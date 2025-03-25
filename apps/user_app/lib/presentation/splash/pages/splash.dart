@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gif/flutter_gif.dart';
+import 'package:user_app/common/helpers/navigator.dart';
+import 'package:user_app/presentation/landing/pages/landing.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -8,24 +9,29 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
-  late FlutterGifController _controller;
 
+
+class _SplashPageState extends State<SplashPage> {
   @override
-  void initState() {
+
+   @override
+  void initState(){
     super.initState();
-    _controller = FlutterGifController(vsync: this);
-    _controller.animateTo(30, duration: const Duration(seconds: 2));
+
+    Future.delayed(const Duration(milliseconds: 4000), (){
+      if(mounted){
+        AppNavigator.push(context, LandingPage());
+      }
+    });
   }
+  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
-        child:GifImage(
-          image: AssetImage("assets/animations/splash_animation.gif"), 
-          controller: _controller,
-        ),
+        child:Image(image: AssetImage("assets/animations/splash_animation.gif"))
       ),
     );
   }
