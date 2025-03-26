@@ -36,7 +36,7 @@ class Skilnk extends StatelessWidget {
         theme: MyThemes.lightTheme,
         darkTheme: MyThemes.darkTheme,
         debugShowCheckedModeBanner: false,
-        home: LandingPage(),
+        home: SplashPage(),
       ),
     );
   }
