@@ -5,7 +5,10 @@ import 'package:user_app/core/theme/custom_colors.dart';
 class MyThemes {
   static final lightTheme = ThemeData(
     brightness: Brightness.light,
-    primaryColor: Colors.deepOrange,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.deepOrange,
+      brightness: Brightness.light,
+    ),
     scaffoldBackgroundColor: Colors.white,
     extensions: [
       const CustomColors(
@@ -14,24 +17,22 @@ class MyThemes {
         infoColor: Color.fromARGB(255, 54, 211, 23),
       ),
     ],
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.blue,
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.deepOrange, // Uses primary from colorScheme
       foregroundColor: Colors.white,
       elevation: 2,
-      titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      titleTextStyle: GoogleFonts.outfit(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
     ),
-    textTheme: GoogleFonts.outfitTextTheme().copyWith(
-      bodyLarge: const TextStyle(fontSize: 16, color: Colors.black),
-      bodyMedium: const TextStyle(fontSize: 14, color: Colors.black87),
-      bodySmall: const TextStyle(fontSize: 12, color: Colors.black54),
-    ),
-    buttonTheme: const ButtonThemeData(
-      buttonColor: Colors.blue,
-      textTheme: ButtonTextTheme.primary,
+    textTheme: GoogleFonts.outfitTextTheme().apply(
+      bodyColor: Colors.black,
+      displayColor: Colors.black87,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.deepOrange, // Uses primary from colorScheme
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
@@ -45,14 +46,14 @@ class MyThemes {
         borderRadius: BorderRadius.circular(8),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.blue, width: 2),
+        borderSide: BorderSide(color: Colors.deepOrange, width: 2),
         borderRadius: BorderRadius.circular(8),
       ),
     ),
-    iconTheme: const IconThemeData(color: Colors.blue),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    iconTheme: const IconThemeData(color: Colors.deepOrange),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
-      selectedItemColor: Colors.blue,
+      selectedItemColor: Colors.deepOrange,
       unselectedItemColor: Colors.grey,
     ),
     useMaterial3: true,
@@ -60,7 +61,10 @@ class MyThemes {
 
   static final darkTheme = ThemeData(
     brightness: Brightness.dark,
-    primaryColor: Colors.deepOrange,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.deepOrange,
+      brightness: Brightness.dark,
+    ),
     scaffoldBackgroundColor: Colors.black,
     extensions: [
       const CustomColors(
@@ -69,24 +73,22 @@ class MyThemes {
         infoColor: Colors.lightBlue,
       ),
     ],
-    appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.teal,
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.deepOrange,
       foregroundColor: Colors.white,
       elevation: 2,
-      titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      titleTextStyle: GoogleFonts.outfit(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
     ),
-    textTheme: GoogleFonts.outfitTextTheme().copyWith(
-      bodyLarge: const TextStyle(fontSize: 30, color: Colors.white),
-      bodyMedium: const TextStyle(fontSize: 20, color: Colors.white70),
-      bodySmall: const TextStyle(fontSize: 20, color: Colors.white54),
-    ),
-    buttonTheme: const ButtonThemeData(
-      buttonColor: Colors.teal,
-      textTheme: ButtonTextTheme.primary,
+    textTheme: GoogleFonts.outfitTextTheme().apply(
+      bodyColor: Colors.white,
+      displayColor: Colors.white70,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
@@ -100,14 +102,14 @@ class MyThemes {
         borderRadius: BorderRadius.circular(8),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(color: Colors.teal, width: 2),
+        borderSide: BorderSide(color: Colors.deepOrange, width: 2),
         borderRadius: BorderRadius.circular(8),
       ),
     ),
-    iconTheme: const IconThemeData(color: Colors.teal),
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+    iconTheme: const IconThemeData(color: Colors.deepOrange),
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: Colors.black,
-      selectedItemColor: Colors.teal,
+      selectedItemColor: Colors.deepOrange,
       unselectedItemColor: Colors.grey,
     ),
     useMaterial3: true,

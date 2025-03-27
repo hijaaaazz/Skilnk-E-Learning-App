@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/presentation/account/cubit/auth_cubit.dart';
+import 'package:user_app/presentation/account/blocs/auth_cubit/auth_cubit.dart';
 
 class ProfileSection extends StatelessWidget {
   const ProfileSection({super.key});
