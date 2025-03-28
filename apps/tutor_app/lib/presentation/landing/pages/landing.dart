@@ -22,7 +22,7 @@ class LandingPage extends StatelessWidget {
     return BlocBuilder<LandingNavigationCubit, int>(
       builder: (context, currentIndex) {
         return Scaffold(
-          body: pages[currentIndex], // Show the correct page
+          body: pages[currentIndex],
           bottomNavigationBar: buildBottomNavbar(currentIndex, context),
         );
       },

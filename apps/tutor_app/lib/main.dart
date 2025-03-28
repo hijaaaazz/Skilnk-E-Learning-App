@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tutor_app/core/theme/theme.dart';
+import 'package:tutor_app/presentation/auth/bloc/auth_cubit/auth_cubit.dart';
+import 'package:tutor_app/presentation/auth/bloc/slanded_clipper_animation.dart/slanded_clipper_animation_cubit.dart';
 import 'package:tutor_app/presentation/landing/cubit/landing_navigation_cubit.dart';
-import 'package:tutor_app/presentation/profile/cubit/auth_cubit.dart';
 import 'package:tutor_app/presentation/splash/pages/splash.dart';
 
 void main() {
@@ -24,13 +26,13 @@ class Skilnk extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_)=> LandingNavigationCubit()),
-        BlocProvider(create: (_)=> AuthCubit())
+        BlocProvider(create: (_)=> AuthCubit()),
+        BlocProvider(create: (_)=> SlantedAnimationCubit())
       ],
       child: MaterialApp(
-        theme: ThemeData(
-          scaffoldBackgroundColor: const Color.fromARGB(255, 13, 3, 31),
-          primaryColor: Colors.white,
-        ),
+        themeMode: ThemeMode.system,
+        theme: MyThemes.lightTheme,
+        darkTheme: MyThemes.darkTheme,
         debugShowCheckedModeBanner: false,
         home: SplashPage(),
       ),
