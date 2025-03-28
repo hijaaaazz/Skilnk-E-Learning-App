@@ -48,35 +48,47 @@ class _AuthenticationViewState extends State<_AuthenticationView> {
         final isSignIn = state.formType == AuthFormType.signIn;
         
         return  Scaffold(
-            body: Stack(
-              children: [
-                BackGroundGradient(),
-                AnimatedBackgroundContainer(isInitialMode: isInitialMode,),
-                AnimatedWelcomeText(isInitialMode: isInitialMode,),
-                
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+            body: SingleChildScrollView(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Stack(
                   children: [
-                    AuthForm(isInitialMode: isInitialMode,isSignIn: isSignIn,),
-                    isInitialMode?
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height  *0.08,
-                    ):SizedBox()
-                  ]
+                    BackGroundGradient(),
+                    AnimatedBackgroundContainer(isInitialMode: isInitialMode,),
+                    AnimatedWelcomeText(isInitialMode: isInitialMode,),
+                    
+                    Padding(
+                      padding: 
+                      isInitialMode?
+                      EdgeInsets.only(top:  MediaQuery.of(context).size.height * 0.75)
+                      :EdgeInsets.only(top:  MediaQuery.of(context).size.height * 0.3),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          AuthForm(isInitialMode: isInitialMode,isSignIn: isSignIn,),
+                          isInitialMode?
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height  *0.08,
+                          ):SizedBox()
+                        ]
+                      ),
+                    ),
+                    if (!isInitialMode)
+                    Positioned(
+                      top: 40,
+                      left: 20,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () {
+                          context.read<AuthUiCubit>().goBackToInitial();
+                        },
+                      ),
+                    ),
+                    
+                  ],
                 ),
-                if (!isInitialMode)
-                Positioned(
-                  top: 40,
-                  left: 20,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () {
-                      context.read<AuthUiCubit>().goBackToInitial();
-                    },
-                  ),
-                ),
-                
-              ],
+              ),
             ),
           );
       },

@@ -15,6 +15,7 @@ class SignUpForm extends StatelessWidget {
     final TextEditingController nameController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
+    final TextEditingController confirmPasswordController = TextEditingController();
 
     return AuthFormContainer(
       isSignIn: false,
@@ -36,6 +37,11 @@ class SignUpForm extends StatelessWidget {
           hintText: "Password",
           icon: Icons.lock,
           isPassword: true,
+        ),
+        AuthInputField(
+          controller: confirmPasswordController,
+          hintText: "Confirm Password",
+          icon: Icons.lock,
         ),
       ],
       buttonText: "Sign Up",
