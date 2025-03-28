@@ -1,4 +1,5 @@
 import 'package:admin_app/common/helpers/navigator.dart';
+import 'package:admin_app/presentation/auth/pages/authentication.dart';
 import 'package:admin_app/presentation/landing/pages/landing.dart';
 import 'package:flutter/material.dart';
 class SplashPage extends StatefulWidget {
@@ -19,7 +20,7 @@ class _SplashPageState extends State<SplashPage> {
 
     Future.delayed(const Duration(milliseconds: 4000), (){
       if(mounted){
-        AppNavigator.push(context, LandingPage());
+        AppNavigator.push(context, AuthenticationPage());
       }
     });
   }

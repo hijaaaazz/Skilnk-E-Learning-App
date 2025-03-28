@@ -1,7 +1,8 @@
+import 'package:admin_app/core/theme/theme.dart';
+import 'package:admin_app/presentation/auth/pages/authentication.dart';
 import 'package:admin_app/presentation/landing/cubit/landing_navigation_cubit.dart';
 import 'package:admin_app/presentation/landing/pages/landing.dart';
 import 'package:admin_app/presentation/profile/cubit/auth_cubit.dart';
-import 'package:admin_app/presentation/splash/pages/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,12 +28,11 @@ class Skilnk extends StatelessWidget {
         BlocProvider(create: (_)=> AuthCubit())
       ],
       child: MaterialApp(
-        theme: ThemeData(
-          scaffoldBackgroundColor: const Color.fromARGB(255, 13, 3, 31),
-          primaryColor: Colors.white,
-        ),
+        theme: MyThemes.lightTheme,
+        darkTheme: MyThemes.darkTheme,
+        themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
-        home: LandingPage(),
+        home: AuthenticationPage(),
       ),
     );
   }
