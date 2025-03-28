@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/common/widgets/app_text.dart';
+import 'package:tutor_app/core/theme/custom_colors_extension.dart';
 import 'package:tutor_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/presentation/auth/widgets/auth_buttons.dart';
 import 'package:tutor_app/presentation/auth/widgets/signin_section.dart';
@@ -95,10 +96,10 @@ class AuthFormContainer extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style:  TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 139, 33, 0),
+              color: context.customColors.primaryRed,
             ),
           ),
           const SizedBox(height: 20),
@@ -106,7 +107,7 @@ class AuthFormContainer extends StatelessWidget {
           const SizedBox(height: 30),
           AuthButtons(
             text: buttonText,
-            backgroundColor: const Color.fromARGB(255, 139, 33, 0),
+            backgroundColor:context.customColors.primaryRed,
             color: Colors.white,
             onPressed: onPressed,
           ),
@@ -118,8 +119,8 @@ class AuthFormContainer extends StatelessWidget {
             },
             child: Text(
               "Forgot Password ?",
-              style: const TextStyle(
-                color: Color.fromARGB(255, 139, 33, 0),
+              style:  TextStyle(
+                color: context.customColors.primaryRed,
               ),
             ),
           ),
@@ -144,8 +145,8 @@ class AuthFormContainer extends StatelessWidget {
             onPressed: onSwitchPressed,
             child: Text(
               switchText,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 139, 33, 0),
+              style:  TextStyle(
+                color: context.customColors.primaryRed ,
               ),
             ),
           ),

@@ -1,6 +1,5 @@
 import 'package:admin_app/common/helpers/navigator.dart';
 import 'package:admin_app/presentation/auth/pages/authentication.dart';
-import 'package:admin_app/presentation/landing/pages/landing.dart';
 import 'package:flutter/material.dart';
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

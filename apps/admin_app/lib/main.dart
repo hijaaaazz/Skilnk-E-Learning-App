@@ -1,13 +1,19 @@
 import 'package:admin_app/core/theme/theme.dart';
+import 'package:admin_app/firebase_options.dart';
 import 'package:admin_app/presentation/auth/pages/authentication.dart';
 import 'package:admin_app/presentation/landing/cubit/landing_navigation_cubit.dart';
 import 'package:admin_app/presentation/landing/pages/landing.dart';
 import 'package:admin_app/presentation/profile/cubit/auth_cubit.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
+
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Color.fromARGB(255, 0, 0, 0),

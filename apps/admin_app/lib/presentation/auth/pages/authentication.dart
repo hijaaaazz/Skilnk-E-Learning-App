@@ -1,4 +1,6 @@
+import 'package:admin_app/core/theme/custom_colors_extension.dart';
 import 'package:admin_app/presentation/auth/widgets/auth_form.dart';
+import 'package:admin_app/presentation/auth/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class AuthenticationPage extends StatelessWidget {
@@ -13,20 +15,23 @@ class AuthenticationPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Row(),
+          NavBar(),
+          
           Expanded(
             child: Row(
               children: [
                 Container(
-
-                  color: Color(0xFFEBEBFF),
+                  color:context.customColors.backgroundLightBlue,
                   height:  MediaQuery.of(context).size.height ,
                   width: MediaQuery.of(context).size.width *0.45,
                   child: Image(image: AssetImage("assets/images/sally_illustration.png")),
                 ),
                 Expanded(
-                  child: Center(
-                    child: LoginForm(),
+                  child: ColoredBox(
+                    color: context.customColors.primaryWhite,
+                    child: Center(
+                      child: LoginForm(),
+                    ),
                   ),
                 )
               ],

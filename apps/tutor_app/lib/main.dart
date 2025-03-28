@@ -1,14 +1,21 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/core/theme/theme.dart';
+import 'package:tutor_app/firebase_options.dart';
 import 'package:tutor_app/presentation/auth/bloc/auth_cubit/auth_cubit.dart';
 import 'package:tutor_app/presentation/auth/bloc/slanded_clipper_animation.dart/slanded_clipper_animation_cubit.dart';
 import 'package:tutor_app/presentation/landing/cubit/landing_navigation_cubit.dart';
 import 'package:tutor_app/presentation/splash/pages/splash.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Color.fromARGB(255, 0, 0, 0),

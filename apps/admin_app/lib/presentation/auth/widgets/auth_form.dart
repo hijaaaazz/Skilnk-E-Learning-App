@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:admin_app/core/theme/custom_colors_extension.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -22,45 +24,30 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Center(
-          child: Container(
-            constraints: BoxConstraints(maxWidth: 500),
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Title
-                  _buildTitle(),
-                  SizedBox(height: 32),
-
-                  // Email Input
-                  _buildEmailField(),
-                  SizedBox(height: 16),
-
-                  // Password Input
-                  _buildPasswordField(),
-                  SizedBox(height: 16),
-
-                  // Remember Me and Sign In Row
-                  _buildRememberMeAndSignIn(),
-                  SizedBox(height: 32),
-
-                  // Divider
-                  _buildDivider(),
-                  SizedBox(height: 16),
-
-                  // Social Login Buttons
-                  _buildSocialLogins(),
-                ],
-              ),
-            ),
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildTitle(),
+              const SizedBox(height: 32),
+              _buildEmailField(),
+              const SizedBox(height: 16),
+              _buildPasswordField(),
+              const SizedBox(height: 16),
+              _buildRememberMeAndSignIn(),
+              const SizedBox(height: 32),
+              _buildDivider(),
+              const SizedBox(height: 16),
+              _buildSocialLogins(),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -69,7 +56,7 @@ class _LoginFormState extends State<LoginForm> {
       'Welcome Back Admin!',
       textAlign: TextAlign.center,
       style: TextStyle(
-        color: Colors.black87,
+        color: context.customColors.textBlack,
         fontSize: 32,
         fontWeight: FontWeight.w600,
       ),
@@ -77,89 +64,73 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _buildEmailField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Email',
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        SizedBox(height: 8),
-        TextField(
-          controller: _emailController,
-          decoration: _inputDecoration(
-            hintText: 'Username or email address',
-            prefixIcon: Icons.email_outlined,
-          ),
-          keyboardType: TextInputType.emailAddress,
-        ),
-      ],
+    return _buildInputField(
+      label: 'Email',
+      hintText: 'Username or email address',
+      controller: _emailController,
+      prefixIcon: Icons.email_outlined,
     );
   }
 
   Widget _buildPasswordField() {
+    return _buildInputField(
+      label: 'Password',
+      hintText: 'Enter your password',
+      controller: _passwordController,
+      prefixIcon: Icons.lock_outline,
+      obscureText: _obscurePassword,
+      suffixIcon: IconButton(
+        icon: Icon(
+          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+          color: context.customColors.borderGrey,
+        ),
+        onPressed: () {
+          setState(() {
+            _obscurePassword = !_obscurePassword;
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required String label,
+    required String hintText,
+    required TextEditingController controller,
+    required IconData prefixIcon,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Password',
+          label,
           style: TextStyle(
-            color: Colors.black87,
+            color: context.customColors.textBlack,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextField(
-          controller: _passwordController,
-          obscureText: _obscurePassword,
-          decoration: _inputDecoration(
-            hintText: 'Enter your password',
-            prefixIcon: Icons.lock_outline,
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey,
-              ),
-              onPressed: () {
-                setState(() {
-                  _obscurePassword = !_obscurePassword;
-                });
-              },
+          
+          controller: controller,
+          obscureText: obscureText,
+          decoration: InputDecoration(
+            iconColor: context.customColors.textBlack,
+            hintStyle: GoogleFonts.outfit(
+              color: context.customColors.textBlack
             ),
+            hintText: hintText,
+            prefixIcon: Icon(prefixIcon,),
+            suffixIcon: suffixIcon,
+            filled: true,
+            fillColor: const Color.fromARGB(255, 206, 206, 206),
+           
           ),
         ),
       ],
-    );
-  }
-
-  InputDecoration _inputDecoration({
-    required String hintText,
-    required IconData prefixIcon,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      hintText: hintText,
-      prefixIcon: Icon(prefixIcon, color: Colors.grey),
-      suffixIcon: suffixIcon,
-      filled: true,
-      fillColor: Colors.grey[100],
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: Colors.orange, width: 2),
-      ),
     );
   }
 
@@ -176,30 +147,26 @@ class _LoginFormState extends State<LoginForm> {
                   _rememberMe = value ?? false;
                 });
               },
-              activeColor: Colors.orange,
+              activeColor: context.customColors.primaryOrange,
+              side:BorderSide(color: context.customColors.textBlack)
             ),
-            Text(
-              'Remember me',
-              style: TextStyle(color: Colors.black54),
-            ),
+            Text('Remember me', style: TextStyle(color: context.customColors.textBlack)),
           ],
         ),
         ElevatedButton(
-          onPressed: _performLogin,
+          onPressed: () {},
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+            backgroundColor: context.customColors.primaryOrange,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
           ),
-          child: Text(
-            'Sign In',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          child: Text('Sign In',
+              style: TextStyle(
+                color: context.customColors.textWhite,
+                fontWeight: FontWeight.bold,
+              )),
         ),
       ],
     );
@@ -208,18 +175,16 @@ class _LoginFormState extends State<LoginForm> {
   Widget _buildDivider() {
     return Row(
       children: [
-        Expanded(child: Divider(color: Colors.grey[300])),
+        Expanded(child: Divider(color: context.customColors.borderGrey)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'SIGN IN WITH',
-            style: TextStyle(
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          child: Text('SIGN IN WITH',
+              style: TextStyle(
+                color: context.customColors.borderGrey,
+                fontWeight: FontWeight.w500,
+              )),
         ),
-        Expanded(child: Divider(color: Colors.grey[300])),
+        Expanded(child: Divider(color: context.customColors.borderGrey)),
       ],
     );
   }
@@ -228,60 +193,24 @@ class _LoginFormState extends State<LoginForm> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _socialLoginButton(
-          icon: Icons.golf_course,  // Replace with Google icon
-          label: 'Google',
-          color: Colors.red,
-        ),
-        SizedBox(width: 16),
-        _socialLoginButton(
-          icon: Icons.facebook,  // Replace with Facebook icon
-          label: 'Facebook',
-          color: Colors.blue,
+        OutlinedButton(
+          onPressed: () {},
+          style: OutlinedButton.styleFrom(
+            backgroundColor: context.customColors.primaryWhite,
+            foregroundColor: context.customColors.textBlack,
+            side: BorderSide(color: context.customColors.borderGrey),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+          child: Row(
+            children: [
+              Image.asset("assets/images/google.png", width: 24),
+              const SizedBox(width: 10),
+              Text('Google'),
+            ],
+          ),
         ),
       ],
     );
-  }
-
-  Widget _socialLoginButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return OutlinedButton.icon(
-      onPressed: () {
-        // Implement social login logic
-      },
-      icon: Icon(icon, color: color),
-      label: Text(label),
-      style: OutlinedButton.styleFrom(
-        foregroundColor: Colors.black87,
-        side: BorderSide(color: Colors.grey.shade300),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-    );
-  }
-
-  void _performLogin() {
-    // Implement login logic
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    
-    // Validate inputs
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter email and password'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    // TODO: Implement actual authentication
-    print('Login attempted with: $email');
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tutor_app/core/theme/custom_colors.dart';
+import 'custom_colors.dart';
 
 class MyThemes {
   static final lightTheme = ThemeData(
@@ -10,15 +10,9 @@ class MyThemes {
       brightness: Brightness.light,
     ),
     scaffoldBackgroundColor: Colors.white,
-    extensions: [
-      const CustomColors(
-        successColor: Colors.green,
-        warningColor: Colors.orange,
-        infoColor: Color.fromARGB(255, 54, 211, 23),
-      ),
-    ],
+    extensions: [CustomColors.light], // Use the predefined light theme
     appBarTheme: AppBarTheme(
-      backgroundColor: Colors.deepOrange, // Uses primary from colorScheme
+      backgroundColor: Colors.deepOrange,
       foregroundColor: Colors.white,
       elevation: 2,
       titleTextStyle: GoogleFonts.outfit(
@@ -32,7 +26,7 @@ class MyThemes {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.deepOrange, // Uses primary from colorScheme
+        backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
@@ -66,13 +60,7 @@ class MyThemes {
       brightness: Brightness.dark,
     ),
     scaffoldBackgroundColor: Colors.black,
-    extensions: [
-      const CustomColors(
-        successColor: Colors.lightGreen,
-        warningColor: Colors.deepOrange,
-        infoColor: Colors.lightBlue,
-      ),
-    ],
+    extensions: [CustomColors.dark], // Use the predefined dark theme
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.deepOrange,
       foregroundColor: Colors.white,

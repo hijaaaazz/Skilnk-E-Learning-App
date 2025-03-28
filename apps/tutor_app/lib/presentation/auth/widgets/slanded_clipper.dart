@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tutor_app/core/theme/custom_colors_extension.dart';
 
 class AnimatedSlantedClipper extends StatefulWidget {
   final bool isSlanted;
@@ -58,7 +59,7 @@ class _AnimatedSlantedClipperState extends State<AnimatedSlantedClipper>
         );
       },
       child: Container(
-        color: const Color.fromARGB(255, 255, 106, 60),
+        color:context.customColors.primaryOrange,
         width: double.infinity,
         height: widget.isSlanted ? widget.screenHeight * 0.5 : widget.screenHeight * 0.75,
       ),
@@ -81,7 +82,7 @@ class SlantedClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     Path path = Path();
 
-    path.lineTo(0, size.height * angleFactor); // Dynamic slant
+    path.lineTo(0, size.height * angleFactor); 
     path.lineTo(size.width, 0); 
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);

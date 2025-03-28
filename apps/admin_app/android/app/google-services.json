@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "288935584617",
+    "firebase_url": "https://skilnk-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "skilnk",
+    "storage_bucket": "skilnk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288935584617:android:f6e9bf5d88fddab55993f8",
+        "android_client_info": {
+          "package_name": "com.example.admin_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288935584617-bkfggihvm40s430cvm49qp4qhrb93270.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5o0MGxqNMGBksqZKgNxzg5CxuZ0aGc4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "288935584617-bkfggihvm40s430cvm49qp4qhrb93270.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
