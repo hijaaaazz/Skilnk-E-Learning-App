@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_state.dart';
-import 'package:user_app/presentation/account/widgets/animated_welcome_text.dart';
-import 'package:user_app/presentation/account/widgets/animated_container.dart';
-import 'package:user_app/presentation/account/widgets/authentication_form.dart';
-import 'package:user_app/presentation/account/widgets/background_gradient.dart';
+import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
+import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_state.dart';
+import 'package:user_app/presentation/auth/widgets/animated_welcome_text.dart';
+import 'package:user_app/presentation/auth/widgets/animated_container.dart';
+import 'package:user_app/presentation/auth/widgets/authentication_form.dart';
+import 'package:user_app/presentation/auth/widgets/background_gradient.dart';
 
 class AuthenticationSection extends StatelessWidget {
   const AuthenticationSection({super.key});

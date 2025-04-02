@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/presentation/account/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/presentation/account/pages/auth.dart';
+import 'package:user_app/presentation/auth/bloc/auth_cubit/auth_cubit.dart';
+import 'package:user_app/presentation/auth/pages/auth.dart';
 import 'package:user_app/presentation/account/pages/profile.dart';
 
 class AccountPage extends StatelessWidget {

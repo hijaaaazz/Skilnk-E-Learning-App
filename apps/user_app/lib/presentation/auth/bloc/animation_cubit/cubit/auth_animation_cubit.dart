@@ -1,6 +1,6 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_state.dart';
+import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_state.dart';
 
 class AuthUiCubit extends Cubit<AuthUiState> {
   AuthUiCubit() : super(AuthUiState.initial());

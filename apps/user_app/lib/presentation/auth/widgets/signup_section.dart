@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/presentation/account/widgets/auth_input_fieds.dart';
-import 'package:user_app/presentation/account/widgets/authentication_form.dart';
+import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
+import 'package:user_app/presentation/auth/widgets/auth_input_fieds.dart';
+import 'package:user_app/presentation/auth/widgets/authentication_form.dart';
 
 
 class SignUpForm extends StatelessWidget {

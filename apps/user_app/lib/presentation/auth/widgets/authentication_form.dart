@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:user_app/common/widgets/app_text.dart';
-import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/presentation/account/widgets/auth_buttons.dart';
-import 'package:user_app/presentation/account/widgets/signin_section.dart';
-import 'package:user_app/presentation/account/widgets/signup_section.dart';
+import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
+import 'package:user_app/presentation/auth/widgets/auth_buttons.dart';
+import 'package:user_app/presentation/auth/widgets/signin_section.dart';
+import 'package:user_app/presentation/auth/widgets/signup_section.dart';
 
 class AuthForm extends StatelessWidget {
   final bool isInitialMode;

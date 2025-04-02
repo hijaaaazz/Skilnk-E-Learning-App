@@ -57,10 +57,14 @@ class _AnimatedSlantedClipperState extends State<AnimatedSlantedClipper>
           child: child,
         );
       },
-      child: Container(
-        color: const Color.fromARGB(255, 255, 106, 60),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 500),
         width: double.infinity,
         height: widget.isSlanted ? widget.screenHeight * 0.5 : widget.screenHeight * 0.75,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 255, 106, 60),
+          borderRadius: BorderRadius.circular(widget.isSlanted? 20 : 0)
+        ),
       ),
     );
   }
