@@ -1,6 +1,10 @@
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/data/auth/models/user_creation_req.dart';
+import 'package:user_app/domain/auth/usecases/signup.dart';
 import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
 import 'package:user_app/presentation/auth/widgets/auth_input_fieds.dart';
 import 'package:user_app/presentation/auth/widgets/authentication_form.dart';
@@ -37,9 +41,15 @@ class SignUpForm extends StatelessWidget {
           isPassword: true,
         ),
       ],
-      buttonText: "Sign Up",
+      
       onPressed: () {
-        
+         
+        //  log("uyfgbcyergfcbytrfgbc");
+
+        // context.read<ButtonStateCubit>().execute(
+        //   usecase: Signupusecase(),
+        //   params: UserCreationReq(name: "", email: "mhcnkd4@gmail.com", password: "")
+        //   );
       },
       switchText: "Already have an account? Sign In",
       onSwitchPressed: () {

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:user_app/common/widgets/app_text.dart';
 import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
 import 'package:user_app/presentation/account/widgets/auth_buttons.dart';
@@ -49,8 +48,8 @@ class AuthButtonsContainer extends StatelessWidget {
         SizedBox(height: MediaQuery.of(context).size.height * 0.025),
         AuthButtons(
           text: "Sign Up",
-          backgroundColor: Colors.white,
-          color: const Color.fromARGB(255, 139, 33, 0),
+          backgroundColor: Colors.red,
+          
           onPressed: () {
             context.read<AuthUiCubit>().toggleAuthMode(false);
           },
@@ -103,12 +102,7 @@ class AuthFormContainer extends StatelessWidget {
           const SizedBox(height: 20),
           ...fields,
           const SizedBox(height: 30),
-          AuthButtons(
-            text: buttonText,
-            backgroundColor: const Color.fromARGB(255, 139, 33, 0),
-            color: Colors.white,
-            onPressed: onPressed,
-          ),
+          
           const SizedBox(height: 15),
           if(isSignIn)
             TextButton(

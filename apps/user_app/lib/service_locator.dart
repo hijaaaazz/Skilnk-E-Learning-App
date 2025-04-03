@@ -5,31 +5,21 @@ import 'package:user_app/domain/auth/repository/auth.dart';
 import 'package:user_app/domain/auth/usecases/signup.dart';
 
 final serviceLocator = GetIt.instance;
-
 Future<void> initializeDependencies() async {
-
-  //Services
-
-  serviceLocator.registerSingleton<AuthFirebaseService>(
-    AuthFirebaseServiceImp()
+  // ✅ Register services lazily
+  serviceLocator.registerLazySingleton<AuthFirebaseService>(
+    () => AuthFirebaseServiceImp()
   );
 
-
-  //Repos
-
-  serviceLocator.registerSingleton<AuthRepository>(
-    AuthenticationRepoImplementation()
+  // ✅ Register repositories lazily
+  serviceLocator.registerLazySingleton<AuthRepository>(
+    () => AuthenticationRepoImplementation()
   );
 
-
-  //usecases
-
-  serviceLocator.registerSingleton<Signupusecase>(
-    Signupusecase()
+  // ✅ Register use cases lazily
+  serviceLocator.registerLazySingleton<Signupusecase>(
+    () => Signupusecase()
   );
-
-
-
-
-
 }
+
+

@@ -2,10 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:user_app/common/widgets/app_text.dart';
+import 'package:user_app/presentation/account/widgets/auth_buttons.dart';
 import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/presentation/auth/widgets/auth_buttons.dart';
 import 'package:user_app/presentation/auth/widgets/signin_section.dart';
 import 'package:user_app/presentation/auth/widgets/signup_section.dart';
 
@@ -65,7 +64,6 @@ class AuthButtonsContainer extends StatelessWidget {
 class AuthFormContainer extends StatelessWidget {
   final String title;
   final List<Widget> fields;
-  final String buttonText;
   final VoidCallback onPressed;
   final String switchText;
   final VoidCallback onSwitchPressed;
@@ -75,7 +73,6 @@ class AuthFormContainer extends StatelessWidget {
     super.key,
     required this.title,
     required this.fields,
-    required this.buttonText,
     required this.onPressed,
     required this.switchText,
     required this.onSwitchPressed,
@@ -103,12 +100,15 @@ class AuthFormContainer extends StatelessWidget {
           const SizedBox(height: 20),
           ...fields,
           const SizedBox(height: 30),
-          AuthButtons(
-            text: buttonText,
-            backgroundColor: const Color.fromARGB(255, 139, 33, 0),
-            color: Colors.white,
-            onPressed: onPressed,
-          ),
+
+          // Builder(
+          //   builder: (context) {
+          //     return BasicReactiveButton(
+          //       height: 100,
+          //       onPressed: onPressed);
+          //   }
+          // ),
+          
           const SizedBox(height: 15),
           if(isSignIn)
             TextButton(
