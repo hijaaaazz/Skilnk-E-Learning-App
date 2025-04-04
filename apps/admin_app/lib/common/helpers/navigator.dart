@@ -6,4 +6,8 @@ class AppNavigator{
     Navigator.push(context, MaterialPageRoute(builder: (context)=> page));
   }
 
+  static void pushAndReplacement(BuildContext context,Widget page){
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> page));
+  }
+
 }

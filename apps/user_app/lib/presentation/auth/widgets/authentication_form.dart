@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_app/common/widgets/app_text.dart';
-import 'package:user_app/presentation/account/widgets/auth_buttons.dart';
+import 'package:user_app/common/widgets/basic_reactive_button.dart';
 import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
 import 'package:user_app/presentation/auth/widgets/signin_section.dart';
 import 'package:user_app/presentation/auth/widgets/signup_section.dart';
@@ -37,23 +37,23 @@ class AuthButtonsContainer extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        AuthButtons(
-          text: "Sign In",
-          backgroundColor: const Color.fromARGB(255, 139, 33, 0),
-          color: Colors.white,
-          onPressed: () {
-            context.read<AuthUiCubit>().toggleAuthMode(true);
-          },
-        ),
+        BasicReactiveButton(
+          title: "Sign In",
+          backgroundColor: const Color.fromARGB(255, 194, 45, 0),
+          onPressed: (){
+          context.read<AuthUiCubit>().toggleAuthMode(true);
+        } ),
+       
         SizedBox(height: MediaQuery.of(context).size.height * 0.025),
-        AuthButtons(
-          text: "Sign Up",
+
+        BasicReactiveButton(
+          title: "Sign Up",
+          textColor: const Color.fromARGB(255, 194, 45, 0),
           backgroundColor: Colors.white,
-          color: const Color.fromARGB(255, 139, 33, 0),
-          onPressed: () {
-            context.read<AuthUiCubit>().toggleAuthMode(false);
-          },
-        )
+          onPressed: (){
+          context.read<AuthUiCubit>().toggleAuthMode(false);
+        })
+       
       ],
     );
   }
@@ -101,13 +101,7 @@ class AuthFormContainer extends StatelessWidget {
           ...fields,
           const SizedBox(height: 30),
 
-          // Builder(
-          //   builder: (context) {
-          //     return BasicReactiveButton(
-          //       height: 100,
-          //       onPressed: onPressed);
-          //   }
-          // ),
+          BasicReactiveButton(onPressed: onPressed),
           
           const SizedBox(height: 15),
           if(isSignIn)
