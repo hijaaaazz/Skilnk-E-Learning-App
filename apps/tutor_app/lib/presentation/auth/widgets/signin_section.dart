@@ -51,7 +51,7 @@ class SignInForm extends StatelessWidget {
                 backgroundColor: const Color.fromARGB(255, 160, 37, 0),
                 onPressed: (){
                   context.read<ButtonStateCubit>().execute(
-                    usecase:SignInusecase(),
+                    usecase:SignInUseCase(),
                     params: UserSignInReq(
                       email: emailController.text,
                       password: passwordController.text));

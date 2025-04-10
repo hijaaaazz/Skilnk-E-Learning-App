@@ -63,7 +63,9 @@ class _AnimatedSlantedClipperState extends State<AnimatedSlantedClipper>
         height: widget.isSlanted ? widget.screenHeight * 0.5 : widget.screenHeight * 0.75,
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 255, 106, 60),
-          borderRadius: BorderRadius.circular(widget.isSlanted? 20 : 0)
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(widget.isSlanted? 20 : 0),
+             )
         ),
       ),
     );

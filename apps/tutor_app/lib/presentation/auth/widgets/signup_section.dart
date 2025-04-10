@@ -56,7 +56,7 @@ class SignUpForm extends StatelessWidget {
                 backgroundColor: const Color.fromARGB(255, 160, 37, 0),
                 onPressed: (){
                   context.read<ButtonStateCubit>().execute(
-                    usecase:Signupusecase(),
+                    usecase:SignupUseCase(),
                     params: UserCreationReq(
                       name: nameController.text,
                       email: emailController.text,

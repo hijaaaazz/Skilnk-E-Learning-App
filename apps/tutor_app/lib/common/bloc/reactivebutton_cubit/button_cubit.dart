@@ -13,7 +13,7 @@ class ButtonStateCubit extends Cubit<ButtonState> {
   print("🚀 execute() called with params: $params");
 
   try {
-    print("🛠 Calling usecase.call()...");
+    print("🛠 Calling usecase.call()...${usecase.toString}");
     Either returnedData = await usecase.call(params: params);
     print("✅ usecase.call() completed");
 

@@ -7,7 +7,6 @@ import 'package:tutor_app/core/routes/app_routes_config.dart';
 import 'package:tutor_app/core/theme/theme.dart';
 import 'package:tutor_app/firebase_options.dart';
 import 'package:tutor_app/presentation/auth/blocs/auth_cubit/auth_cubit.dart';
-import 'package:tutor_app/presentation/splash/pages/splash.dart';
 import 'package:tutor_app/service_locator.dart';
 
 Future<void> main() async {

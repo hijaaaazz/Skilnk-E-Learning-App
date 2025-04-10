@@ -6,8 +6,9 @@ import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
 import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_state.dart';
 import 'package:tutor_app/common/widgets/basic_reactive_button.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
-import 'package:tutor_app/domain/auth/usecases/signin_with-google.dart';
+import 'package:tutor_app/domain/auth/usecases/signin_with_google.dart';
 import 'package:tutor_app/presentation/auth/blocs/animation_cubit/auth_animation_cubit.dart';
+import 'package:tutor_app/presentation/auth/widgets/forgot_pass.dart';
 import 'package:tutor_app/presentation/auth/widgets/signin_section.dart';
 import 'package:tutor_app/presentation/auth/widgets/signup_section.dart';
 
@@ -116,7 +117,13 @@ class AuthFormContainer extends StatelessWidget {
           if(isSignIn)
             TextButton(
             onPressed: (){
-
+              showDialog(
+              context: context,
+              builder:(context) {
+                return  ResetPassDialog(
+                  prefillEmail: " hi",
+                  dialogContext: context);
+              });
             },
             child: Text(
               "Forgot Password ?",
@@ -148,11 +155,7 @@ class AuthFormContainer extends StatelessWidget {
                           usecase: SignInWithGoogleUseCase()
                         );
                       },
-                      initialChild: SizedBox(
-                        height: MediaQuery.of(context).size.height *0.04,
-                         child: Image(
-                          image: AssetImage("assets/images/google.png")),
-                       ),
+                      
                      
                      );
                    }

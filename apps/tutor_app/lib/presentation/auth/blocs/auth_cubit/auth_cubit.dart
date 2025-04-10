@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-enum AuthStatus { authenticated, unauthenticated }
+enum AuthStatus { authenticated, unauthenticated, unverified }
 
 class AuthStatusState {
   final AuthStatus status;
@@ -14,6 +14,10 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
   AuthStatusCubit() : super(AuthStatusState.initial());
 
   void login() {
+    emit(AuthStatusState(status: AuthStatus.unverified));
+  }
+
+  void verify() {
     emit(AuthStatusState(status: AuthStatus.authenticated));
   }
 
