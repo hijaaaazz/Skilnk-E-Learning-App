@@ -33,62 +33,78 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ButtonStateCubit(),  // ✅ Provide at the top
-      child: Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 500),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildTitle(),
-                const SizedBox(height: 32),
-                _buildEmailField(),
-                const SizedBox(height: 16),
-                _buildPasswordField(),
-                const SizedBox(height: 16),
-                _buildSignInButton(),
-                const SizedBox(height: 32),
-               
-              
-              ],
+      create: (context) => ButtonStateCubit(),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Adjust form width based on available space
+          final formWidth = constraints.maxWidth > 500 
+              ? 500.0 
+              : constraints.maxWidth * 0.9;
+          
+          // Adjust font sizes based on available width
+          final titleSize = constraints.maxWidth > 768 ? 32.0 : 24.0;
+          final labelSize = constraints.maxWidth > 768 ? 14.0 : 12.0;
+          
+          return Center(
+            child: Container(
+              constraints: BoxConstraints(maxWidth: formWidth),
+              padding: EdgeInsets.symmetric(
+                horizontal: constraints.maxWidth > 768 ? 24 : 16, 
+                vertical: constraints.maxWidth > 768 ? 32 : 24
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildTitle(titleSize),
+                    SizedBox(height: constraints.maxWidth > 768 ? 32 : 24),
+                    _buildEmailField(labelSize),
+                    SizedBox(height: constraints.maxWidth > 768 ? 16 : 12),
+                    _buildPasswordField(labelSize),
+                    SizedBox(height: constraints.maxWidth > 768 ? 16 : 12),
+                    _buildSignInButton(),
+                    SizedBox(height: constraints.maxWidth > 768 ? 32 : 24),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        }
       ),
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle(double fontSize) {
     return Text(
       'Welcome Back Admin!',
       textAlign: TextAlign.center,
       style: TextStyle(
         color: context.customColors.textBlack,
-        fontSize: 32,
+        fontSize: fontSize,
         fontWeight: FontWeight.w600,
       ),
     );
   }
 
-  Widget _buildEmailField() {
+  Widget _buildEmailField(double labelSize) {
     return _buildInputField(
       label: 'Email',
       hintText: 'Username or email address',
       controller: _emailController,
       prefixIcon: Icons.email_outlined,
+      labelSize: labelSize,
     );
   }
 
-  Widget _buildPasswordField() {
+  Widget _buildPasswordField(double labelSize) {
     return _buildInputField(
       label: 'Password',
       hintText: 'Enter your password',
       controller: _passwordController,
       prefixIcon: Icons.lock_outline,
       obscureText: _obscurePassword,
+      labelSize: labelSize,
       suffixIcon: IconButton(
         icon: Icon(
           _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -108,6 +124,7 @@ class _LoginFormState extends State<LoginForm> {
     required String hintText,
     required TextEditingController controller,
     required IconData prefixIcon,
+    required double labelSize,
     bool obscureText = false,
     Widget? suffixIcon,
   }) {
@@ -118,13 +135,12 @@ class _LoginFormState extends State<LoginForm> {
           label,
           style: TextStyle(
             color: context.customColors.textBlack,
-            fontSize: 14,
+            fontSize: labelSize,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),
         TextField(
-          
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
@@ -137,19 +153,17 @@ class _LoginFormState extends State<LoginForm> {
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: const Color.fromARGB(255, 206, 206, 206),
-           
           ),
         ),
       ],
     );
   }
 
-  
   Widget _buildSignInButton() {
     return BlocConsumer<ButtonStateCubit, ButtonState>(
       listener: (context, state) {
         if (state is ButtonSuccessState) {
-          AppNavigator.push(context, LandingPage()); // ✅ Navigate when successful
+          AppNavigator.push(context, LandingPage());
         }
       },
       builder: (context, state) {
@@ -175,9 +189,5 @@ class _LoginFormState extends State<LoginForm> {
       },
     );
   }
-
-
- 
-
-  
 }
+

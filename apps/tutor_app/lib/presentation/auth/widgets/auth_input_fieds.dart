@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tutor_app/core/theme/custom_colors_extension.dart';
 
 class AuthInputField extends StatefulWidget {
   final TextEditingController controller;
@@ -34,27 +33,20 @@ class _AuthInputFieldState extends State<AuthInputField> {
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextField(
-        style: TextStyle(
-          color: context.customColors.primaryRed
-        ),
       
         controller: widget.controller,
         obscureText: widget.isPassword && _obscureText,
         keyboardType: widget.keyboardType,
-        cursorWidth: 3,
-        cursorHeight: 16,
-        cursorColor: context.customColors.primaryOrange,
         decoration: InputDecoration(
-          
           contentPadding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width* 0.1),
           hintText: widget.hintText,
-          hintStyle: GoogleFonts.outfit(color: context.customColors.neutralGrey),
-          prefixIcon: Icon(widget.icon, color: context.customColors.neutralGrey),
+          hintStyle: GoogleFonts.outfit(color: Color.fromARGB(255, 134, 134, 134)),
+          prefixIcon: Icon(widget.icon, color:  Color.fromARGB(255, 134, 134, 134)),
           suffixIcon: widget.isPassword
               ? IconButton(
                   icon: Icon(
                     _obscureText ? Icons.visibility : Icons.visibility_off,
-                    color: context.customColors.primaryOrange,
+                    color: const Color.fromARGB(255, 139, 33, 0),
                   ),
                   onPressed: () {
                     setState(() {

@@ -7,8 +7,8 @@ import 'package:user_app/presentation/auth/widgets/animated_widgets/animated_con
 import 'package:user_app/presentation/auth/widgets/authentication_form.dart';
 import 'package:user_app/presentation/auth/widgets/animated_widgets/background_gradient.dart';
 
-class AuthenticationSection extends StatelessWidget {
-  const AuthenticationSection({super.key});
+class AuthenticationPage extends StatelessWidget {
+  const AuthenticationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +46,9 @@ class _AuthenticationViewState extends State<_AuthenticationView> {
         final isInitialMode = state.isInitialMode;
         final isSignIn = state.formType == AuthFormType.signIn;
         
-        return  SizedBox(
-            height: MediaQuery.of(context).size.height - kBottomNavigationBarHeight,
-            width: MediaQuery.of(context).size.width,
-            child: Stack(
+        return  Scaffold(
+            
+            body: Stack(
               children: [
                 BackGroundGradient(),
                 AnimatedBackgroundContainer(isInitialMode: isInitialMode,),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tutor_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:tutor_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_state.dart';
-import 'package:tutor_app/presentation/auth/widgets/animated_container.dart';
-import 'package:tutor_app/presentation/auth/widgets/animated_welcome_text.dart';
+import 'package:tutor_app/presentation/auth/blocs/animation_cubit/auth_animation_cubit.dart';
+import 'package:tutor_app/presentation/auth/blocs/animation_cubit/auth_animation_state.dart';
+import 'package:tutor_app/presentation/auth/widgets/animated_widgets/animated_container.dart';
+import 'package:tutor_app/presentation/auth/widgets/animated_widgets/animated_welcome_text.dart';
+import 'package:tutor_app/presentation/auth/widgets/animated_widgets/background_gradient.dart';
 import 'package:tutor_app/presentation/auth/widgets/authentication_form.dart';
-import 'package:tutor_app/presentation/auth/widgets/background_gradient.dart';
 
 
 class AuthenticationPage extends StatelessWidget {
@@ -20,25 +20,8 @@ class AuthenticationPage extends StatelessWidget {
   }
 }
 
-class _AuthenticationView extends StatefulWidget {
+class _AuthenticationView extends StatelessWidget {
   const _AuthenticationView();
-
-  @override
-  State<_AuthenticationView> createState() => _AuthenticationViewState();
-}
-
-class _AuthenticationViewState extends State<_AuthenticationView> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    _nameController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

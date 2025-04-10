@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/common/bloc/cubit/button_cubit.dart';
-import 'package:user_app/common/bloc/cubit/button_state.dart';
+import 'package:user_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
+import 'package:user_app/common/bloc/reactivebutton_cubit/button_state.dart';
 import 'package:user_app/common/widgets/app_text.dart';
 
 class BasicReactiveButton extends StatelessWidget {
@@ -11,6 +11,11 @@ class BasicReactiveButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final Widget? content;
+  final Widget? loadingChild;
+  final Widget? initialChild;
+
+  /// Advanced: optional custom builder to fully override the button UI
+  final Widget Function(BuildContext, ButtonState)? customBuilder;
 
   const BasicReactiveButton({
     required this.onPressed,
@@ -19,6 +24,9 @@ class BasicReactiveButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.content,
+    this.loadingChild,
+    this.initialChild,
+    this.customBuilder,
     super.key,
   });
 
@@ -26,15 +34,20 @@ class BasicReactiveButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ButtonStateCubit, ButtonState>(
       builder: (context, state) {
-        if (state is ButtonLoadingState) {
-          return _loading();
+        if (customBuilder != null) {
+          return customBuilder!(context, state);
         }
-        return _initial(context);
+
+        if (state is ButtonLoadingState) {
+          return loadingChild ?? _defaultLoading();
+        }
+
+        return initialChild ?? _defaultInitial(context);
       },
     );
   }
 
-  Widget _loading() {
+  Widget _defaultLoading() {
     return Container(
       height: height ?? 50,
       width: double.infinity,
@@ -54,14 +67,14 @@ class BasicReactiveButton extends StatelessWidget {
     );
   }
 
-  Widget _initial(BuildContext context) {
+  Widget _defaultInitial(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
         height: height ?? 50,
         width: MediaQuery.of(context).size.width * 0.8,
         decoration: BoxDecoration(
-          color: backgroundColor?? const Color.fromARGB(255, 221, 221, 221),
+          color: backgroundColor ?? const Color.fromARGB(255, 221, 221, 221),
           borderRadius: BorderRadius.circular(25),
           boxShadow: [
             BoxShadow(

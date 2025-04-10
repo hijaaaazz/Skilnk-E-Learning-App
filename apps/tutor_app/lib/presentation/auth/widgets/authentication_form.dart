@@ -1,15 +1,15 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tutor_app/common/widgets/app_text.dart';
-import 'package:tutor_app/core/theme/custom_colors_extension.dart';
-import 'package:tutor_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:tutor_app/presentation/auth/widgets/auth_buttons.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
+import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_state.dart';
+import 'package:tutor_app/common/widgets/basic_reactive_button.dart';
+import 'package:tutor_app/core/routes/app_route_constants.dart';
+import 'package:tutor_app/domain/auth/usecases/signin_with-google.dart';
+import 'package:tutor_app/presentation/auth/blocs/animation_cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/presentation/auth/widgets/signin_section.dart';
 import 'package:tutor_app/presentation/auth/widgets/signup_section.dart';
-
-
 
 class AuthForm extends StatelessWidget {
   final bool isInitialMode;
@@ -38,25 +38,31 @@ class AuthButtonsContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        AuthButtons(
-          text: "Sign In",
-          backgroundColor: const Color.fromARGB(255, 139, 33, 0),
-          color: Colors.white,
-          onPressed: () {
+        BlocProvider(
+          create: (_)=> ButtonStateCubit(),
+          child: BasicReactiveButton(
+            title: "Sign In",
+            backgroundColor: const Color.fromARGB(255, 194, 45, 0),
+            onPressed: (){
             context.read<AuthUiCubit>().toggleAuthMode(true);
-          },
+          } ),
         ),
+       
         SizedBox(height: MediaQuery.of(context).size.height * 0.025),
-        AuthButtons(
-          text: "Sign Up",
-          backgroundColor: Colors.white,
-          color: const Color.fromARGB(255, 139, 33, 0),
-          onPressed: () {
+
+        BlocProvider(
+          create: (_) => ButtonStateCubit(),
+          child: BasicReactiveButton(
+            title: "Sign Up",
+            textColor: const Color.fromARGB(255, 194, 45, 0),
+            backgroundColor: Colors.white,
+            onPressed: (){
             context.read<AuthUiCubit>().toggleAuthMode(false);
-          },
+          }),
         )
+       
       ],
     );
   }
@@ -67,8 +73,6 @@ class AuthButtonsContainer extends StatelessWidget {
 class AuthFormContainer extends StatelessWidget {
   final String title;
   final List<Widget> fields;
-  final String buttonText;
-  final VoidCallback onPressed;
   final String switchText;
   final VoidCallback onSwitchPressed;
   final bool isSignIn;
@@ -77,8 +81,7 @@ class AuthFormContainer extends StatelessWidget {
     super.key,
     required this.title,
     required this.fields,
-    required this.buttonText,
-    required this.onPressed,
+
     required this.switchText,
     required this.onSwitchPressed,
     required this.isSignIn
@@ -86,7 +89,8 @@ class AuthFormContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 200),
       width: MediaQuery.of(context).size.width * 0.85,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -96,21 +100,18 @@ class AuthFormContainer extends StatelessWidget {
         children: [
           Text(
             title,
-            style:  TextStyle(
+            style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: context.customColors.primaryRed,
+              color: Color.fromARGB(255, 139, 33, 0),
             ),
           ),
           const SizedBox(height: 20),
           ...fields,
           const SizedBox(height: 30),
-          AuthButtons(
-            text: buttonText,
-            backgroundColor:context.customColors.primaryRed,
-            color: Colors.white,
-            onPressed: onPressed,
-          ),
+
+          
+          
           const SizedBox(height: 15),
           if(isSignIn)
             TextButton(
@@ -119,34 +120,52 @@ class AuthFormContainer extends StatelessWidget {
             },
             child: Text(
               "Forgot Password ?",
-              style:  TextStyle(
-                color: context.customColors.primaryRed,
+              style: const TextStyle(
+                color: Color.fromARGB(255, 139, 33, 0),
               ),
             ),
           ),
            TextButton(
             
             onPressed: (){
-              log('ujfuyhbcfgyvbrdgtfcvberdygbcfgyrbfcyugbdyfcg');
+              log('');
             },
-             child: Row(
-                   mainAxisAlignment: MainAxisAlignment.center,
-                   children: [
-                     SizedBox(
-                      height: MediaQuery.of(context).size.height *0.04,
-                       child: Image(
-                        image: AssetImage("assets/images/google.png")),
-                     ),
-                     AppText(text: title)
-                   ],
+             child: BlocProvider(
+              create: (context)=> ButtonStateCubit(),
+               child: BlocListener<ButtonStateCubit,ButtonState>(
+                listener: (context, state) {
+                  if(state is ButtonSuccessState){
+                    context.goNamed(AppRouteConstants.homeRouteName);
+                  }
+                },
+                 child: Builder(
+                   builder: (context) {
+                     return BasicReactiveButton(
+                     
+                      onPressed: () {
+                        log("yhguyhuh");
+                        context.read<ButtonStateCubit>().execute(
+                          usecase: SignInWithGoogleUseCase()
+                        );
+                      },
+                      initialChild: SizedBox(
+                        height: MediaQuery.of(context).size.height *0.04,
+                         child: Image(
+                          image: AssetImage("assets/images/google.png")),
+                       ),
+                     
+                     );
+                   }
                  ),
+               ),
+             ),
            ),
           TextButton(
             onPressed: onSwitchPressed,
             child: Text(
               switchText,
-              style:  TextStyle(
-                color: context.customColors.primaryRed ,
+              style: const TextStyle(
+                color: Color.fromARGB(255, 139, 33, 0),
               ),
             ),
           ),
@@ -155,3 +174,6 @@ class AuthFormContainer extends StatelessWidget {
     );
   }
 }
+
+
+

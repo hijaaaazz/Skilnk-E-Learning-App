@@ -12,14 +12,9 @@ class UsersPage extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => UserManagementCubit()..displayUsers(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Users'),
-          actions: [
-           
-          ],
-        ),
-        body: BlocBuilder<UserManagementCubit, UserManagementState>(
+      child: SizedBox(
+        
+        child: BlocBuilder<UserManagementCubit, UserManagementState>(
           builder: (context, state) {
             if (state is UsersLoading) {
               return const Center(child: CircularProgressIndicator());

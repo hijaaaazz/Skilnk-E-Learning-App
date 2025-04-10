@@ -15,17 +15,7 @@ Widget buildDrawer(int currentIndex, BuildContext context) {
   return Drawer(
     child: Column(
       children: [
-        DrawerHeader(
-          decoration: BoxDecoration(color: Colors.blueGrey),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.account_circle, size: 80, color: Colors.white),
-              SizedBox(height: 10),
-              Text("User Name", style: TextStyle(color: Colors.white, fontSize: 18)),
-            ],
-          ),
-        ),
+        
         ListView.builder(
           shrinkWrap: true, 
           itemCount: drawerItems.length,

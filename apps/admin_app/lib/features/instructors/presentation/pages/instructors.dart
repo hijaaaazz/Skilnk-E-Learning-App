@@ -14,12 +14,7 @@ class InstructorsPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => MentorManagementCubit()..displayMentors(),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Mentors'),
-          actions: [
-           
-          ],
-        ),
+       
         body: BlocBuilder<MentorManagementCubit, MentorManagementState>(
           builder: (context, state) {
             if (state is MentorsLoading) {

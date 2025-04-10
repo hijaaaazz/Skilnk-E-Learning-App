@@ -1,9 +1,16 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:user_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
+import 'package:user_app/common/bloc/reactivebutton_cubit/button_state.dart';
 import 'package:user_app/common/widgets/app_text.dart';
 import 'package:user_app/common/widgets/basic_reactive_button.dart';
+import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/domain/auth/usecases/signin_with-google.dart';
+import 'package:user_app/presentation/account/blocs/auth_cubit/auth_cubit.dart';
 import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
 import 'package:user_app/presentation/auth/widgets/signin_section.dart';
 import 'package:user_app/presentation/auth/widgets/signup_section.dart';
@@ -37,22 +44,28 @@ class AuthButtonsContainer extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        BasicReactiveButton(
-          title: "Sign In",
-          backgroundColor: const Color.fromARGB(255, 194, 45, 0),
-          onPressed: (){
-          context.read<AuthUiCubit>().toggleAuthMode(true);
-        } ),
+        BlocProvider(
+          create: (_)=> ButtonStateCubit(),
+          child: BasicReactiveButton(
+            title: "Sign In",
+            backgroundColor: const Color.fromARGB(255, 194, 45, 0),
+            onPressed: (){
+            context.read<AuthUiCubit>().toggleAuthMode(true);
+          } ),
+        ),
        
         SizedBox(height: MediaQuery.of(context).size.height * 0.025),
 
-        BasicReactiveButton(
-          title: "Sign Up",
-          textColor: const Color.fromARGB(255, 194, 45, 0),
-          backgroundColor: Colors.white,
-          onPressed: (){
-          context.read<AuthUiCubit>().toggleAuthMode(false);
-        })
+        BlocProvider(
+          create: (_) => ButtonStateCubit(),
+          child: BasicReactiveButton(
+            title: "Sign Up",
+            textColor: const Color.fromARGB(255, 194, 45, 0),
+            backgroundColor: Colors.white,
+            onPressed: (){
+            context.read<AuthUiCubit>().toggleAuthMode(false);
+          }),
+        )
        
       ],
     );
@@ -64,7 +77,6 @@ class AuthButtonsContainer extends StatelessWidget {
 class AuthFormContainer extends StatelessWidget {
   final String title;
   final List<Widget> fields;
-  final VoidCallback onPressed;
   final String switchText;
   final VoidCallback onSwitchPressed;
   final bool isSignIn;
@@ -73,7 +85,7 @@ class AuthFormContainer extends StatelessWidget {
     super.key,
     required this.title,
     required this.fields,
-    required this.onPressed,
+
     required this.switchText,
     required this.onSwitchPressed,
     required this.isSignIn
@@ -81,7 +93,8 @@ class AuthFormContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 200),
       width: MediaQuery.of(context).size.width * 0.85,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -101,7 +114,7 @@ class AuthFormContainer extends StatelessWidget {
           ...fields,
           const SizedBox(height: 30),
 
-          BasicReactiveButton(onPressed: onPressed),
+          
           
           const SizedBox(height: 15),
           if(isSignIn)
@@ -121,17 +134,34 @@ class AuthFormContainer extends StatelessWidget {
             onPressed: (){
               log('ujfuyhbcfgyvbrdgtfcvberdygbcfgyrbfcyugbdyfcg');
             },
-             child: Row(
-                   mainAxisAlignment: MainAxisAlignment.center,
-                   children: [
-                     SizedBox(
-                      height: MediaQuery.of(context).size.height *0.04,
-                       child: Image(
-                        image: AssetImage("assets/images/google.png")),
-                     ),
-                     AppText(text: title)
-                   ],
+             child: BlocProvider(
+              create: (context)=> ButtonStateCubit(),
+               child: BlocListener<ButtonStateCubit,ButtonState>(
+                listener: (context, state) {
+                  if(state is ButtonSuccessState){
+                    context.read<AuthStatusCubit>().login();
+                    context.pushReplacementNamed(AppRouteConstants.accountRouteName);
+                  }
+                },
+                 child: Builder(
+                   builder: (context) {
+                     return BasicReactiveButton(
+                     
+                      onPressed: () {
+                        context.read<ButtonStateCubit>().execute(
+                          usecase: SignInWithGoogle());
+                      },
+                     
+                      //  child: SizedBox(
+                      //   height: MediaQuery.of(context).size.height *0.04,
+                      //    child: Image(
+                      //     image: AssetImage("assets/images/google.png")),
+                      //  ),
+                     );
+                   }
                  ),
+               ),
+             ),
            ),
           TextButton(
             onPressed: onSwitchPressed,

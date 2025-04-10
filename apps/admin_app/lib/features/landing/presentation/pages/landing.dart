@@ -21,24 +21,43 @@ class LandingPage extends StatelessWidget {
     ProfilePage()
   ];
 
+  static final List<String> pageTitles = [
+    "Dashboard",
+    "Courses",
+    "Orders",
+    "Manage Users",
+    "Manage Instructors",
+    "Profile"
+  ];
+
+  static final List<List<Widget>> pageActions = [
+    [IconButton(icon: Icon(Icons.refresh), onPressed: () {})], // Dashboard
+    [IconButton(icon: Icon(Icons.search), onPressed: () {})], // Courses
+    [IconButton(icon: Icon(Icons.filter_list), onPressed: () {})], // Orders
+    [], // Users (No action)
+    [], // Instructors (No action)
+    [IconButton(icon: Icon(Icons.edit), onPressed: () {})], // Profile
+  ];
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LandingNavigationCubit, int>(
       builder: (context, currentIndex) {
         return Scaffold(
           appBar: AppBar(
-            title: Text("Admin App"),
+            title: Text(pageTitles[currentIndex]), // Dynamic Title
+            actions: pageActions[currentIndex], // Dynamic Actions
             leading: Builder(
               builder: (context) => IconButton(
-                icon: Icon(Icons.menu), 
+                icon: Icon(Icons.menu),
                 onPressed: () {
                   Scaffold.of(context).openDrawer();
                 },
               ),
             ),
           ),
-          drawer: buildDrawer(currentIndex, context), 
-          body: pages[currentIndex], 
+          drawer: buildDrawer(currentIndex, context),
+          body: pages[currentIndex],
         );
       },
     );
