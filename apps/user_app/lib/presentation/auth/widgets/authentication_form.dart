@@ -1,17 +1,11 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:user_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
-import 'package:user_app/common/bloc/reactivebutton_cubit/button_state.dart';
-import 'package:user_app/common/widgets/app_text.dart';
 import 'package:user_app/common/widgets/basic_reactive_button.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/domain/auth/usecases/signin_with-google.dart';
 import 'package:user_app/presentation/account/blocs/auth_cubit/auth_cubit.dart';
+import 'package:user_app/presentation/account/widgets/buttons.dart';
 import 'package:user_app/presentation/auth/bloc/animation_cubit/cubit/auth_animation_cubit.dart';
+import 'package:user_app/presentation/auth/widgets/forgot_password_dialog.dart';
 import 'package:user_app/presentation/auth/widgets/signin_section.dart';
 import 'package:user_app/presentation/auth/widgets/signup_section.dart';
 
@@ -93,86 +87,64 @@ class AuthFormContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 200),
-      width: MediaQuery.of(context).size.width * 0.85,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 139, 33, 0),
-            ),
-          ),
-          const SizedBox(height: 20),
-          ...fields,
-          const SizedBox(height: 30),
-
-          
-          
-          const SizedBox(height: 15),
-          if(isSignIn)
-            TextButton(
-            onPressed: (){
-
-            },
-            child: Text(
-              "Forgot Password ?",
+    return BlocListener<AuthStatusCubit,AuthStatusState>(
+      listener: (context, state) {
+         if(state.message != null){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
+            }
+      },
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        width: MediaQuery.of(context).size.width * 0.85,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
               style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 139, 33, 0),
               ),
             ),
-          ),
-           TextButton(
+            const SizedBox(height: 20),
+            ...fields,
+            const SizedBox(height: 30),
+      
             
-            onPressed: (){
-              log('ujfuyhbcfgyvbrdgtfcvberdygbcfgyrbfcyugbdyfcg');
-            },
-             child: BlocProvider(
-              create: (context)=> ButtonStateCubit(),
-               child: BlocListener<ButtonStateCubit,ButtonState>(
-                listener: (context, state) {
-                  if(state is ButtonSuccessState){
-                    context.read<AuthStatusCubit>().login();
-                    context.pushReplacementNamed(AppRouteConstants.accountRouteName);
-                  }
-                },
-                 child: Builder(
-                   builder: (context) {
-                     return BasicReactiveButton(
-                     
-                      onPressed: () {
-                        context.read<ButtonStateCubit>().execute(
-                          usecase: SignInWithGoogle());
-                      },
-                     
-                      //  child: SizedBox(
-                      //   height: MediaQuery.of(context).size.height *0.04,
-                      //    child: Image(
-                      //     image: AssetImage("assets/images/google.png")),
-                      //  ),
-                     );
-                   }
-                 ),
-               ),
-             ),
-           ),
-          TextButton(
-            onPressed: onSwitchPressed,
-            child: Text(
-              switchText,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 139, 33, 0),
+            
+            const SizedBox(height: 15),
+            if(isSignIn)
+              TextButton(
+              onPressed: (){
+                showForgotPasswordDialog(context);
+              },
+              child: Text(
+                "Forgot Password ?",
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 139, 33, 0),
+                ),
               ),
             ),
-          ),
-        ],
+             GoogleSignInButton(
+                onPressed: (){
+                   context.read<AuthStatusCubit>().signInWithGoogle();
+                }
+                ),
+            TextButton(
+              onPressed: onSwitchPressed,
+              child: Text(
+                switchText,
+                style: const TextStyle(
+                  color: Color.fromARGB(255, 139, 33, 0),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

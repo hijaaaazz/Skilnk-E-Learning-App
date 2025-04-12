@@ -24,12 +24,13 @@ class UserModel {
 
   // Create a UserModel instance from a Map
   factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      name: map['name'],
-      email: map['email'],
-      password: map['password'],
-    );
-  }
+  return UserModel(
+    name: map['name'] ?? '',
+    email: map['email'] ?? '',
+    password: map['password'] ?? '',
+  );
+}
+
 
   // Convert UserModel to JSON string
   String toJson() => json.encode(toMap());

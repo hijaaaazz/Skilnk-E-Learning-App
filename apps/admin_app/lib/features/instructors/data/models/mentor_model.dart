@@ -24,12 +24,13 @@ class MentorModel {
 
   // Create a MentorModel instance from a Map
   factory MentorModel.fromMap(Map<String, dynamic> map) {
-    return MentorModel(
-      name: map['name'],
-      email: map['email'],
-      password: map['password'],
-    );
-  }
+  return MentorModel(
+    name: map['name'] ?? '',
+    email: map['email'] ?? '',
+    password: map['password'] ?? '',
+  );
+}
+
 
   // Convert MentorModel to JSON string
   String toJson() => json.encode(toMap());

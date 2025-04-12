@@ -1,28 +1,39 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 Widget buildBottomNavbar(StatefulNavigationShell navigationShell) {
-  
-
   return NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
-        indicatorColor: Colors.amber,
-        destinations: destinations.map(
-          (destination) {
-            return NavigationDestination(
-              icon: destination.icon,
-              label: destination.label,
-            );
-          },
-        ).toList(),
+    selectedIndex: navigationShell.currentIndex,
+    onDestinationSelected: (index) {
+      navigationShell.goBranch(
+        index,
+        initialLocation: index == navigationShell.currentIndex,
       );
+    },
+    // Deep orange theming
+    backgroundColor: Colors.white,
+    indicatorColor: Colors.deepOrange.shade100,
+    surfaceTintColor: Colors.deepOrange.shade50,
+    height: 65,
+    shadowColor: Colors.black12,
+    elevation: 3,
+    labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+    destinations: destinations.map(
+      (destination) {
+        return NavigationDestination(
+          icon: Icon(
+            destination.icon.icon,
+            color: Colors.grey.shade600,
+          ),
+          selectedIcon: Icon(
+            destination.icon.icon,
+            color: Colors.deepOrange.shade800,
+          ),
+          label: destination.label,
+        );
+      },
+    ).toList(),
+  );
 }
 
 class Destination {
@@ -36,8 +47,8 @@ class Destination {
 }
 
 const destinations = [
-  Destination(label: "Home", icon: Icon(Icons.home)),
-  Destination(label: "Explore", icon: Icon(Icons.explore)),
-  Destination(label: "Library", icon: Icon(Icons.library_books)),
-  Destination(label: "Profile", icon: Icon(Icons.person)),
+  Destination(label: "Home", icon: Icon(Icons.home_outlined)),
+  Destination(label: "Explore", icon: Icon(Icons.explore_outlined)),
+  Destination(label: "Library", icon: Icon(Icons.library_books_outlined)),
+  Destination(label: "Profile", icon: Icon(Icons.person_outline)),
 ];

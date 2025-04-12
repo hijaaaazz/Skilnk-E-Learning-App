@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tutor_app/common/bloc/user_management/user_management_bloc.dart';
-import 'package:tutor_app/core/routes/app_route_constants.dart';
 
 class BasicAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -26,22 +24,22 @@ class BasicAppBar extends StatelessWidget implements PreferredSizeWidget {
               ? [
                   BlocBuilder<UserManagementBloc, UserManagementState>(
                     builder: (context, state) {
-                      if (state is UserLoaded &&
-                          state.user.image.isNotEmpty) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              context.pushNamed(AppRouteConstants.profileRouteName);
-                            },
-                            child: CircleAvatar(
-                              radius: 18,
-                              backgroundImage:
-                                  NetworkImage(state.user.image),
-                            ),
-                          ),
-                        );
-                      }
+                      // if (state is UserLoaded &&
+                      //     state.user.image.isNotEmpty) {
+                      //   return Padding(
+                      //     padding: const EdgeInsets.only(right: 12.0),
+                      //     child: GestureDetector(
+                      //       onTap: () {
+                      //         context.pushNamed(AppRouteConstants.profileRouteName);
+                      //       },
+                      //       child: CircleAvatar(
+                      //         radius: 18,
+                      //         backgroundImage:
+                      //             NetworkImage(""),
+                      //       ),
+                      //     ),
+                      //   );
+                      // }
                       return const SizedBox.shrink();
                     },
                   ),

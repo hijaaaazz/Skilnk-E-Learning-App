@@ -7,12 +7,12 @@ import 'package:tutor_app/domain/auth/usecases/get_user.dart';
 import 'package:tutor_app/domain/auth/usecases/logout.dart';
 import 'package:tutor_app/domain/auth/usecases/resent_verification.dart';
 import 'package:tutor_app/domain/auth/usecases/reset_pass.dart';
-
 import 'package:tutor_app/domain/auth/usecases/signin.dart';
 import 'package:tutor_app/domain/auth/usecases/signin_with_google.dart';
 import 'package:tutor_app/domain/auth/usecases/signup.dart';
 
 final serviceLocator = GetIt.instance;
+
 
 Future<void> initializeDependencies() async {
   // ✅ Services
@@ -60,3 +60,4 @@ Future<void> initializeDependencies() async {
     () => ResetPasswordUseCase()
   );
 }
+

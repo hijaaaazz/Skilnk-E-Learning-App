@@ -27,7 +27,6 @@ class AuthFirebaseServiceImp extends AuthFirebaseService{
       ).set(
         {
           'email' : user.email,
-          'password' : user.password
         }
       );
 

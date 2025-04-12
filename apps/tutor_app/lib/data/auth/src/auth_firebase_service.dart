@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,16 +6,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tutor_app/data/auth/models/user_creation_req.dart';
 import 'package:tutor_app/data/auth/models/user_model.dart';
 import 'package:tutor_app/data/auth/models/user_signin_model.dart';
-
 abstract class AuthFirebaseService {
-  Future<Either<String, dynamic>> signUp(UserCreationReq user);
+  Future<Either<String, UserModel>> signUp(UserCreationReq user);
   Future<Either<String, UserModel>> signIn(UserSignInReq user);
   Future<Either<String, UserModel>> signInWithGoogle();
   Future<Either<String, String>> logout();
   Future<Either<String, UserModel>> getCurrentUser();
   Future<Either<String, String>> sendEmailVerification();
   Future<Either<String, String>> sendPasswordResetEmail(String email);
-  Future<Either<String, String>> registerUser(UserCreationReq user);
+  Future<Either<String, dynamic>> registerUser(UserModel user);
   Future<Either<String, bool>> isEmailVerified();
   Future<Either<String, bool>> checkIfUserExists(String email);
 }
@@ -24,253 +22,210 @@ abstract class AuthFirebaseService {
 class AuthFirebaseServiceImp extends AuthFirebaseService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final CollectionReference _users = FirebaseFirestore.instance.collection('mentors');
 
-  // Collection reference
-  final CollectionReference _mentorsCollection = 
-      FirebaseFirestore.instance.collection('mentors');
+
+@override  Future<Either<String, UserModel>> signUp(UserCreationReq user) async {
+  try {
+    if (user.email?.isEmpty ?? true) return Left("Email cannot be empty");
+    if (user.password?.isEmpty ?? true) return Left("Password cannot be empty");
+    if (user.password!.length < 6) return Left("Password must be at least 6 characters");
+
+    final email = user.email!;
+
+    // Create user with Firebase Auth
+    final credential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: user.password!,
+    );
+
+    final firebaseUser = credential.user!;
+    
+    // Update display name
+    if (user.name?.isNotEmpty ?? false) {
+      await firebaseUser.updateDisplayName(user.name);
+    }
+
+    // Send email verification
+    await firebaseUser.sendEmailVerification();
+
+    // Save user data in Firestore
+    await FirebaseFirestore.instance.collection('mentors').doc(firebaseUser.uid).set({
+      'uid': firebaseUser.uid,
+      'name': user.name ?? '',
+      'email': email,
+      'image': firebaseUser.photoURL ?? '',
+      'emailVerified': false,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    return Right(UserModel(
+      userId: firebaseUser.uid,
+      email: email,
+      name: user.name ?? '',
+      image: firebaseUser.photoURL ?? '',
+      emailVerified: false,
+    ));
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'email-already-in-use') {
+      return Left("Email already registered. Please login.");
+    }
+    return Left("Auth error: ${e.message}");
+  } catch (e) {
+    return Left("Unexpected error during signup.");
+  }
+}
+
+@override
+Future<Either<String, UserModel>> signIn(UserSignInReq user) async {
+  try {
+    log('Sign In Auth call started');
+    if (user.email?.isEmpty ?? true) return Left("Email required");
+    if (user.password?.isEmpty ?? true) return Left("Password required");
+
+    final email = user.email!;
+
+    // Step 1: Sign in with Firebase Auth
+    final authResult = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: user.password!,
+    );
+
+    final firebaseUser = authResult.user!;
+    await firebaseUser.reload();
+    final refreshedUser = _auth.currentUser!;
+
+    // Step 2: Check if this email exists in "users" or "admins" collection
+    final firestore = FirebaseFirestore.instance;
+
+    final userDoc = await firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    final adminDoc = await firestore
+        .collection('admins')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (userDoc.docs.isNotEmpty || adminDoc.docs.isNotEmpty) {
+      await _auth.signOut();
+      log("no entry mone");
+      return Left("You are not allowed to login from Tutor app");
+    }
+
+    // Step 3: Check email verification
+    if (!refreshedUser.emailVerified) {
+      await refreshedUser.sendEmailVerification();
+      return Right(UserModel(
+        userId: refreshedUser.uid,
+        email: refreshedUser.email ?? '',
+        name: refreshedUser.displayName ?? '',
+        image: refreshedUser.photoURL ?? '',
+        emailVerified: false,
+      ));
+    }
+
+    // Step 4: Get tutor data from "tutors" collection
+    final tutorDoc = await _users.doc(refreshedUser.uid).get();
+    final tutorData = tutorDoc.data() as Map<String, dynamic>? ?? {};
+
+    log("Tutor login success");
+    return Right(UserModel(
+      userId: refreshedUser.uid,
+      email: refreshedUser.email ?? '',
+      name: refreshedUser.displayName ?? tutorData['name'] ?? '',
+      image: refreshedUser.photoURL ?? tutorData['image'] ?? '',
+      emailVerified: true,
+    ));
+  } on FirebaseAuthException catch (e) {
+    switch (e.code) {
+      case 'user-not-found':
+        return Left("No account found");
+      case 'wrong-password':
+      case 'invalid-credential':
+        return Left("Incorrect password");
+      default:
+        return Left("Login failed: ${e.message}");
+    }
+  } catch (e) {
+    return Left("Login failed: unexpected error");
+  }
+}
+
+
 
   @override
-  Future<Either<String, dynamic>> signUp(UserCreationReq user) async {
-    try {
-      // Validate inputs
-      if (user.email == null || user.email!.isEmpty) {
-        return Left("Email cannot be empty");
-      }
-      
-      if (user.password == null || user.password!.isEmpty) {
-        return Left("Password cannot be empty");
-      }
-      
-      if (user.password!.length < 6) {
-        return Left("Password must be at least 6 characters");
-      }
+Future<Either<String, UserModel>> signInWithGoogle() async {
+  try {
+    final googleUser = await _googleSignIn.signIn();
+    if (googleUser == null) return Left("Google sign in cancelled");
 
-      final existingUser = await checkIfUserExists(user.email!);
-      
-      if (existingUser.isRight()) {
-        final exists = existingUser.getOrElse(() => false);
-        if (exists) {
-          // Try to handle existing user scenario
-          try {
-            final userCredential = await _auth.signInWithEmailAndPassword(
-              email: user.email!,
-              password: user.password!,
-            );
-            
-            if (!userCredential.user!.emailVerified) {
-              await userCredential.user!.sendEmailVerification();
-              await _auth.signOut(); // Sign out after sending verification
-              return Right("Account exists but not verified. Verification email sent.");
-            } else {
-              await _auth.signOut(); // Sign out if email is verified
-              return Left("Email already verified. Please login.");
-            }
-          } catch (e) {
-            return Left("Email already exists. Please login or reset your password.");
-          }
-        }
-      }
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-  
-      final credential = await _auth.createUserWithEmailAndPassword(
-        email: user.email!,
-        password: user.password!,
-      );
-     
-      if (user.name != null && user.name!.isNotEmpty) {
-        await credential.user!.updateDisplayName(user.name);
-      }
-      
-      // Send verification email
-      await credential.user!.sendEmailVerification();
+    final authResult = await _auth.signInWithCredential(credential);
+    final firebaseUser = authResult.user;
+    if (firebaseUser == null) return Left("Google authentication failed");
 
-      return Right(
-        UserModel(
-          userId: credential.user!.uid,
-          email: credential.user!.email ?? '',
-          name: user.name ?? '',
-          image: credential.user!.photoURL ?? '',
-        )
-      );
-    } on FirebaseAuthException catch (e) {
-      log("FirebaseAuthException during signup: ${e.code}");
-      
-      switch (e.code) {
-        case 'email-already-in-use':
-          return Left("Email already in use. Please login or reset your password.");
-        case 'invalid-email':
-          return Left("Invalid email format.");
-        case 'weak-password':
-          return Left("Password is too weak. Use at least 6 characters.");
-        case 'operation-not-allowed':
-          return Left("Account creation is disabled.");
-        default:
-          return Left("Sign up failed: ${e.message}");
-      }
-    } catch (e) {
-      log("Exception during signup: $e");
-      return Left("Sign up failed due to an unexpected error.");
+    final email = firebaseUser.email ?? '';
+    final firestore = FirebaseFirestore.instance;
+
+    // Check if the email exists in 'users' or 'admins' collection
+    final userCheck = await firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    final adminCheck = await firestore
+        .collection('admins')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (userCheck.docs.isNotEmpty || adminCheck.docs.isNotEmpty) {
+      await _auth.signOut();
+      await _googleSignIn.signOut();
+      log('no entry');
+      return Left("You are not allowed to login from Tutor app");
     }
+
+    // Save to 'tutors' collection
+    await _users.doc(firebaseUser.uid).set({
+      'uid':firebaseUser.uid,
+      'email': email,
+      'name': firebaseUser.displayName ?? 'User',
+      'image': firebaseUser.photoURL ?? '',
+      'emailVerified': firebaseUser.emailVerified,
+    }, SetOptions(merge: true));
+
+    return Right(UserModel(
+      userId: firebaseUser.uid,
+      email: email,
+      name: firebaseUser.displayName ?? '',
+      image: firebaseUser.photoURL ?? '',
+      emailVerified: true,
+    ));
+  } catch (e) {
+    log(e.toString());
+    return Left("Google sign in failed: $e");
   }
+}
 
-  @override
-  Future<Either<String, UserModel>> signIn(UserSignInReq user) async {
-    try {
-      // Validate inputs
-      if (user.email == null || user.email!.isEmpty) {
-        return Left("Email cannot be empty");
-      }
-      
-      if (user.password == null || user.password!.isEmpty) {
-        return Left("Password cannot be empty");
-      }
-
-      // Check if user is registered and approved in Firestore
-      var userQuery = await _mentorsCollection
-          .where('email', isEqualTo: user.email)
-          .get();
-
-      if (userQuery.docs.isEmpty) {
-        return Left("User not registered");
-      }
-
-      var userData = userQuery.docs.first.data() as Map<String, dynamic>;
-
-      // Check if user is approved
-      if (userData['isApproved'] == false) {
-        return Left("Your account is not approved yet. Please wait for admin approval.");
-      }
-
-      // Firebase Authentication
-      var authResponse = await _auth.signInWithEmailAndPassword(
-        email: user.email!,
-        password: user.password!,
-      );
-
-      // Check if email is verified
-      if (!authResponse.user!.emailVerified) {
-        // Send a new verification email
-        await authResponse.user!.sendEmailVerification();
-        await _auth.signOut(); // Sign out if email not verified
-        return Left("Email not verified. A new verification email has been sent.");
-      }
-
-      // Update user's last login timestamp
-      await _mentorsCollection.doc(authResponse.user!.uid).update({
-        'lastLogin': FieldValue.serverTimestamp(),
-      });
-
-      return Right(
-        UserModel(
-          userId: authResponse.user!.uid,
-          email: authResponse.user!.email ?? '',
-          name: authResponse.user!.displayName ?? userData['name'] ?? '',
-          image: authResponse.user!.photoURL ?? userData['image'] ?? '',
-        ),
-      );
-    } on FirebaseAuthException catch (e) {
-      log("FirebaseAuthException during signin: ${e.code}");
-      
-      switch (e.code) {
-        case 'invalid-email':
-          return Left("Invalid email format");
-        case 'user-disabled':
-          return Left("This account has been disabled");
-        case 'user-not-found':
-          return Left("No account found with this email");
-        case 'wrong-password':
-        case 'invalid-credential':
-          return Left("Incorrect password");
-        default:
-          return Left("Login failed: ${e.message}");
-      }
-    } catch (e) {
-      log("Exception during signin: $e");
-      return Left("Login failed due to an unexpected error");
-    }
-  }
-
-  @override
-  Future<Either<String, UserModel>> signInWithGoogle() async {
-    try {
-      // Begin Google sign in process
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
-      if (googleUser == null) {
-        return Left("Google sign in was cancelled");
-      }
-
-      // Obtain auth details
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
-      // Create credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      // Sign in to Firebase with credential
-      UserCredential authResponse = await _auth.signInWithCredential(credential);
-      
-      if (authResponse.user == null) {
-        return Left("Failed to authenticate with Google");
-      }
-
-      // Check if user exists in Firestore
-      final userDoc = await _mentorsCollection.doc(authResponse.user!.uid).get();
-      
-      // Default approval status for new Google sign-ins
-      bool isApproved = false;
-      
-      if (userDoc.exists) {
-        final userData = userDoc.data() as Map<String, dynamic>?;
-        // Preserve existing approval status if user exists
-        isApproved = userData?['isApproved'] ?? false;
-      }
-
-      // Update or create user document in Firestore
-      await _mentorsCollection.doc(authResponse.user!.uid).set({
-        'email': authResponse.user!.email,
-        'name': authResponse.user!.displayName ?? 'User',
-        'image': authResponse.user!.photoURL ?? '',
-        'isApproved': isApproved, // Set approval status
-        'authProvider': 'google',
-        'lastLogin': FieldValue.serverTimestamp(),
-        'createdAt': userDoc.exists ? FieldValue.serverTimestamp() : FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-
-      // Check if user is approved
-      if (!isApproved) {
-        await _auth.signOut();
-        return Left("Your account requires approval. Please wait for admin approval.");
-      }
-
-      return Right(
-        UserModel(
-          userId: authResponse.user!.uid,
-          email: authResponse.user!.email ?? '',
-          name: authResponse.user!.displayName ?? '',
-          image: authResponse.user!.photoURL ?? '',
-        )
-      );
-    } on FirebaseAuthException catch (e) {
-      log("FirebaseAuthException during Google signin: ${e.code}");
-      return Left("Google sign in failed: ${e.message}");
-    } catch (e) {
-      log("Exception during Google signin: $e");
-      return Left("Google sign in failed due to an unexpected error");
-    }
-  }
   
   @override
   Future<Either<String, String>> logout() async {
     try {
       await _auth.signOut();
-      await _googleSignIn.signOut(); // Also sign out from Google
-      
+      await _googleSignIn.signOut();
       return Right('Logged out successfully');
     } catch (e) {
-      log("Exception during logout: $e");
       return Left('Logout failed: $e');
     }
   }
@@ -278,170 +233,127 @@ class AuthFirebaseServiceImp extends AuthFirebaseService {
   @override
   Future<Either<String, UserModel>> getCurrentUser() async {
     try {
-      final firebaseUser = _auth.currentUser;
-      
-      if (firebaseUser == null) {
-        return Left('No logged-in user');
+      final user = _auth.currentUser;
+      if (user == null || !user.emailVerified) {
+        return Left(user == null ? 'No logged-in user' : 'Email not verified');
       }
 
-      // Check if email is verified
-      if (!firebaseUser.emailVerified) {
-        return Left('Email not verified');
-      }
-
-      // Get user data from Firestore
-      final doc = await _mentorsCollection.doc(firebaseUser.uid).get();
-
-      if (!doc.exists) {
-        return Left('User profile not found');
-      }
+      final doc = await _users.doc(user.uid).get();
+      if (!doc.exists) return Left('User profile not found');
 
       final data = doc.data() as Map<String, dynamic>;
+     
 
-      // Check if user is approved
-      if (data['isApproved'] == false) {
-        await _auth.signOut(); // Sign out if not approved
-        return Left('Your account is not approved yet');
-      }
-
-      return Right(
-        UserModel(
-          userId: firebaseUser.uid,
-          email: data['email'] ?? firebaseUser.email ?? '',
-          name: data['name'] ?? firebaseUser.displayName ?? '',
-          image: data['image'] ?? firebaseUser.photoURL ?? '',
-        ),
-      );
+      return Right(UserModel.fromJson(data));
     } catch (e) {
-      log("Exception while getting current user: $e");
       return Left('Failed to fetch user: $e');
     }
   }
 
   @override
-  Future<Either<String, String>> sendEmailVerification() async {
-    try {
-      final user = _auth.currentUser;
-      
-      if (user == null) {
-        return Left('No user is currently signed in');
-      }
+Future<Either<String, String>> sendEmailVerification() async {
+  try {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return Left('No user signed in');
 
-      if (user.emailVerified) {
-        return Right('Email is already verified');
-      }
+    await currentUser.reload();
+    if (currentUser.emailVerified) return Right('Email already verified');
 
-      await user.sendEmailVerification();
-      return Right('Verification email has been sent to ${user.email}');
-    } catch (e) {
-      log("Exception during email verification: $e");
-      return Left('Failed to send verification email: $e');
-    }
+    await currentUser.sendEmailVerification();
+    return Right('Verification email sent to ${currentUser.email}');
+  } catch (e) {
+    return Left('Failed to send verification email');
   }
+}
+
 
   @override
-  Future<Either<String, String>> sendPasswordResetEmail(String email) async {
-    try {
-      if (email.isEmpty) {
-        return Left('Email cannot be empty');
-      }
+Future<Either<String, String>> sendPasswordResetEmail(String email) async {
+  try {
+    if (email.isEmpty) return Left('Email required');
 
-      // Check if user exists in Firebase Auth first
-      final methods = await _auth.fetchSignInMethodsForEmail(email);
-      
-      if (methods.isEmpty) {
-        return Left('No account found with this email');
-      }
-
-      await _auth.sendPasswordResetEmail(email: email);
-      return Right('Password reset email sent to $email');
-    } on FirebaseAuthException catch (e) {
-      log("FirebaseAuthException during password reset: ${e.code}");
-      
-      switch (e.code) {
-        case 'invalid-email':
-          return Left('Invalid email format');
-        case 'user-not-found':
-          return Left('No account found with this email');
-        default:
-          return Left('Failed to send password reset email: ${e.message}');
-      }
-    } catch (e) {
-      log("Exception during password reset: $e");
-      return Left('Failed to send password reset email');
-    }
+    await _auth.sendPasswordResetEmail(email: email);
+    return Right('Password reset email sent');
+  } catch (e) {
+    return Left('Failed to send reset email');
   }
+}
+
 
   @override
-  Future<Either<String, String>> registerUser(UserCreationReq user) async {
-    try {
-      final firebaseUser = _auth.currentUser;
+Future<Either<String, dynamic>> registerUser(UserModel user) async {
+  try {
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) return Left("No authenticated user");
 
-      if (firebaseUser == null) {
-        return Left("No authenticated user found");
-      }
+    // Reload to ensure latest emailVerified status
+    await currentUser.reload();
+    if (!currentUser.emailVerified) return Left("Email not verified");
 
-      // Check if email is verified
-      if (!firebaseUser.emailVerified) {
-        return Left("Please verify your email before completing registration");
-      }
+    
 
-      final uid = firebaseUser.uid;
+    // Save to users collection
+    log('registering user');
+    await _users.doc(currentUser.uid).set({
+      'userId': currentUser.uid,
+      'name': user.name,
+      'email': user.email,
+      'emailVerified': true,
+    
+      'createdAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
 
-      // Create or update user profile in Firestore
-      await _mentorsCollection.doc(uid).set({
-        'email': firebaseUser.email,
-        'name': user.name ?? firebaseUser.displayName ?? 'User',
-        'userId': uid,
-        'isApproved': false, // Default to not approved
-        'emailVerified': firebaseUser.emailVerified,
-      }, SetOptions(merge: true));
-
-      return Right("Registration completed. Waiting for admin approval.");
-    } catch (e) {
-      log("Exception during user registration: $e");
-      return Left("Registration failed: $e");
-    }
+    return Right(UserModel(
+      userId: currentUser.uid,
+      name: user.name,
+      email: user.email,
+      emailVerified: true,
+      
+    ));
+  } catch (e) {
+    return Left("Registration failed: $e");
   }
+}
+
 
   @override
-  Future<Either<String, bool>> isEmailVerified() async {
-    try {
-      final user = _auth.currentUser;
-      
-      if (user == null) {
-        return Left('No user is currently signed in');
-      }
+Future<Either<String, bool>> isEmailVerified() async {
+  try {
+    final user = _auth.currentUser;
+    if (user == null) return Left('No signed-in user');
 
-      await user.reload();
-      
-      return Right(user.emailVerified);
-    } catch (e) {
-      log("Exception checking email verification: $e");
-      return Left('Failed to check email verification status');
-    }
-  }
+    await user.reload();
 
-  @override
-  Future<Either<String, bool>> checkIfUserExists(String email) async {
-    try {
-      // Check with Firebase Auth
-      final methods = await _auth.fetchSignInMethodsForEmail(email);
-      
-      if (methods.isNotEmpty) {
-        return Right(true);
-      }
-      
-      // Double-check with Firestore for completeness
-      final querySnapshot = await _mentorsCollection
-          .where('email', isEqualTo: email)
-          .limit(1)
+    if (user.emailVerified) {
+      // Delete from unverified_users if it exists
+      final unverifiedDoc = await FirebaseFirestore.instance
+          .collection('unverified_users')
+          .doc(user.email)
           .get();
-          
-      return Right(querySnapshot.docs.isNotEmpty);
-    } catch (e) {
-      log("Exception checking if user exists: $e");
-      return Left('Failed to check if user exists');
+
+      if (unverifiedDoc.exists) {
+        await FirebaseFirestore.instance
+            .collection('unverified_users')
+            .doc(user.email)
+            .delete();
+      }
     }
+  log(user.emailVerified.toString());
+    return Right(user.emailVerified);
+  } catch (e) {
+    return Left('Failed to check verification status');
   }
+}
+
+
+  @override
+Future<Either<String, bool>> checkIfUserExists(String email) async {
+  try {
+    final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+    log(methods.toString());
+    return Right(methods.isNotEmpty);
+  } catch (e) {
+    return Left('Failed to check user');
+  }
+}
 }

@@ -1,13 +1,13 @@
+
+// LogoutUseCase.dart
 import 'package:dartz/dartz.dart';
 import 'package:user_app/core/usecase/usecase.dart';
 import 'package:user_app/domain/auth/repository/auth.dart';
 import 'package:user_app/service_locator.dart';
 
-
-class LogOutUseCase implements Usecase<Either, NoParams> {
+class LogOutUseCase implements Usecase<Either<String, String>, NoParams> {
   @override
-  Future<Either> call({required NoParams params}) {
+  Future<Either<String, String>> call({NoParams? params}) {
     return serviceLocator<AuthRepository>().logOut();
   }
-  
 }

@@ -8,7 +8,7 @@ import 'package:dartz/dartz.dart';
 class GetMentorsUseCase implements Usecase<Either, dynamic> {  // Use nullable type
   @override
   Future<Either> call({ dynamic params}) async {  // Optional params
-   
+    log('hihihihihihihi');
     try {
       Either response =
           await serviceLocator<MentorsRepo>().getUsers();
@@ -16,7 +16,7 @@ class GetMentorsUseCase implements Usecase<Either, dynamic> {  // Use nullable t
           log("got the responce");
       return response;
     } catch (e) {
-      log("$e");
+      log("brrrrr $e");
       return Left("Signup failed: $e");
     }
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/presentation/auth/blocs/animation_cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/presentation/auth/widgets/animated_widgets/slanded_clipper.dart';
+
 // ignore: must_be_immutable
 class AnimatedBackgroundContainer extends StatelessWidget {
   bool isInitialMode;

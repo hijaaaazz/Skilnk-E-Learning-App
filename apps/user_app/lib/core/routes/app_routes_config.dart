@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/data/auth/models/user_creation_req.dart';
+import 'package:user_app/domain/auth/entity/user.dart';
 import 'package:user_app/presentation/account/pages/profile.dart';
 import 'package:user_app/presentation/auth/pages/auth.dart';
+import 'package:user_app/presentation/auth/pages/verify_page.dart';
 import 'package:user_app/presentation/explore/pages/explore.dart';
 import 'package:user_app/presentation/home/pages/home.dart';
 import 'package:user_app/presentation/library/pages/library.dart';
@@ -28,6 +31,15 @@ class AppRoutes {
         path: "/auth",
         pageBuilder: (context, state) {
           return MaterialPage(child: AuthenticationPage());
+        },
+      ),
+
+      GoRoute(
+        name: AppRouteConstants.verificationRouteName,
+        path: "/verify",
+        pageBuilder: (context, state) {
+          final user = (state.extra as UserEntity);
+          return MaterialPage(child: VerifyPage(user: user,));
         },
       ),
       

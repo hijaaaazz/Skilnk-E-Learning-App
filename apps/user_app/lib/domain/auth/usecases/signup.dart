@@ -1,16 +1,17 @@
+// SignupUseCase.dart
+import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:user_app/core/usecase/usecase.dart';
 import 'package:user_app/data/auth/models/user_creation_req.dart';
+import 'package:user_app/domain/auth/entity/user.dart';
 import 'package:user_app/domain/auth/repository/auth.dart';
 import 'package:user_app/service_locator.dart';
 
-
-class Signupusecase implements Usecase<Either, UserCreationReq> {
+class SignupUseCase implements Usecase<Either<String, dynamic>, UserCreationReq> {
   @override
-  Future<Either> call({required UserCreationReq params}) async {
-
-      return await serviceLocator<AuthRepository>().signUp(params);
-
-     
+  Future<Either<String, UserEntity>> call({required UserCreationReq params}) async {
+    return await serviceLocator<AuthRepository>().signUp(params);
   }
 }
+
+

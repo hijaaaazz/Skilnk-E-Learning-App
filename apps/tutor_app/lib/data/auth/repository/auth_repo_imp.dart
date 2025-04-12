@@ -4,12 +4,13 @@ import 'package:tutor_app/data/auth/models/user_creation_req.dart';
 import 'package:tutor_app/data/auth/models/user_model.dart';
 import 'package:tutor_app/data/auth/models/user_signin_model.dart';
 import 'package:tutor_app/data/auth/src/auth_firebase_service.dart';
+import 'package:tutor_app/domain/auth/entity/user.dart';
 import 'package:tutor_app/domain/auth/repository/auth.dart';
 import 'package:tutor_app/service_locator.dart';
 
 class AuthenticationRepoImplementation extends AuthRepository {
   @override
-  Future<Either<String, dynamic>> signUp(UserCreationReq user) async {
+  Future<Either<String, UserEntity>> signUp(UserCreationReq user) async {
     try {
       final result = await serviceLocator<AuthFirebaseService>().signUp(user);
       return result.fold(
@@ -17,9 +18,9 @@ class AuthenticationRepoImplementation extends AuthRepository {
           log("Signup error: $error");
           return Left(error);
         },
-        (success) {
-          log("Signup success: $success");
-          return Right(success);
+        (usermodel) {
+          log("Signup success: $usermodel");
+          return Right(usermodel.toEntity());
         }
       );
     } catch (e, stacktrace) {
@@ -29,19 +30,32 @@ class AuthenticationRepoImplementation extends AuthRepository {
   }
 
   @override
-  Future<Either<String, UserModel>> signIn(UserSignInReq user) async {
-    try {
-      return await serviceLocator<AuthFirebaseService>().signIn(user);
-    } catch (e, stacktrace) {
-      log('signIn unexpected error: $e\n$stacktrace');
-      return Left('Signin failed due to an unexpected error');
-    }
+Future<Either<String, UserEntity>> signIn(UserSignInReq user) async {
+  try {
+    final result = await serviceLocator<AuthFirebaseService>().signIn(user);
+
+    return result.fold(
+      (error) => Left(error),
+      (userModel) => Right(userModel.toEntity()),
+    );
+  } catch (e, stacktrace) {
+    log('signIn unexpected error: $e\n$stacktrace');
+    return Left('Signin failed due to an unexpected error');
   }
+}
+
 
   @override
-  Future<Either<String, UserModel>> signInWithGoogle() async {
+  Future<Either<String, UserEntity>> signInWithGoogle() async {
     try {
-      return await serviceLocator<AuthFirebaseService>().signInWithGoogle();
+      final result = await serviceLocator<AuthFirebaseService>().signInWithGoogle();
+      return result.fold(
+        (l){
+          return Left(l);
+        }, 
+        (r){
+          return Right(r.toEntity());
+        });
     } catch (e, stacktrace) {
       log('SignInWithGoogle unexpected error: $e\n$stacktrace');
       return Left('Google sign-in failed due to an unexpected error');
@@ -60,8 +74,12 @@ class AuthenticationRepoImplementation extends AuthRepository {
 
   @override
   Future<Either<String, UserModel>> getCurrentUser() async {
+    log("getCurrent User");
     try {
-      return await serviceLocator<AuthFirebaseService>().getCurrentUser();
+      final result = await serviceLocator<AuthFirebaseService>().getCurrentUser();
+      log(result.fold((l)=>l,
+      (r)=> r.emailVerified.toString()));
+      return result;
     } catch (e, stacktrace) {
       log('getCurrentUser unexpected error: $e\n$stacktrace');
       return Left('Failed to get current user due to an unexpected error');
@@ -79,9 +97,12 @@ class AuthenticationRepoImplementation extends AuthRepository {
   }
     
   @override
-  Future<Either<String, String>> registerUser(UserCreationReq user) async {
+  Future<Either<String, UserEntity>> registerUser(UserEntity user) async {
     try {
-      return await serviceLocator<AuthFirebaseService>().registerUser(user);
+      final result = await serviceLocator<AuthFirebaseService>().registerUser(UserModel.fromEntity(user));
+      return result.fold(
+        (error)=> Left(error.toString())
+        ,(user) => Right(user.toEntity()) );
     } catch (e, stacktrace) {
       log('registerUser unexpected error: $e\n$stacktrace');
       return Left('Failed to register user due to an unexpected error');
@@ -90,6 +111,7 @@ class AuthenticationRepoImplementation extends AuthRepository {
   
   @override
   Future<Either<String, String>> sendPasswordResetEmail(String email) async {
+    log(email);
     try {
       return await serviceLocator<AuthFirebaseService>().sendPasswordResetEmail(email);
     } catch (e, stacktrace) {
@@ -98,15 +120,7 @@ class AuthenticationRepoImplementation extends AuthRepository {
     }
   }
   
-  @override
-  Future<Either<String, bool>> isEmailVerified() async {
-    try {
-      return await serviceLocator<AuthFirebaseService>().isEmailVerified();
-    } catch (e, stacktrace) {
-      log('isEmailVerified unexpected error: $e\n$stacktrace');
-      return Left('Failed to check email verification status due to an unexpected error');
-    }
-  }
+  
   
   @override
   Future<Either<String, bool>> checkIfUserExists(String email) async {
@@ -115,6 +129,18 @@ class AuthenticationRepoImplementation extends AuthRepository {
     } catch (e, stacktrace) {
       log('checkIfUserExists unexpected error: $e\n$stacktrace');
       return Left('Failed to check if user exists due to an unexpected error');
+    }
+  }
+  
+  @override
+  Future<Either<String, bool>> isEmailVerified(UserEntity user) async {
+    try {
+       final result = await serviceLocator<AuthFirebaseService>().isEmailVerified();
+        serviceLocator<AuthFirebaseService>().registerUser(UserModel.fromEntity(user));
+        return result;
+    } catch (e, stacktrace) {
+      log('isEmailVerified unexpected error: $e\n$stacktrace');
+      return Left('Failed to check isEmailVerified');
     }
   }
 }

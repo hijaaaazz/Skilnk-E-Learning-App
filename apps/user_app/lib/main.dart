@@ -2,13 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
 import 'package:user_app/core/configs/theme/theme.dart';
 import 'package:user_app/core/routes/app_routes_config.dart';
 import 'package:user_app/firebase_options.dart';
 import 'package:user_app/presentation/account/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/presentation/account/blocs/slanded_clipper_animation.dart/slanded_clipper_animation_cubit.dart';
-import 'package:user_app/presentation/splash/pages/splash.dart';
 import 'package:user_app/service_locator.dart';
 
 Future<void> main() async {
@@ -38,7 +35,7 @@ class Skilnk extends StatelessWidget {
     
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => AuthStatusCubit())
+        BlocProvider(create: (_) => AuthStatusCubit()),
       ],
       child: MaterialApp.router(
         themeMode: ThemeMode.system,

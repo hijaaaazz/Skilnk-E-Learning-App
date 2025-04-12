@@ -1,17 +1,18 @@
-
 import 'package:tutor_app/domain/auth/entity/user.dart';
 
 class UserModel {
   final String userId;
   final String name;
   final String email;
-  final String image;
+  final String? image;
+  final bool emailVerified;
 
   UserModel({
     required this.userId,
     required this.name,
     required this.email,
-    required this.image,
+    this.image,
+    required this.emailVerified
   });
 
   // ✅ From JSON (Firebase or Hive or local)
@@ -21,6 +22,7 @@ class UserModel {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       image: json['image'] ?? '',
+      emailVerified: json['emailVerified'] ?? false
     );
   }
 
@@ -41,6 +43,7 @@ class UserModel {
       name: entity.name,
       email: entity.email,
       image: entity.image,
+      emailVerified: entity.emailVerified
     );
   }
 
@@ -51,6 +54,7 @@ class UserModel {
       name: name,
       email: email,
       image: image,
+      emailVerified: emailVerified
     );
   }
 }

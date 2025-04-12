@@ -14,7 +14,6 @@ class BasicReactiveButton extends StatelessWidget {
   final Widget? loadingChild;
   final Widget? initialChild;
 
-  /// Advanced: optional custom builder to fully override the button UI
   final Widget Function(BuildContext, ButtonState)? customBuilder;
 
   const BasicReactiveButton({

@@ -1,16 +1,13 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
-import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_state.dart';
 import 'package:tutor_app/common/widgets/basic_reactive_button.dart';
-import 'package:tutor_app/core/routes/app_route_constants.dart';
-import 'package:tutor_app/domain/auth/usecases/signin_with_google.dart';
 import 'package:tutor_app/presentation/auth/blocs/animation_cubit/auth_animation_cubit.dart';
-import 'package:tutor_app/presentation/auth/widgets/forgot_pass.dart';
+import 'package:tutor_app/presentation/auth/blocs/auth_cubit/auth_cubit.dart';
+import 'package:tutor_app/presentation/auth/widgets/forgot_password_dialog.dart';
 import 'package:tutor_app/presentation/auth/widgets/signin_section.dart';
 import 'package:tutor_app/presentation/auth/widgets/signup_section.dart';
+
 
 class AuthForm extends StatelessWidget {
   final bool isInitialMode;
@@ -117,13 +114,7 @@ class AuthFormContainer extends StatelessWidget {
           if(isSignIn)
             TextButton(
             onPressed: (){
-              showDialog(
-              context: context,
-              builder:(context) {
-                return  ResetPassDialog(
-                  prefillEmail: " hi",
-                  dialogContext: context);
-              });
+              showForgotPasswordDialog(context);
             },
             child: Text(
               "Forgot Password ?",
@@ -135,33 +126,10 @@ class AuthFormContainer extends StatelessWidget {
            TextButton(
             
             onPressed: (){
-              log('');
+              context.read<AuthStatusCubit>().signInWithGoogle();
+                          
             },
-             child: BlocProvider(
-              create: (context)=> ButtonStateCubit(),
-               child: BlocListener<ButtonStateCubit,ButtonState>(
-                listener: (context, state) {
-                  if(state is ButtonSuccessState){
-                    context.goNamed(AppRouteConstants.homeRouteName);
-                  }
-                },
-                 child: Builder(
-                   builder: (context) {
-                     return BasicReactiveButton(
-                     
-                      onPressed: () {
-                        log("yhguyhuh");
-                        context.read<ButtonStateCubit>().execute(
-                          usecase: SignInWithGoogleUseCase()
-                        );
-                      },
-                      
-                     
-                     );
-                   }
-                 ),
-               ),
-             ),
+             child: Text("Sign with Google")
            ),
           TextButton(
             onPressed: onSwitchPressed,
@@ -177,6 +145,3 @@ class AuthFormContainer extends StatelessWidget {
     );
   }
 }
-
-
-

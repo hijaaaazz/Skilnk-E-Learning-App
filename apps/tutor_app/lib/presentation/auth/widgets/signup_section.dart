@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
-import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_state.dart';
-import 'package:tutor_app/common/widgets/basic_reactive_button.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/data/auth/models/user_creation_req.dart';
-import 'package:tutor_app/domain/auth/usecases/signup.dart';
 import 'package:tutor_app/presentation/auth/blocs/animation_cubit/auth_animation_cubit.dart';
+import 'package:tutor_app/presentation/auth/blocs/auth_cubit/auth_cubit.dart';
 import 'package:tutor_app/presentation/auth/widgets/auth_input_fieds.dart';
 import 'package:tutor_app/presentation/auth/widgets/authentication_form.dart';
 
@@ -41,32 +38,38 @@ class SignUpForm extends StatelessWidget {
           icon: Icons.lock,
           isPassword: true,
         ),
-        BlocProvider(
-            create: (_) => ButtonStateCubit(),
-            child: BlocConsumer<ButtonStateCubit,ButtonState>(
-              listener:(context, state) {
-                if(state is ButtonSuccessState){
-                  context.goNamed(AppRouteConstants.emailVerificationRouteName);
-                }
-              },
-              builder: (context, state) {
-                return  BasicReactiveButton(
-                title: "Sign Up",
-                textColor: const Color.fromARGB(255, 255, 255, 255),
-                backgroundColor: const Color.fromARGB(255, 160, 37, 0),
-                onPressed: (){
-                  context.read<ButtonStateCubit>().execute(
-                    usecase:SignupUseCase(),
-                    params: UserCreationReq(
-                      name: nameController.text,
-                      email: emailController.text,
-                      password: passwordController.text));
-                }
+        BlocConsumer<AuthStatusCubit,AuthStatusState>(
+          listener:(context, state) {
+            if(state.status == AuthStatus.emailVerified){
+              context.pushReplacementNamed(AppRouteConstants.homeRouteName);
+            }if(state.status == AuthStatus.authenticated){
+              
+              context.pushReplacementNamed(AppRouteConstants.emailVerificationRouteName,
+              extra: state.user
               );
-              },
+            }if(state.status == AuthStatus.failure){
+              
+            }
+          },
+          builder: (context, state) {
+            if(state.status == AuthStatus.loading){
+              return CircularProgressIndicator();
+            }
+            return  TextButton(
+            child: 
             
-            ),
-          ),
+            Text("SignUp"),
+            onPressed: (){
+              context.read<AuthStatusCubit>().signUp(
+                UserCreationReq(name: nameController.text, 
+                email: emailController.text, 
+                password: passwordController.text)
+              );
+            }
+          );
+          },
+        
+        ),
       ],
       
       

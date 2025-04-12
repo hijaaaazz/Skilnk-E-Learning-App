@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
@@ -16,7 +18,7 @@ class MentorsFirebaseServiceImp extends MentorsFirebaseService {
       List<Map<String, dynamic>> users = snapshot.docs
           .map((doc) => doc.data())  // convert each document to Map
           .toList();
-
+  log(users.join());
       // Return the users as the right side of the Either
       return Right(users);
     } catch (e) {
