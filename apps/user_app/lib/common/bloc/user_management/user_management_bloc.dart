@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:user_app/domain/auth/entity/user.dart';
+import 'package:user_app/features/auth/domain/entity/user.dart';
 
 
 part 'user_management_event.dart';

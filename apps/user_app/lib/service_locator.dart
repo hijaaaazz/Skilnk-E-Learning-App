@@ -1,15 +1,15 @@
 import 'package:get_it/get_it.dart';
-import 'package:user_app/data/auth/repository/auth_repo_imp.dart';
-import 'package:user_app/data/auth/src/auth_firebase_service.dart';
-import 'package:user_app/domain/auth/repository/auth.dart';
-import 'package:user_app/domain/auth/usecases/check_verification.dart';
-import 'package:user_app/domain/auth/usecases/get_user.dart';
-import 'package:user_app/domain/auth/usecases/logout.dart';
-import 'package:user_app/domain/auth/usecases/resent_verification.dart';
-import 'package:user_app/domain/auth/usecases/reset_pass.dart';
-import 'package:user_app/domain/auth/usecases/signin.dart';
-import 'package:user_app/domain/auth/usecases/signin_with_google.dart';
-import 'package:user_app/domain/auth/usecases/signup.dart';
+import 'package:user_app/features/auth/data/repository/auth_repo_imp.dart';
+import 'package:user_app/features/auth/data/src/auth_firebase_service.dart';
+import 'package:user_app/features/auth/domain/repository/auth.dart';
+import 'package:user_app/features/auth/domain/usecases/check_verification.dart';
+import 'package:user_app/features/auth/domain/usecases/get_user.dart';
+import 'package:user_app/features/auth/domain/usecases/logout.dart';
+import 'package:user_app/features/auth/domain/usecases/resent_verification.dart';
+import 'package:user_app/features/auth/domain/usecases/reset_pass.dart';
+import 'package:user_app/features/auth/domain/usecases/signin.dart';
+import 'package:user_app/features/auth/domain/usecases/signin_with_google.dart';
+import 'package:user_app/features/auth/domain/usecases/signup.dart';
 
 final serviceLocator = GetIt.instance;
 

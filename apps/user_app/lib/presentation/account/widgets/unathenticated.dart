@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/presentation/account/widgets/login_suggession.dart';
-import 'package:user_app/presentation/account/widgets/option_tile.dart';
+import 'package:user_app/features/account/presentation/widgets/login_suggession.dart';
+import 'package:user_app/features/account/presentation/widgets/option_tile.dart';
+
 
 Widget buildUnauthenticatedUI(BuildContext context) {
     return SingleChildScrollView(

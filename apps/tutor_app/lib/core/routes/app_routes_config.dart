@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
-import 'package:tutor_app/domain/auth/entity/user.dart';
-import 'package:tutor_app/presentation/account/pages/account.dart';
-import 'package:tutor_app/presentation/auth/pages/auth.dart';
-import 'package:tutor_app/presentation/auth/pages/email_verification_page.dart';
-import 'package:tutor_app/presentation/auth/pages/verify_page.dart';
-import 'package:tutor_app/presentation/main_page/pages/landing.dart';
-import 'package:tutor_app/presentation/splash/pages/splash.dart';
+import 'package:tutor_app/features/auth/domain/entity/user.dart';
+import 'package:tutor_app/features/account/presentation/pages/account.dart';
+import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
+import 'package:tutor_app/features/auth/presentation/pages/email_verification_page.dart';
+import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
+import 'package:tutor_app/features/main_scaffold/presentation/pages/landing.dart';
+import 'package:tutor_app/features/splash/presentation/pages/splash.dart';
 
 class AppRoutes {
   GoRouter router = GoRouter(

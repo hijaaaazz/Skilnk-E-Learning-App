@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/data/auth/models/user_creation_req.dart';
-import 'package:user_app/domain/auth/entity/user.dart';
-import 'package:user_app/presentation/account/pages/profile.dart';
-import 'package:user_app/presentation/auth/pages/auth.dart';
-import 'package:user_app/presentation/auth/pages/verify_page.dart';
-import 'package:user_app/presentation/explore/pages/explore.dart';
-import 'package:user_app/presentation/home/pages/home.dart';
-import 'package:user_app/presentation/library/pages/library.dart';
-import 'package:user_app/presentation/account/pages/account.dart';
-import 'package:user_app/presentation/main_page/pages/landing.dart';
-import 'package:user_app/presentation/splash/pages/splash.dart';
+import 'package:user_app/features/account/presentation/pages%20/account.dart';
+import 'package:user_app/features/account/presentation/pages%20/profile.dart';
+import 'package:user_app/features/auth/domain/entity/user.dart';
+import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
+import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
+import 'package:user_app/features/explore/presentation/pages/explore.dart';
+import 'package:user_app/features/home/presentation/pages/home.dart';
+import 'package:user_app/features/library/presentation/pages/library.dart';
+import 'package:user_app/features/main_page/presentation/pages/landing.dart';
+import 'package:user_app/features/splash/presentation/pages/splash.dart';
 
 class AppRoutes {
   GoRouter router = GoRouter(
-    initialLocation: "/splash"
+    initialLocation: "/home"
     ,
     routes: [
       GoRoute(
