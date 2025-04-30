@@ -28,11 +28,15 @@ class _SplashPageState extends State<SplashPage> {
 
     if (!mounted) return;
 
-    if (authState.status == AuthStatus.emailVerified) {
-      context.goNamed(AppRouteConstants.homeRouteName);
-    } else {
-      context.goNamed(AppRouteConstants.authRouteName);
-    }
+    if (authState.status == AuthStatus.adminVerified) {
+        context.goNamed(AppRouteConstants.homeRouteName);
+      } else if (authState.status == AuthStatus.emailVerified) {
+        context.goNamed(AppRouteConstants.waitingRouteName);
+        
+      } else {
+        context.goNamed(AppRouteConstants.authRouteName);
+      }
+
   }
 
   @override

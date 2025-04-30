@@ -6,6 +6,7 @@ import 'package:admin_app/features/instructors/data/repos/user_management_repo.d
 import 'package:admin_app/features/instructors/data/src/mentors_firebase_service.dart';
 import 'package:admin_app/features/instructors/domain/repos/mentor_managment.dart';
 import 'package:admin_app/features/instructors/domain/usecases/get_mentors.dart';
+import 'package:admin_app/features/instructors/domain/usecases/update_mentor.dart';
 import 'package:admin_app/features/users/data/repos/user_management_repo.dart';
 import 'package:admin_app/features/users/data/src/users_firebase_service.dart';
 import 'package:admin_app/features/users/domain/repos/user_managment.dart';
@@ -58,6 +59,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<GetMentorsUseCase>(
     () => GetMentorsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<UpdateMentorUseCase>(
+    () => UpdateMentorUseCase()
   );
 }
 

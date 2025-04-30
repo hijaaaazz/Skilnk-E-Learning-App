@@ -76,8 +76,10 @@ class SignUpForm extends StatelessWidget {
 
         BlocConsumer<AuthStatusCubit, AuthStatusState>(
           listener: (context, state) {
-            if (state.status == AuthStatus.emailVerified) {
+            if (state.status == AuthStatus.adminVerified) {
               context.pushReplacementNamed(AppRouteConstants.homeRouteName);
+            } else if(state.status == AuthStatus.emailVerified){
+              context.pushReplacementNamed(AppRouteConstants.waitingRouteName);
             } else if (state.status == AuthStatus.authenticated) {
               context.pushReplacementNamed(
                 AppRouteConstants.emailVerificationRouteName,

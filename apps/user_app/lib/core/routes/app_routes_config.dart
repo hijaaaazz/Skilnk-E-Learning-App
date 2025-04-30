@@ -5,6 +5,7 @@ import 'package:user_app/features/account/presentation/pages%20/account.dart';
 import 'package:user_app/features/account/presentation/pages%20/profile.dart';
 import 'package:user_app/features/auth/domain/entity/user.dart';
 import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
+import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
 import 'package:user_app/features/explore/presentation/pages/explore.dart';
 import 'package:user_app/features/home/presentation/pages/home.dart';
@@ -39,6 +40,14 @@ class AppRoutes {
         pageBuilder: (context, state) {
           final user = (state.extra as UserEntity);
           return MaterialPage(child: VerifyPage(user: user,));
+        },
+      ),
+      GoRoute(
+        name: AppRouteConstants.personalInfoSubmitingPageName,
+        path: "/personalInfo",
+        pageBuilder: (context, state) {
+          
+          return MaterialPage(child: InfoSubmitionPage());
         },
       ),
       

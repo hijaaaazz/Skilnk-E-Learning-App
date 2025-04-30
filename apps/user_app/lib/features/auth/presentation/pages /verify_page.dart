@@ -20,12 +20,12 @@ class VerifyPage extends StatelessWidget {
       listener: (context, state) {
         if (state.status == AuthStatus.loading) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("co")),
+            const SnackBar(content: Text("please wait")),
           );
         }if (state.status == AuthStatus.emailVerified) {
-          context.go(AppRouteConstants.accountRouteName);
+          context.go(AppRouteConstants.personalInfoSubmitingPageName);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('uccessfully')),
+            const SnackBar(content: Text('successfully')),
           );
         }
         

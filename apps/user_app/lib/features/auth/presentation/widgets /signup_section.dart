@@ -15,7 +15,7 @@ class SignUpForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormState>(); // ✅ Key for validation
+    final formKey = GlobalKey<FormState>(); // Key for validation
     final nameController = TextEditingController();
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
@@ -71,7 +71,7 @@ class SignUpForm extends StatelessWidget {
             },
             builder: (context, state) {
               return PrimaryAuthButton(
-                text: "Sign Up",
+                text: "Continue",
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     context.read<AuthStatusCubit>().signUp(

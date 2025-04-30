@@ -9,38 +9,46 @@ class InstructorsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fetch mentors when page is built
-
     return BlocProvider(
       create: (context) => MentorManagementCubit()..displayMentors(),
       child: Scaffold(
-       
-        body: BlocBuilder<MentorManagementCubit, MentorManagementState>(
-          builder: (context, state) {
-            if (state is MentorsLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is MentorsLoadingError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error_outline, color: Colors.red, size: 48),
-                    const SizedBox(height: 16),
-                    const Text('Failed to load mentors'),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      onPressed: () => context.read<MentorManagementCubit>().displayMentors(),
-                      child: const Text('Try Again'),
-                    ),
-                  ],
-                ),
+        body: BlocListener<MentorManagementCubit, MentorManagementState>(
+          listener: (context, state) {
+            if (state is MentorsUpdationSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Mentor updated successfully")),
               );
-            } else if (state is MentorsLoadingSucces) {
-              return _buildmentorsList(context, state.mentors);
+            } else if (state is MentorsUpdationError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Failed to update mentor")),
+              );
             }
-            
-            return const Center(child: Text('No data available'));
           },
+          child: BlocBuilder<MentorManagementCubit, MentorManagementState>(
+            builder: (context, state) {
+              if (state is MentorsLoading && state.mentors.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is MentorsLoadingError && state.mentors.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.red, size: 48),
+                      const SizedBox(height: 16),
+                      const Text('Failed to load mentors'),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: () => context.read<MentorManagementCubit>().displayMentors(),
+                        child: const Text('Try Again'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return _buildmentorsList(context, state.mentors);
+            },
+          ),
         ),
       ),
     );
@@ -71,23 +79,24 @@ class InstructorsPage extends StatelessWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Block button - just shows a snackbar as dummy action
                 IconButton(
-                  icon: const Icon(Icons.block, color: Colors.red),
+                  icon: Icon(user.isblocked? Icons.check_circle : Icons.block, color: Colors.red),
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Blocked user: ${user.name}')),
-                    );
+                    context.read<MentorManagementCubit>().updateMentor(
+                          user.copyWith(isblocked: !user.isblocked),
+                        );
                   },
                 ),
-                // Unblock button - just shows a snackbar as dummy action
-                IconButton(
-                  icon: const Icon(Icons.check_circle, color: Colors.green),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Unblocked user: ${user.name}')),
-                    );
-                  },
+                Visibility(
+                  visible: !user.isVerified,
+                  child: IconButton(
+                    icon: Icon(Icons.check, color: Colors.green),
+                    onPressed: () {
+                      context.read<MentorManagementCubit>().updateMentor(
+                            user.copyWith(isVerified: true),
+                          );
+                    },
+                  ),
                 ),
               ],
             ),

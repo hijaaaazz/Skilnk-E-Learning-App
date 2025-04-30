@@ -17,7 +17,7 @@ final serviceLocator = GetIt.instance;
 Future<void> initializeDependencies() async {
   // ✅ Services
   serviceLocator.registerLazySingleton<AuthFirebaseService>(
-    () => AuthFirebaseServiceImp()
+    () => AuthFirebaseServiceImpl()
   );
 
   // ✅ Repositories

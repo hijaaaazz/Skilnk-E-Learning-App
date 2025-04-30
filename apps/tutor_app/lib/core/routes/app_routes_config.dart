@@ -6,6 +6,8 @@ import 'package:tutor_app/features/account/presentation/pages/account.dart';
 import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
 import 'package:tutor_app/features/auth/presentation/pages/email_verification_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
+import 'package:tutor_app/features/auth/presentation/pages/waiting_page.dart';
+import 'package:tutor_app/features/courses/presentation/pages/courses.dart';
 import 'package:tutor_app/features/main_scaffold/presentation/pages/landing.dart';
 import 'package:tutor_app/features/splash/presentation/pages/splash.dart';
 
@@ -37,6 +39,13 @@ class AppRoutes {
           return MaterialPage(child: AuthenticationPage());
         },
       ),
+      GoRoute(
+        path:'/wait',
+        name: AppRouteConstants.waitingRouteName,
+        pageBuilder: (context, state) {
+          return MaterialPage(child: WaitingPage());
+        },      
+       ),
       
       
       StatefulShellRoute.indexedStack(
@@ -111,14 +120,6 @@ class DashBoardPage extends StatelessWidget {
 
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-class CoursesPage extends StatelessWidget {
-  const CoursesPage({super.key});
 
   @override
   Widget build(BuildContext context) {

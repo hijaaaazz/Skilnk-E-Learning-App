@@ -1,10 +1,12 @@
 import 'dart:developer';
 
+import 'package:admin_app/features/instructors/data/models/mentor_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class MentorsFirebaseService {
   Future<Either<String, List<Map<String, dynamic>>>> getUsers();
+  Future<Either<String, Map<String, dynamic>>> updateUser(MentorModel user);
 }
 
 class MentorsFirebaseServiceImp extends MentorsFirebaseService {
@@ -26,4 +28,28 @@ class MentorsFirebaseServiceImp extends MentorsFirebaseService {
       return Left("Failed to fetch users: $e");
     }
   }
+  
+  @override
+Future<Either<String, Map<String, dynamic>>> updateUser(MentorModel user) async {
+  try {
+    final userDocRef = FirebaseFirestore.instance.collection('mentors').doc(user.tutorId);
+
+    // Perform update
+    await userDocRef.update(user.toJson());
+
+    // Fetch updated document
+    final updatedSnapshot = await userDocRef.get();
+    final updatedData = updatedSnapshot.data();
+
+    if (updatedData != null) {
+      return Right(updatedData);
+    } else {
+      return Left("User not found after update.");
+    }
+  } catch (e) {
+    return Left("Failed to update user: $e");
+  }
+}
+
+
 }

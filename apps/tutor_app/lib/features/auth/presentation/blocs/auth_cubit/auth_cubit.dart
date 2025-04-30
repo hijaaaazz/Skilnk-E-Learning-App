@@ -24,6 +24,7 @@ enum AuthStatus {
   unauthenticated,
   authenticated,
   emailVerified,
+  adminVerified,
   failure,
   loading,
 }
@@ -118,22 +119,37 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
     );
   }
 
-  // Get Current User
   Future<void> getCurrentUser() async {
-    emit(AuthStatusState(status: AuthStatus.loading));
-    final result = await serviceLocator<GetCurrentUserUseCase>().call(params: NoParams());
-    result.fold(
-      (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),
-      (userModel) {
-        final isVerified = userModel.emailVerified;
-        log("bloc sttus $isVerified");
-        emit(AuthStatusState(
-          status: isVerified ? AuthStatus.emailVerified : AuthStatus.authenticated,
-          user: userModel.toEntity(), // assume `toEntity()` exists
-        ));
-      },
-    );
-  }
+  emit(AuthStatusState(status: AuthStatus.unauthenticated));
+
+  final result = await serviceLocator<GetCurrentUserUseCase>().call(params: NoParams());
+
+  result.fold(
+    (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),
+    (userModel) {
+      final isEmailVerified = userModel.emailVerified;
+      final isAdminVerified = userModel.isVerified ?? false; // assumed to mean admin verified
+
+      log("Email verified: $isEmailVerified, Admin verified: $isAdminVerified");
+
+      AuthStatus status;
+
+      if (isEmailVerified && isAdminVerified) {
+        status = AuthStatus.adminVerified;
+      } else if (isEmailVerified) {
+        status = AuthStatus.emailVerified;
+      } else {
+        status = AuthStatus.authenticated;
+      }
+
+      emit(AuthStatusState(
+        status: status,
+        user: userModel.toEntity(),
+      ));
+    },
+  );
+}
+
 
   // Send Verification Email
   Future<void> sendVerificationEmail() async {
