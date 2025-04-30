@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tutor_app/common/widgets/app_bar.dart';
+import 'package:tutor_app/core/routes/app_route_constants.dart';
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
@@ -11,7 +13,7 @@ class CoursesPage extends StatelessWidget {
 
         actions: [
           IconButton(onPressed: (){
-            
+            context.pushNamed(AppRouteConstants.addnewCourseRouteName);
           }, icon: Icon(Icons.add_box_outlined,color: Colors.white,))
         ],
       ),

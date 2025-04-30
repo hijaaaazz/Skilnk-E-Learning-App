@@ -10,6 +10,10 @@ import 'package:tutor_app/features/auth/domain/usecases/reset_pass.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signin.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signup.dart';
+import 'package:tutor_app/features/courses/data/repo/courses_repo.dart';
+import 'package:tutor_app/features/courses/domain/repo/course_repo.dart';
+import 'package:tutor_app/features/courses/domain/usecases/create_course.dart';
+import 'package:tutor_app/features/courses/presentation/pages/add_new_course.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -23,6 +27,10 @@ Future<void> initializeDependencies() async {
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthenticationRepoImplementation()
+  );
+
+  serviceLocator.registerLazySingleton<CoursesRepository>(
+    () => CoursesRepoImplementation()
   );
 
   // ✅ Use Cases
@@ -58,6 +66,10 @@ Future<void> initializeDependencies() async {
   
   serviceLocator.registerLazySingleton<ResetPasswordUseCase>(
     () => ResetPasswordUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<CreateCourseUseCase>(
+    () => CreateCourseUseCase()
   );
 }
 

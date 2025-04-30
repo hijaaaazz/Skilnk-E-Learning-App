@@ -7,6 +7,7 @@ import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
 import 'package:tutor_app/features/auth/presentation/pages/email_verification_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/waiting_page.dart';
+import 'package:tutor_app/features/courses/presentation/pages/add_new_course.dart';
 import 'package:tutor_app/features/courses/presentation/pages/courses.dart';
 import 'package:tutor_app/features/main_scaffold/presentation/pages/landing.dart';
 import 'package:tutor_app/features/splash/presentation/pages/splash.dart';
@@ -70,9 +71,19 @@ class AppRoutes {
                 path: "/courses",
                 name: AppRouteConstants.exploreRouteName,
                 builder: (context, state) => CoursesPage(),
+                routes: [
+                  GoRoute(
+                    path: "addnewcourse", // This becomes /courses/addnewcourse
+                    name: AppRouteConstants.addnewCourseRouteName,
+                    builder: (context, state) => AddNewCoursePage(
+                      
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+
           StatefulShellBranch(
             routes: [
               GoRoute(
