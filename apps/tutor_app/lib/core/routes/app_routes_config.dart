@@ -4,7 +4,6 @@ import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/auth/domain/entity/user.dart';
 import 'package:tutor_app/features/account/presentation/pages/account.dart';
 import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
-import 'package:tutor_app/features/auth/presentation/pages/email_verification_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/waiting_page.dart';
 import 'package:tutor_app/features/courses/presentation/pages/add_new_course.dart';
@@ -76,7 +75,7 @@ class AppRoutes {
                     path: "addnewcourse", // This becomes /courses/addnewcourse
                     name: AppRouteConstants.addnewCourseRouteName,
                     builder: (context, state) => AddNewCoursePage(
-                      
+
                     ),
                   ),
                 ],

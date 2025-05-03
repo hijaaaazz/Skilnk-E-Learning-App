@@ -9,12 +9,12 @@ class PrimaryAuthButton extends StatelessWidget {
   final double width;
 
   const PrimaryAuthButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.isLoading = false,
     this.width = double.infinity,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -129,11 +129,11 @@ class AlternateGoogleSignInButton extends StatelessWidget {
   final double width;
 
   const AlternateGoogleSignInButton({
-    Key? key,
+    super.key,
     required this.onPressed,
     this.isLoading = false,
     this.width = double.infinity,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

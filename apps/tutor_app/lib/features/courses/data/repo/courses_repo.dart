@@ -6,7 +6,6 @@ import 'package:tutor_app/features/courses/domain/repo/course_repo.dart';
 class CoursesRepoImplementation extends CoursesRepository {
   @override
   Future<Either<String, CourseEntity>> addNewCourse() {
-    // TODO: implement addNewCourse
     throw UnimplementedError();
   }
   

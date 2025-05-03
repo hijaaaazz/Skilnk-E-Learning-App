@@ -47,6 +47,8 @@ class ResetPasswordSentState extends ResetPasswordState{
 }
 
 class ResetPasswordFailedState extends ResetPasswordState {
+  @override
+  // ignore: overridden_fields
   final String message;
 
   ResetPasswordFailedState({

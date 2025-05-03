@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:tutor_app/common/widgets/app_bar.dart';
-import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
 
 class AccountPage extends StatelessWidget {
@@ -31,6 +29,7 @@ class AccountPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(20),
@@ -44,6 +43,7 @@ class AccountPage extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
+                          // ignore: deprecated_member_use
                           color: const Color.fromARGB(255, 194, 45, 0).withOpacity(0.3),
                           spreadRadius: 1,
                           blurRadius: 8,

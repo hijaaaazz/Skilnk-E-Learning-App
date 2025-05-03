@@ -4,6 +4,8 @@ import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_state.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
 class ForgotPasswordView extends StatefulWidget {
+  const ForgotPasswordView({super.key});
+
   @override
   State<ForgotPasswordView> createState() => _ForgotPasswordViewState();
 }
