@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/common/bloc/user_management/user_management_bloc.dart';
 import 'package:tutor_app/core/routes/app_routes_config.dart';
 import 'package:tutor_app/core/theme/theme.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 import 'package:tutor_app/firebase_options.dart';
-import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:tutor_app/service_locator.dart';
 
 Future<void> main() async {
@@ -32,7 +32,7 @@ class Skilnk extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => AuthStatusCubit()),
+        BlocProvider(create: (_) => AuthBloc()),
         BlocProvider(create: (_) => UserManagementBloc())
         
       ],

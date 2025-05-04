@@ -27,8 +27,8 @@ class AppRoutes {
         name: AppRouteConstants.emailVerificationRouteName,
         path: "/verify",
         pageBuilder: (context, state) {
-          final user = (state.extra as UserEntity);
-          return MaterialPage(child: VerifyPage(user: user,));
+          
+          return MaterialPage(child: VerifyPage());
         },
       ),
 

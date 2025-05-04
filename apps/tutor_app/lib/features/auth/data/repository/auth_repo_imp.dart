@@ -313,6 +313,32 @@ class AuthenticationRepoImplementation extends AuthRepository {
   }
   
   @override
+Future<Either<String, bool>> checkIfUserVerifiedByAdmin(UserEntity user) async {
+  try {
+    final currentUser = await _firebaseService.getCurrentAuthUser();
+    if (currentUser == null) {
+      return Left('No signed-in user');
+    }
+
+    // Fetch user document from Firestore
+    final userDoc = await _firebaseService.getUserDocById(currentUser.uid);
+
+    if (!userDoc.exists) {
+      return Left('User record not found in Firestore');
+    }
+
+    final data = userDoc.data() as Map<String, dynamic>;
+    final isVerified = data['is_verified'] as bool? ?? false;
+
+    log('Admin verification status: $isVerified');
+    return Right(isVerified);
+  } catch (e, stacktrace) {
+    log('checkIfUserVerifiedByAdmin error: $e\n$stacktrace');
+    return Left('Failed to check admin verification');
+  }
+}
+
+  @override
   Future<Either<String, bool>> isEmailVerified(UserEntity user) async {
     try {
       final currentUser = await _firebaseService.getCurrentAuthUser();
@@ -333,4 +359,5 @@ class AuthenticationRepoImplementation extends AuthRepository {
       return Left('Failed to check isEmailVerified');
     }
   }
+
 }

@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_state.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_event.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
 
@@ -17,13 +20,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthStatusCubit, AuthStatusState>(
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.message != null) {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(state.message!)));
         }
-        if (state is ResetPasswordSentState) {
+        if (state is ResetPasswordSent) {
           ScaffoldMessenger.of(context)
               .showSnackBar(const SnackBar(content: Text("Email sent")));
         }
@@ -108,15 +111,10 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                                 setState(() {
                                   isLoading = true;
                                 });
-                                context
-                                    .read<AuthStatusCubit>()
-                                    .resetPassword(emailController.text)
-                                    .then((_) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                });
+
+                                context.read<AuthBloc>().add(ResetPasswordEvent(email: emailController.text));
                               }
+
                             },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 175, 41, 0),

@@ -1,4 +1,6 @@
-import 'dart:async';
+
+
+// CheckVerificationByAdminUseCase.dart
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
@@ -7,23 +9,25 @@ import 'package:tutor_app/features/auth/domain/entity/user.dart';
 import 'package:tutor_app/features/auth/domain/repository/auth.dart';
 import 'package:tutor_app/service_locator.dart';
 
-class CheckVerificationUseCase
+class CheckVerificationByAdminUseCase
     implements StreamUsecase<Either<String, bool>, UserEntity> {
+ 
+
   @override
   Stream<Either<String, bool>> call({required UserEntity params}) async* {
     while (true) {
-      log('Checking email verification for user: ${params.tutorId}');
+      log('Checking verification for user: ${params.tutorId}'); // Log to check the params
 
       final result = await serviceLocator<AuthRepository>()
-          .isEmailVerified(params);
+          .checkIfUserVerifiedByAdmin(params);
 
-      log('Email verification result: $result');
+      log('Verification result: $result'); // Log the result
 
       yield result;
 
-      // Stop checking if verified
+      // Break the loop if verification is successful
       if (result.isRight() && result.getOrElse(() => false)) {
-        log('User email verified, stopping stream.');
+        log('User verified, stopping verification check.');
         break;
       }
 

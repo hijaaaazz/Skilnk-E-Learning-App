@@ -33,4 +33,6 @@ abstract class AuthRepository {
   
   /// Checks if a user with the given email exists
   Future<Either<String, bool>> checkIfUserExists(String email);
+
+   Future<Either<String, bool>> checkIfUserVerifiedByAdmin(UserEntity user);
 }

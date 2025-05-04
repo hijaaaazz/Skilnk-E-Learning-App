@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:tutor_app/features/auth/data/repository/auth_repo_imp.dart';
 import 'package:tutor_app/features/auth/data/src/auth_firebase_service.dart';
 import 'package:tutor_app/features/auth/domain/repository/auth.dart';
+import 'package:tutor_app/features/auth/domain/usecases/admin_verification_check.dart';
 import 'package:tutor_app/features/auth/domain/usecases/check_verification.dart';
 import 'package:tutor_app/features/auth/domain/usecases/get_user.dart';
 import 'package:tutor_app/features/auth/domain/usecases/logout.dart';
@@ -37,6 +38,10 @@ Future<void> initializeDependencies() async {
   // Basic authentication use cases
   serviceLocator.registerLazySingleton<SignupUseCase>(
     () => SignupUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<CheckVerificationByAdminUseCase>(
+    () => CheckVerificationByAdminUseCase()
   );
   
   serviceLocator.registerLazySingleton<SignInUseCase>(

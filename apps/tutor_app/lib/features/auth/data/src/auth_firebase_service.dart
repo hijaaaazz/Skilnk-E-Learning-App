@@ -16,6 +16,8 @@ abstract class AuthFirebaseService {
   Future<void> updateUserDisplayName(String name);
   
   // Firestore operations
+  Future<DocumentSnapshot<Map<String, dynamic>>> getUserDocById(String uid);
+
   Future<void> saveUserToFirestore(UserModel user);
   Future<UserModel?> getUserFromFirestore(String uid);
   Future<bool> checkUserCollectionForEmail(String email, String collectionName);
@@ -126,4 +128,11 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
     
     return querySnapshot.docs.isNotEmpty;
   }
+  
+  @override
+Future<DocumentSnapshot<Map<String, dynamic>>> getUserDocById(String uid) async {
+  return await FirebaseFirestore.instance.collection('mentors').doc(uid).get();
+}
+
+
 }

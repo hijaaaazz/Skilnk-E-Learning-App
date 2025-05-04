@@ -6,6 +6,9 @@ import 'package:tutor_app/features/auth/data/models/user_creation_req.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_state.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_event.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/auth_input_fieds.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/authentication_form.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/buttons.dart';
@@ -74,7 +77,7 @@ class SignUpForm extends StatelessWidget {
 
         const SizedBox(height: 16),
 
-        BlocConsumer<AuthStatusCubit, AuthStatusState>(
+        BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state.status == AuthStatus.adminVerified) {
               context.pushReplacementNamed(AppRouteConstants.homeRouteName);
@@ -100,13 +103,11 @@ class SignUpForm extends StatelessWidget {
               text: "Sign Up",
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  context.read<AuthStatusCubit>().signUp(
-                        UserCreationReq(
-                          name: nameController.text.trim(),
-                          email: emailController.text.trim(),
-                          password: passwordController.text.trim(),
-                        ),
-                      );
+                  context.read<AuthBloc>().add(
+                    SignUpEvent(request: 
+                    UserCreationReq(name: nameController.text,
+                    email: emailController.text,
+                    password: passwordController.text)));
                 }
               },
             );

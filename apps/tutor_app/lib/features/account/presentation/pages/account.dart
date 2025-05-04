@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/common/widgets/app_bar.dart';
-import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_event.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -10,7 +12,7 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BasicAppBar(title: "Account",),
-      body: BlocBuilder<AuthStatusCubit, AuthStatusState>(
+      body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return _buildAuthenticatedUI(context);
         },
@@ -20,7 +22,7 @@ class AccountPage extends StatelessWidget {
 
 
   Widget _buildAuthenticatedUI(BuildContext context) {
-    return BlocBuilder<AuthStatusCubit,AuthStatusState>(
+    return BlocBuilder<AuthBloc,AuthState>(
       builder: (context, state) {
         return SingleChildScrollView(
         child: Column(
@@ -97,7 +99,7 @@ class AccountPage extends StatelessWidget {
             TextButton(onPressed: (){
 
               
-              context.read<AuthStatusCubit>().logOut(context);
+              context.read<AuthBloc>().add(LogOutEvent(context: context));
               
             }, child: Text("Logout")),
             

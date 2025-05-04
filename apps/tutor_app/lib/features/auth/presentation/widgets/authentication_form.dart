@@ -4,7 +4,8 @@ import 'package:tutor_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
 import 'package:tutor_app/common/widgets/basic_reactive_button.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_state.dart';
-import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
+import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_event.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/buttons.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/signin_section.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/signup_section.dart';
@@ -127,7 +128,7 @@ class AuthFormContainer extends StatelessWidget {
            GoogleSignInButton(
             
             onPressed: (){
-              context.read<AuthStatusCubit>().signInWithGoogle();
+              context.read<AuthBloc>().add(SignInWithGoogleEvent());
                           
             },
            ),

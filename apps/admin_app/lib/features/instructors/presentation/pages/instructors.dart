@@ -1,3 +1,5 @@
+import 'package:admin_app/common/widgets/app_text.dart';
+import 'package:admin_app/common/widgets/dialog.dart';
 import 'package:admin_app/features/instructors/domain/entities/mentor_entity.dart';
 import 'package:admin_app/features/instructors/presentation/bloc/cubit/mentor_management_cubit.dart';
 import 'package:admin_app/features/instructors/presentation/bloc/cubit/mentor_management_state.dart';
@@ -87,18 +89,39 @@ class InstructorsPage extends StatelessWidget {
                         );
                   },
                 ),
-                Visibility(
-                  visible: !user.isVerified,
-                  child: IconButton(
-                    icon: Icon(Icons.check, color: Colors.green),
+                TextButton(
+                    child:
+                    Row(
+                      children: [
+                        AppText(
+                          text: user.isVerified ? "Verify" : "Unverify",
+                          color: user.isVerified ? Colors.green : Colors.red,
+                        ),
+                        SizedBox(width: 8),
+                        Icon(
+                          user.isVerified ? Icons.check_circle : Icons.cancel,
+                          color: user.isVerified ? Colors.green : Colors.red,
+                        ),],
+                    ) ,
                     onPressed: () {
-                      context.read<MentorManagementCubit>().updateMentor(
-                            user.copyWith(isVerified: true),
+                      CustomDialog.show(
+                        context: context,
+                        title: user.isVerified ? "Unverify Mentor" : "Verify Mentor",
+                        message: user.isVerified
+                            ? "Are you sure you want to unverify this mentor?"
+                            : "Are you sure you want to verify this mentor?",
+                        onDone: () {
+                          Navigator.of(context).pop();
+                          // Call the updateMentor method with the updated user object
+                          context.read<MentorManagementCubit>().updateMentor(
+                            user.copyWith(isVerified: !user.isVerified),
                           );
+                        },
+                      );
+                      
                     },
                   ),
-                ),
-              ],
+              ]
             ),
           ),
         );
