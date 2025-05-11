@@ -1,3 +1,5 @@
+import 'package:tutor_app/features/courses/domain/entities/lecture_entity.dart';
+
 class CourseEntity {
   final String id;
   final String title;
@@ -13,7 +15,7 @@ class CourseEntity {
   final Map<String, int> ratingBreakdown;
   final int totalReviews;
   final List<String> reviews;
-  final List<String> lessons;
+  final List<LectureEntity> lessons;
   final String courseThumbnail;
   final String level;
   final bool notificationSent;

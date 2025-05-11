@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tutor_app/features/courses/data/models/lecture_model.dart';
+import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 
 class CourseModel {
   final String id;
@@ -15,7 +17,7 @@ class CourseModel {
   final Map<String, int> ratingBreakdown;
   final int totalReviews;
   final List<String> reviews;
-  final List<String> lessons;
+  final List<LectureModel> lessons;
   final String courseThumbnail;
   final String level;
   final bool notificationSent;
@@ -23,7 +25,7 @@ class CourseModel {
   final bool isBanned;
   final DateTime createdAt;
   final DateTime updatedAt;
-  //final String? quizId;
+  final String? language;
 
   CourseModel({
     required this.id,
@@ -48,43 +50,99 @@ class CourseModel {
     required this.isBanned,
     required this.createdAt,
     required this.updatedAt,
-    //this.quizId,
+    this.language,
   });
 
   factory CourseModel.fromJson(Map<String, dynamic> json, String docId) {
     return CourseModel(
       id: docId,
       title: json['title'] ?? '',
-      categoryId: json['category']?['_id'] ?? '',
+      categoryId: json['category'] is Map ? json['category']['_id'] ?? '' : json['category'] ?? '',
       description: json['description'] ?? '',
       price: json['price'] ?? 0,
       offerPercentage: json['offer_percentage'] ?? 0,
-      tutorId: json['tutor']?['_id'] ?? '',
+      tutorId: json['tutor'] is Map ? json['tutor']['_id'] ?? '' : json['tutor'] ?? '',
       duration: json['duration'] ?? 0,
       isActive: json['isActive'] ?? false,
       enrolledCount: json['enrolled_count'] ?? 0,
       averageRating: (json['average_rating'] ?? 0).toDouble(),
-      ratingBreakdown: Map<String, int>.from(json['rating_breakdown'] ?? {
-        "five_star": 0,
-        "four_star": 0,
-        "three_star": 0,
-        "two_star": 0,
-        "one_star": 0,
-      }),
+      ratingBreakdown: _parseRatingBreakdown(json['rating_breakdown']),
       totalReviews: json['total_reviews'] ?? 0,
-      reviews: List<String>.from(json['reviews'] ?? []),
-      lessons: List<String>.from(
-        (json['lessons'] as List<dynamic>? ?? []).map((e) => e['_id'] ?? ''),
-      ),
+      reviews: _parseReviews(json['reviews']),
+      lessons: _parseLessons(json['lessons']),
       courseThumbnail: json['course_thumbnail'] ?? '',
       level: json['level'] ?? '',
       notificationSent: json['notificationSent'] ?? false,
       listed: json['listed'] ?? false,
       isBanned: json['isBanned'] ?? false,
-      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      //quizId: json['quiz']?['_id'],
+      createdAt: _parseTimestamp(json['createdAt']),
+      updatedAt: _parseTimestamp(json['updatedAt']),
+      language: json['language'],
     );
+  }
+
+  static Map<String, int> _parseRatingBreakdown(dynamic data) {
+    if (data == null) {
+      return {
+        "five_star": 0,
+        "four_star": 0,
+        "three_star": 0,
+        "two_star": 0,
+        "one_star": 0,
+      };
+    }
+    
+    try {
+      return Map<String, int>.from(data);
+    } catch (e) {
+      return {
+        "five_star": 0,
+        "four_star": 0,
+        "three_star": 0,
+        "two_star": 0,
+        "one_star": 0,
+      };
+    }
+  }
+  
+  static List<String> _parseReviews(dynamic data) {
+    if (data == null) return [];
+    
+    try {
+      return (data as List).map((e) => e.toString()).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+  
+  static List<LectureModel> _parseLessons(dynamic data) {
+    if (data == null) return [];
+    
+    try {
+      return (data as List<dynamic>).map((lessonData) {
+        if (lessonData is Map<String, dynamic>) {
+          return LectureModel.fromJson(lessonData);
+        } else {
+          // If the lesson is just an ID string or other format
+          return LectureModel(
+            title: '',
+            description: '',
+            videoUrl: '',
+            notesUrl: '',
+            durationInSeconds: 0,
+          );
+        }
+      }).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+  
+  static DateTime _parseTimestamp(dynamic timestamp) {
+    if (timestamp is Timestamp) {
+      return timestamp.toDate();
+    }
+    return DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
@@ -102,15 +160,15 @@ class CourseModel {
       'rating_breakdown': ratingBreakdown,
       'total_reviews': totalReviews,
       'reviews': reviews,
-      'lessons': lessons,
+      'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
       'course_thumbnail': courseThumbnail,
       'level': level,
+      'language': language ?? '',
       'notificationSent': notificationSent,
       'listed': listed,
       'isBanned': isBanned,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      //'quiz': quizId,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
     };
   }
 
@@ -129,7 +187,7 @@ class CourseModel {
     Map<String, int>? ratingBreakdown,
     int? totalReviews,
     List<String>? reviews,
-    List<String>? lessons,
+    List<LectureModel>? lessons,
     String? courseThumbnail,
     String? level,
     bool? notificationSent,
@@ -137,7 +195,7 @@ class CourseModel {
     bool? isBanned,
     DateTime? createdAt,
     DateTime? updatedAt,
-    //String? quizId,
+    String? language,
   }) {
     return CourseModel(
       id: id ?? this.id,
@@ -162,7 +220,34 @@ class CourseModel {
       isBanned: isBanned ?? this.isBanned,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      //quizId: quizId ?? this.quizId,
+      language: language ?? this.language,
+    );
+  }
+
+  CourseEntity toEntity() {
+    return CourseEntity(
+      id: id,
+      title: title,
+      categoryId: categoryId,
+      description: description,
+      price: price,
+      offerPercentage: offerPercentage,
+      tutorId: tutorId,
+      duration: duration,
+      isActive: isActive,
+      enrolledCount: enrolledCount,
+      averageRating: averageRating,
+      ratingBreakdown: ratingBreakdown,
+      totalReviews: totalReviews,
+      reviews: reviews,
+      lessons: lessons.map((e) => e.toEntity()).toList(),
+      courseThumbnail: courseThumbnail,
+      level: level,
+      notificationSent: notificationSent,
+      listed: listed,
+      isBanned: isBanned,
+      createdAt: createdAt,
+      updatedAt: updatedAt
     );
   }
 }

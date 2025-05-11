@@ -1,7 +1,7 @@
-import 'package:admin_app/features/auth/presentaion/pages/authentication.dart';
-import 'package:admin_app/features/landing/presentation/pages/landing.dart';
+import 'package:admin_app/core/routes/app_route_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -15,25 +15,17 @@ class SplashPage extends StatelessWidget {
     if (user != null) {
       // User is logged in, navigate to the home screen
       Future.microtask(() {
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => LandingPage()),
-        );
+        context.goNamed(AppRouteConstants.auth);
       });
     } else {
       // User is not logged in, navigate to the login screen
       Future.microtask(() {
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => AuthenticationPage()),
-        );
+        context.goNamed(AppRouteConstants.auth);
       });
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Auth Check')),
+      
       body: Center(child: CircularProgressIndicator()), // Loading until check is complete
     );
   }

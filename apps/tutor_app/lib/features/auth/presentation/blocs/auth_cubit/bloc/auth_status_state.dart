@@ -21,9 +21,6 @@ abstract class AuthState  {
     this.message,
     this.user,
   });
-
-  @override
-  List<Object?> get props => [status, message, user];
 }
 
 class AuthInitial extends AuthState {

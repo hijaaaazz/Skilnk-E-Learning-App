@@ -1,65 +1,142 @@
-import 'package:admin_app/features/courses/presentation/pages/courses.dart';
-import 'package:admin_app/features/dashboard/presentation/pages/dashboard.dart';
-import 'package:admin_app/features/instructors/presentation/pages/instructors.dart';
-import 'package:admin_app/features/landing/presentation/bloc/landing_navigation_cubit.dart';
-import 'package:admin_app/features/landing/presentation/widgets/navigation_bar.dart';
-import 'package:admin_app/features/orders/presentation/pages/orders.dart';
-import 'package:admin_app/features/profile/presentation/pages/profile.dart';
-import 'package:admin_app/features/users/presentation/pages/users.dart';
+import 'package:admin_app/common/widgets/appbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class LandingPage extends StatelessWidget {
-  const LandingPage({super.key});
+   LandingPage({required this.navigationShell, Key? key}) : super(key: key);
 
-  static final List<Widget> pages = [
-    DashboardPage(),
-    CoursesPage(),
-    OrdersPage(),
-    UsersPage(),
-    InstructorsPage(),
-    ProfilePage()
-  ];
+  final StatefulNavigationShell navigationShell;
 
-  static final List<String> pageTitles = [
-    "Dashboard",
-    "Courses",
-    "Orders",
-    "Manage Users",
-    "Manage Instructors",
-    "Profile"
-  ];
+final List<Destination> destinations = [
+  Destination(icon: Icons.dashboard, title: 'Dashboard', index: 0),
+  Destination(icon: Icons.book, title: 'Courses', index: 1),
+  Destination(icon: Icons.shopping_cart, title: 'Orders', index: 2),
+  Destination(icon: Icons.person, title: 'Manage Mentors', index: 3),
+  Destination(icon: Icons.people, title: 'Manage Users', index: 4),
+  Destination(icon: Icons.settings, title: 'Settings', index: 5),
+  Destination(icon: Icons.logout, title: 'Sign-out', index: 99),
+];
 
-  static final List<List<Widget>> pageActions = [
-    [IconButton(icon: Icon(Icons.refresh), onPressed: () {})], // Dashboard
-    [IconButton(icon: Icon(Icons.search), onPressed: () {})], // Courses
-    [IconButton(icon: Icon(Icons.filter_list), onPressed: () {})], // Orders
-    [], // Users (No action)
-    [], // Instructors (No action)
-    [IconButton(icon: Icon(Icons.edit), onPressed: () {})], // Profile
-  ];
+  
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LandingNavigationCubit, int>(
-      builder: (context, currentIndex) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(pageTitles[currentIndex]), // Dynamic Title
-            actions: pageActions[currentIndex], // Dynamic Actions
-            leading: Builder(
-              builder: (context) => IconButton(
-                icon: Icon(Icons.menu),
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-              ),
-            ),
-          ),
-          drawer: buildDrawer(currentIndex, context),
-          body: pages[currentIndex],
-        );
-      },
+    return Scaffold(
+      backgroundColor: const Color(0xFFF4F7F9),
+      drawer: _buildDrawer(context),
+      drawerEnableOpenDragGesture: false,
+      appBar: SkilnkAppBar(
+        title: (destinations[navigationShell.currentIndex].title),
+      ),
+      body: navigationShell,
+      bottomNavigationBar: _buildFooter(), // optional
     );
   }
+ 
+
+
+ Widget _buildDrawer(BuildContext context) {
+  return Drawer(
+    width: 280,
+    child: Container(
+      color: const Color(0xFF1D1F26),
+      child: Column(
+        children: [
+          Container(
+            width: 280,
+            height: 70,
+            color: const Color(0xFF1D1F26),
+            padding: const EdgeInsets.only(left: 24, top: 15),
+            child: Row(
+              children: const [
+                SizedBox(width: 30, height: 30),
+                SizedBox(width: 10),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Skil',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      TextSpan(
+                        text: 'nk',
+                        style: TextStyle(
+                          color: Color(0xFFFF6636),
+                          fontSize: 32,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ...destinations.map((item) {
+            return _drawerItem(context, item);
+          }).toList(),
+          const Spacer(),
+        ],
+      ),
+    ),
+  );
+}
+
+
+  Widget _drawerItem(BuildContext context, Destination item) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.pop(context);
+      if (item.index < navigationShell.route.branches.length) {
+        navigationShell.goBranch(item.index);
+      } else {
+        // Handle sign-out or other action
+      }
+    },
+    child: Container(
+      width: double.infinity,
+      height: 48,
+      color: Colors.transparent,
+      padding: const EdgeInsets.only(left: 24, top: 12),
+      child: Row(
+        children: [
+          Icon(item.icon, size: 24, color: const Color(0xFF8C93A3)),
+          const SizedBox(width: 12),
+          Text(
+            item.title,
+            style: const TextStyle(
+              color: Color(0xFF8C93A3),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+  Widget _buildFooter() {
+    return Container(
+      height: 50,
+      color: Colors.grey[200],
+      alignment: Alignment.center,
+      child: const Text(
+        '© 2025 Skilnk',
+        style: TextStyle(color: Colors.grey),
+      ),
+    );
+  }
+}
+class Destination {
+  final IconData icon;
+  final String title;
+  final int index;
+
+  Destination({required this.icon, required this.title, required this.index});
 }

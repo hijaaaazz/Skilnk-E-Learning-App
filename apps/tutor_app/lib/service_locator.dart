@@ -12,9 +12,11 @@ import 'package:tutor_app/features/auth/domain/usecases/signin.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signup.dart';
 import 'package:tutor_app/features/courses/data/repo/courses_repo.dart';
+import 'package:tutor_app/features/courses/data/src/cloudinary_services.dart';
+import 'package:tutor_app/features/courses/data/src/firebase_services.dart';
 import 'package:tutor_app/features/courses/domain/repo/course_repo.dart';
 import 'package:tutor_app/features/courses/domain/usecases/create_course.dart';
-import 'package:tutor_app/features/courses/presentation/pages/add_new_course.dart';
+import 'package:tutor_app/features/courses/domain/usecases/get_course_options.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -23,6 +25,14 @@ Future<void> initializeDependencies() async {
   // ✅ Services
   serviceLocator.registerLazySingleton<AuthFirebaseService>(
     () => AuthFirebaseServiceImpl()
+  );
+
+  serviceLocator.registerLazySingleton<CourseFirebaseService>(
+    () => CoursesFirebaseServiceImpl()
+  );
+
+  serviceLocator.registerLazySingleton<CourseCloudinaryServices>(
+    () => CourseCloudinaryServiceImp()
   );
 
   // ✅ Repositories
@@ -76,5 +86,10 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<CreateCourseUseCase>(
     () => CreateCourseUseCase()
   );
+
+  serviceLocator.registerLazySingleton<GetCourseOptionsUseCase>(
+    () => GetCourseOptionsUseCase()
+  );
+
 }
 

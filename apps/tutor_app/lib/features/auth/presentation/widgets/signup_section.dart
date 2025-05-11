@@ -5,7 +5,6 @@ import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/auth/data/models/user_creation_req.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_state.dart';
-import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_event.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';

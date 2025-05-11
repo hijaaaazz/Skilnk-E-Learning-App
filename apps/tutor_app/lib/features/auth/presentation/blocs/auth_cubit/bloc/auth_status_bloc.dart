@@ -4,8 +4,6 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
-import 'package:go_router/go_router.dart';
-import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/core/usecase/usecase.dart';
 import 'package:tutor_app/features/auth/domain/usecases/admin_verification_check.dart';
 import 'package:tutor_app/features/auth/domain/usecases/check_verification.dart';
@@ -61,7 +59,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (user) {
         log(user.toString());
-        if (user!.emailVerified) {
+        if (user.emailVerified) {
           emit(AuthEmailVerified(user: user));
         } else {
           emit(AuthAuthenticated(user: user));
@@ -90,7 +88,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(AuthFailure(message: failure)),
       (_) {
-        event.context.goNamed(AppRouteConstants.authRouteName);
         emit(const AuthInitial());
       },
     );

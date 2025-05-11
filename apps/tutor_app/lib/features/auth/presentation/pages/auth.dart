@@ -1,11 +1,9 @@
 import 'dart:ui';
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tutor_app/common/widgets/blurred_loading.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_cubit.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/animation_cubit/auth_animation_state.dart';
-import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/animated_widgets/animated_container.dart';
@@ -118,22 +116,7 @@ Widget build(BuildContext context) {
 
                 //  Blurred overlay loading
                 if (isLoading)
-                  Positioned.fill(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                      child: Container(
-                        color: const Color.fromARGB(54, 0, 0, 0),
-                        alignment: Alignment.center,
-                        child: const SizedBox(
-                          width: 200, // Adjust width as needed
-                          child: LinearProgressIndicator(
-                            color: Colors.deepOrange,
-                            backgroundColor: Colors.white24,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  BlurredLoading()
 
               ],
             );

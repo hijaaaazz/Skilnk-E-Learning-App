@@ -30,7 +30,7 @@ class AppText extends StatelessWidget {
       style: style ?? GoogleFonts.outfit(
         fontSize: size ,
         fontWeight: weight,
-        color: color 
+        color: color ?? Colors.black
       ),
       textAlign: textAlign,
       maxLines: maxLines,

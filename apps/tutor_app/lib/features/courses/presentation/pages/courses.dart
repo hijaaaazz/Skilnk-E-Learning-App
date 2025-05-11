@@ -8,13 +8,18 @@ class CoursesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      appBar: BasicAppBar(title: "My Courses",
-
+    return Scaffold(
+      appBar: BasicAppBar(
+        title: "My Courses",
         actions: [
-          IconButton(onPressed: (){
-            context.pushNamed(AppRouteConstants.addnewCourseRouteName);
-          }, icon: Icon(Icons.add_box_outlined,color: Colors.white,))
+          IconButton(
+            onPressed: () {
+              // First navigate to the wrapper route, then it will automatically
+              // forward to the basic info page or handle the navigation
+              context.pushNamed(AppRouteConstants.addCourse);
+            },
+            icon: Icon(Icons.add_box_outlined, color: Colors.white),
+          ),
         ],
       ),
       body: Center(

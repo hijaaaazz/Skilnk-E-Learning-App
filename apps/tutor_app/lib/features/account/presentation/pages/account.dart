@@ -99,7 +99,7 @@ class AccountPage extends StatelessWidget {
             TextButton(onPressed: (){
 
               
-              context.read<AuthBloc>().add(LogOutEvent(context: context));
+              context.read<AuthBloc>().add(LogOutEvent());
               
             }, child: Text("Logout")),
             

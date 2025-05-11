@@ -107,6 +107,7 @@ class AuthenticationRepoImplementation extends AuthRepository {
         'users',
       );
       
+      
       final isUserInAdminsCollection = await _firebaseService.checkUserCollectionForEmail(
         user.email!,
         'admins',
@@ -338,26 +339,36 @@ Future<Either<String, bool>> checkIfUserVerifiedByAdmin(UserEntity user) async {
   }
 }
 
-  @override
-  Future<Either<String, bool>> isEmailVerified(UserEntity user) async {
-    try {
-      final currentUser = await _firebaseService.getCurrentAuthUser();
-      if (currentUser == null) {
-        return Left('No signed-in user');
-      }
 
-      if (currentUser.emailVerified) {
-        // Register the user with verified email
-        final userModel = UserModel.fromEntity(user);
-        await _firebaseService.saveUserToFirestore(userModel);
-      }
-      
-      log(currentUser.emailVerified.toString());
-      return Right(currentUser.emailVerified);
-    } catch (e, stacktrace) {
-      log('isEmailVerified unexpected error: $e\n$stacktrace');
-      return Left('Failed to check isEmailVerified');
+@override
+Future<Either<String, bool>> isEmailVerified(UserEntity user) async {
+  try {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+
+    if (firebaseUser == null) {
+      return Left('No signed-in user');
     }
+
+    await firebaseUser.reload(); // Refresh user info from Firebase Auth
+    final refreshedUser = FirebaseAuth.instance.currentUser;
+
+    final isVerified = refreshedUser?.emailVerified ?? false;
+
+    if (isVerified) {
+      final userModel = UserModel.fromEntity(user).copyWith(
+        emailVerified: true,
+        updatedDate: DateTime.now(),
+      );
+      await _firebaseService.saveUserToFirestore(userModel);
+    }
+
+    log('Email verified: $isVerified');
+    return Right(isVerified);
+  } catch (e, stacktrace) {
+    log('isEmailVerified unexpected error: $e\n$stacktrace');
+    return Left('Failed to check isEmailVerified');
   }
+}
+
 
 }

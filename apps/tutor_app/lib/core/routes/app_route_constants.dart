@@ -8,5 +8,12 @@ class AppRouteConstants {
   static const String profileRouteName = "profile";
   static const String emailVerificationRouteName = "emailverify";
   static const String waitingRouteName = "waiting";
-  static const String addnewCourseRouteName = "addnewcourse";
+
+  // Add New Course Routes
+  static const String addCourse = "add_course";
+  static const String addCourseBasicRouteName = "add_course_basic";
+  static const String addCourseAdvancedRouteName = "add_course_advanced";
+  static const String addCourseCurriculumRouteName = "add_course_curriculum";
+  static const String addCoursePublishRouteName = "add_course_publish";
+  static const String addCourseaddlectureName = "add_lesson";
 }

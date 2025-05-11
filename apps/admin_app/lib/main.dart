@@ -1,3 +1,4 @@
+import 'package:admin_app/core/routes/app_routes_config.dart';
 import 'package:admin_app/core/theme/theme.dart';
 import 'package:admin_app/features/splash/presentation/pages/splash.dart';
 import 'package:admin_app/features/users/presentation/bloc/cubit/user_management_cubit.dart';
@@ -38,12 +39,12 @@ class Skilnk extends StatelessWidget {
         BlocProvider(create: (_)=> AuthCubit()),
       
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
         theme: MyThemes.lightTheme,
         darkTheme: MyThemes.darkTheme,
         themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
-        home: SplashPage(),
+        routerConfig: AppRoutes().router,
       ),
     );
   }

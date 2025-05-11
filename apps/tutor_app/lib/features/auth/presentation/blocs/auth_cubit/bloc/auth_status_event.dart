@@ -1,5 +1,4 @@
 // auth_event.dart
-import 'package:flutter/material.dart';
 import 'package:tutor_app/features/auth/data/models/user_creation_req.dart';
 import 'package:tutor_app/features/auth/data/models/user_signin_model.dart';
 import 'package:tutor_app/features/auth/domain/entity/user.dart';
@@ -31,12 +30,6 @@ class SignInEvent extends AuthEvent {
 class SignInWithGoogleEvent extends AuthEvent {}
 
 class LogOutEvent extends AuthEvent {
-  final BuildContext context;
-
-  const LogOutEvent({required this.context});
-
-  @override
-  List<Object?> get props => [context];
 }
 
 class GetCurrentUserEvent extends AuthEvent {}

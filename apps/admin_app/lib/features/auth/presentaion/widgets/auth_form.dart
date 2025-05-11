@@ -1,13 +1,13 @@
 import 'package:admin_app/common/bloc/cubit/button_cubit.dart';
 import 'package:admin_app/common/bloc/cubit/button_state.dart';
-import 'package:admin_app/common/helpers/navigator.dart';
 import 'package:admin_app/common/widgets/basic_reactive_button.dart';
+import 'package:admin_app/core/routes/app_route_constants.dart';
 import 'package:admin_app/features/auth/data/models/user_creation_req.dart';
 import 'package:admin_app/features/auth/domain/usecases/signup.dart';
-import 'package:admin_app/features/landing/presentation/pages/landing.dart';
 import 'package:flutter/material.dart';
 import 'package:admin_app/core/theme/custom_colors_extension.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginForm extends StatefulWidget {
@@ -22,6 +22,7 @@ class _LoginFormState extends State<LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  final formkey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -53,19 +54,34 @@ class _LoginFormState extends State<LoginForm> {
                 vertical: constraints.maxWidth > 768 ? 32 : 24
               ),
               child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildTitle(titleSize),
-                    SizedBox(height: constraints.maxWidth > 768 ? 32 : 24),
-                    _buildEmailField(labelSize),
-                    SizedBox(height: constraints.maxWidth > 768 ? 16 : 12),
-                    _buildPasswordField(labelSize),
-                    SizedBox(height: constraints.maxWidth > 768 ? 16 : 12),
-                    _buildSignInButton(),
-                    SizedBox(height: constraints.maxWidth > 768 ? 32 : 24),
-                  ],
+                child: Form(
+                  key: formkey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildTitle(titleSize),
+                      SizedBox(height: constraints.maxWidth > 768 ? 32 : 24),
+                      _buildEmailField(labelSize),
+                      SizedBox(height: constraints.maxWidth > 768 ? 16 : 12),
+                      _buildPasswordField(labelSize),
+                      SizedBox(height: constraints.maxWidth > 768 ? 16 : 12),
+                      _buildSignInButton(
+                        ontap: () {
+                          if (formkey.currentState!.validate()) {
+                            context.read<ButtonStateCubit>().execute(
+                              usecase: SignInusecase(),
+                              params: AdminSignInReq(
+                                email: _emailController.text,
+                                password: _passwordController.text,
+                              )
+                            );
+                          }
+                        },
+                      ),
+                      SizedBox(height: constraints.maxWidth > 768 ? 32 : 24),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -91,6 +107,12 @@ class _LoginFormState extends State<LoginForm> {
     return _buildInputField(
       label: 'Email',
       hintText: 'Username or email address',
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
+        return null;
+      },
       controller: _emailController,
       prefixIcon: Icons.email_outlined,
       labelSize: labelSize,
@@ -101,6 +123,12 @@ class _LoginFormState extends State<LoginForm> {
     return _buildInputField(
       label: 'Password',
       hintText: 'Enter your password',
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your password';
+        }
+        return null;
+      },
       controller: _passwordController,
       prefixIcon: Icons.lock_outline,
       obscureText: _obscurePassword,
@@ -120,50 +148,65 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _buildInputField({
-    required String label,
-    required String hintText,
-    required TextEditingController controller,
-    required IconData prefixIcon,
-    required double labelSize,
-    bool obscureText = false,
-    Widget? suffixIcon,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
+  required String label,
+  required String hintText,
+  required TextEditingController controller,
+  required IconData prefixIcon,
+  required double labelSize,
+  required String? Function(String?) validator,
+  bool obscureText = false,
+  Widget? suffixIcon,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: TextStyle(
+          color: context.customColors.textBlack,
+          fontSize: labelSize,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      const SizedBox(height: 8),
+      TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        validator: validator,
+        decoration: InputDecoration(
+          iconColor: context.customColors.textBlack,
+          hintStyle: GoogleFonts.outfit(
             color: context.customColors.textBlack,
-            fontSize: labelSize,
-            fontWeight: FontWeight.w500,
+          ),
+          hintText: hintText,
+          prefixIcon: Icon(prefixIcon),
+          suffixIcon: suffixIcon,
+          filled: true,
+          fillColor: const Color.fromARGB(255, 206, 206, 206),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.transparent),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: context.customColors.primaryOrange),
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          decoration: InputDecoration(
-            iconColor: context.customColors.textBlack,
-            hintStyle: GoogleFonts.outfit(
-              color: context.customColors.textBlack
-            ),
-            hintText: hintText,
-            prefixIcon: Icon(prefixIcon,),
-            suffixIcon: suffixIcon,
-            filled: true,
-            fillColor: const Color.fromARGB(255, 206, 206, 206),
-          ),
-        ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
 
-  Widget _buildSignInButton() {
+
+  Widget _buildSignInButton({required Function ontap}) {
     return BlocConsumer<ButtonStateCubit, ButtonState>(
       listener: (context, state) {
         if (state is ButtonSuccessState) {
-          AppNavigator.push(context, LandingPage());
+          
+          context.goNamed(AppRouteConstants.dashboard);
         }
       },
       builder: (context, state) {
@@ -172,13 +215,7 @@ class _LoginFormState extends State<LoginForm> {
           children: [
             BasicReactiveButton(
               onPressed: () {
-                context.read<ButtonStateCubit>().execute(
-                  usecase: SignInusecase(),
-                  params: AdminSignInReq(
-                    email: _emailController.text, 
-                    password: _passwordController.text
-                  ),
-                );
+                ontap();
               },
               title: 'Sign In',
               backgroundColor: context.customColors.primaryOrange,
@@ -190,4 +227,6 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 }
+
+
 

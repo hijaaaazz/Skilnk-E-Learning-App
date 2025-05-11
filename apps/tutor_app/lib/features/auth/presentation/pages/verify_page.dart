@@ -35,7 +35,7 @@ class VerifyPage extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Email verification successful")),
               );
-              context.goNamed(AppRouteConstants.homeRouteName);
+              context.goNamed(AppRouteConstants.waitingRouteName);
             });
           }
 

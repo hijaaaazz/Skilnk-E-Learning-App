@@ -1,6 +1,5 @@
 import 'package:admin_app/core/theme/custom_colors_extension.dart';
 import 'package:admin_app/features/auth/presentaion/widgets/auth_form.dart';
-import 'package:admin_app/features/auth/presentaion/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 
 class AuthenticationPage extends StatelessWidget {

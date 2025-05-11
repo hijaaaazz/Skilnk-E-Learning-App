@@ -56,6 +56,7 @@ class WaitingPage extends StatelessWidget {
 
           // Default waiting UI
           return Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,

@@ -81,14 +81,38 @@ class InstructorsPage extends StatelessWidget {
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: Icon(user.isblocked? Icons.check_circle : Icons.block, color: Colors.red),
-                  onPressed: () {
-                    context.read<MentorManagementCubit>().updateMentor(
-                          user.copyWith(isblocked: !user.isblocked),
-                        );
-                  },
-                ),
+                TextButton(
+                    child:
+                    Row(
+                      children: [
+                        AppText(
+                          text: user.isblocked ? "Block" : "Unblock",
+                          color: user.isblocked ? Colors.red : Colors.green,
+                        ),
+                        SizedBox(width: 8),
+                        Icon(
+                          user.isVerified ? Icons.check_circle : Icons.cancel,
+                          color: user.isblocked ? Colors.red : Colors.green,
+                        ),],
+                    ) ,
+                    onPressed: () {
+                      CustomDialog.show(
+                        context: context,
+                        title: user.isblocked ? "Unblock Mentor" : "Block Mentor",
+                        content: Text(user.isblocked
+                            ? "Are you sure you want to Unblock this mentor?"
+                            : "Are you sure you want to block this mentor?"),
+                        onDone: () {
+                          context.read<MentorManagementCubit>().updateMentor(
+                            user.copyWith(isblocked: !user.isblocked),
+                          );
+                        },
+                      );
+                      
+                    },
+                  ),
+                user.isVerified?
+                AppText(text: "Verified", color: Colors.green):
                 TextButton(
                     child:
                     Row(
@@ -107,12 +131,10 @@ class InstructorsPage extends StatelessWidget {
                       CustomDialog.show(
                         context: context,
                         title: user.isVerified ? "Unverify Mentor" : "Verify Mentor",
-                        message: user.isVerified
+                        content: Text(user.isVerified
                             ? "Are you sure you want to unverify this mentor?"
-                            : "Are you sure you want to verify this mentor?",
+                            : "Are you sure you want to verify this mentor?"),
                         onDone: () {
-                          Navigator.of(context).pop();
-                          // Call the updateMentor method with the updated user object
                           context.read<MentorManagementCubit>().updateMentor(
                             user.copyWith(isVerified: !user.isVerified),
                           );
