@@ -80,6 +80,8 @@ class AddCourseState {
 
   });
 
+
+
   AddCourseState copyWith({
   CourseOptionsEntity? options,
   bool? isOptionsLoading,
@@ -153,3 +155,9 @@ static const _noChange = Object();
 
 }
 
+
+class CourseUploadState extends AddCourseState{}
+
+class CourseUploadLoading extends CourseUploadState{}
+class CourseUploadErrorStaete extends CourseUploadState{}
+class CourseUploadSuccessStaete extends CourseUploadState{}
