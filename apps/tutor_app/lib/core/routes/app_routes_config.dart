@@ -7,9 +7,12 @@ import 'package:tutor_app/features/account/presentation/pages/account.dart';
 import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
 import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/waiting_page.dart';
+import 'package:tutor_app/features/courses/data/models/course_details_args.dart';
+import 'package:tutor_app/features/courses/presentation/bloc/course_bloc/courses_bloc.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_cubit.dart';
 import 'package:tutor_app/features/courses/presentation/pages/add_course_warapper.dart';
 import 'package:tutor_app/features/courses/presentation/pages/add_lesson.dart';
+import 'package:tutor_app/features/courses/presentation/pages/course_detailed.dart';
 import 'package:tutor_app/features/courses/presentation/pages/courses.dart';
 import 'package:tutor_app/features/courses/presentation/pages/advanced_info_submition.dart';
 import 'package:tutor_app/features/courses/presentation/pages/curicullum_submition.dart';
@@ -23,7 +26,7 @@ class AppRoutes {
   
   late final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: "/courses/addnewcourse",
+    initialLocation: "/splash",
     routes: [
       // Authentication and Splash Routes
       GoRoute(
@@ -61,8 +64,8 @@ class AppRoutes {
         name: AppRouteConstants.addCourse,
         pageBuilder: (context, state) {
           // Create the cubit only when user navigates to add course flow
-          
           return MaterialPage(
+          
             child: BlocProvider(
               create: (_) => AddCourseCubit()..loadCourseOptions(),
               child: AddCourseWrapper(state: state),
@@ -174,7 +177,7 @@ class AppRoutes {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: "/dashboardpage",
+                path: "/dashboard",
                 name: AppRouteConstants.homeRouteName,
                 builder: (context, state) => DashBoardPage(),
               ),
@@ -185,7 +188,23 @@ class AppRoutes {
               GoRoute(
                 path: "/courses",
                 name: AppRouteConstants.exploreRouteName,
-                builder: (context, state) => const CoursesPage(),
+                builder: (context, state) => CoursesPage(),
+                routes: [
+                  GoRoute(
+                    path: "course_details",
+                    name: AppRouteConstants.courseDetailesRouteName,
+                    pageBuilder: (context, state) {
+                      final args = state.extra as CourseDetailsArgs;
+                      return MaterialPage(
+                        child: BlocProvider.value(
+                          value: args.bloc,
+                          child: CourseDetailPage(courseId: args.courseId),
+                        ),
+                      );
+                    },
+                  ),
+
+                ]
               ),
             ],
           ),

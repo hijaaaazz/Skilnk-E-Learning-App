@@ -5,12 +5,16 @@ import 'package:tutor_app/features/courses/data/models/category_model.dart';
 import 'package:tutor_app/features/courses/data/models/course_creation_req.dart';
 import 'package:tutor_app/features/courses/data/models/course_model.dart';
 import 'package:tutor_app/features/courses/data/models/course_options_model.dart';
+import 'package:tutor_app/features/courses/data/models/get_course_req.dart';
 import 'package:tutor_app/features/courses/data/models/lang_model.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_model.dart';
+import 'package:tutor_app/features/courses/domain/entities/couse_preview.dart';
 
 abstract class CourseFirebaseService {
   Future<Either<String, CourseOptionsModel>> getCourseOptions();
   Future<Either<String, List<CategoryModel>>> getCategories();
+  Future<Either<String, List<CoursePreview>>> getCourses({required CourseParams params});
+  Future<Either<String,CourseModel>> getCourseDetails({required String courseId});
   Future<Either<String, CourseModel>> createCourse(CourseCreationReq req);
 }
 
@@ -83,19 +87,9 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
         return Left("Tutor ID is required");
       }
       
-      // Process lectures
-      int totalDurationInSeconds = 0;
-      final lectures = req.lectures ?? [];
-      
-      // Calculate total duration
-      for (final lecture in lectures) {
-        if (lecture.duration != null) {
-          totalDurationInSeconds += lecture.duration!.inSeconds;
-        }
-      }
+    
       
       // Calculate duration in minutes from seconds (rounded up)
-      final durationInMinutes = (totalDurationInSeconds / 60).ceil();
       
       // Create course model
       final courseModel = CourseModel(
@@ -103,10 +97,10 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
         title: req.title ?? '',
         categoryId: req.categoryId ?? '',
         description: req.description ?? '',
-        price: req.price ?? 0,
+        price: int.parse(req.price?? "") ,
         offerPercentage: req.offerPercentage ?? 0,
         tutorId: req.tutorId ?? '',
-        duration: durationInMinutes,
+        duration: req.duration!.inSeconds,
         isActive: false,
         enrolledCount: 0,
         averageRating: 0.0,
@@ -119,7 +113,7 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
         },
         totalReviews: 0,
         reviews: [],
-        lessons: lectures.map((lecture) => LectureModel(
+        lessons: req.lectures!.map((lecture) => LectureModel(
           title: lecture.title ?? '',
           description: lecture.description ?? '',
           videoUrl: lecture.videoUrl ?? '',
@@ -159,4 +153,100 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
       return Left("Failed to create course: ${e.toString()}");
     }
   }
+  
+@override
+Future<Either<String, List<CoursePreview>>> getCourses({
+  required CourseParams params,
+  
+}) async {
+  try {
+    Query query = _firestore
+        .collection('courses')
+        .where('tutorId', isEqualTo: params.tutorId)
+        .orderBy('createdAt', descending: true)
+        .limit(params.limit);
+
+    // Add pagination logic if lastDoc is provided
+    if (params.lastDoc != null) {
+      query = query.startAfterDocument(params.lastDoc!);
+    }
+
+    final querySnapshot = await query.get();
+
+    // Map the fetched documents to CoursePreview, extracting only necessary fields
+    final previews = querySnapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+
+      // Only extract the necessary fields to reduce overhead
+      return CoursePreview(
+      id: doc.id,
+      isActive: data['isActive'],
+      title: data['title'] ?? '',
+      thumbnailUrl: data['course_thumbnail'] ?? '',
+      duration: (data['duration'] ?? 0).toString(),
+      rating: calculateAverageRating(data['rating_breakdown'] ?? 0),
+      level: data['level']
+    );
+
+    }).toList();
+
+    return Right(previews);
+  } catch (e) {
+    log("Pagination error: $e");
+    return Left("Failed to load courses: ${e.toString()}");
+  }
+}
+
+
+double calculateAverageRating(Map<String, dynamic> ratings) {
+  final ratingKeys = {
+    'one_star': 1,
+    'two_star': 2,
+    'three_star': 3,
+    'four_star': 4,
+    'five_star': 5,
+  };
+
+  int totalScore = 0;
+  int totalCount = 0;
+
+  ratings.forEach((key, value) {
+    final star = ratingKeys[key];
+    final count = int.tryParse(value.toString()) ?? 0;
+
+    if (star != null) {
+      totalScore += star * count;
+      totalCount += count;
+    }
+  });
+
+  if (totalCount == 0) return 0.0;
+
+  return totalScore / totalCount;
+}
+
+  @override
+Future<Either<String, CourseModel>> getCourseDetails({required String courseId}) async {
+  try {
+    final docRef = _firestore.collection('courses').doc(courseId);
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists || docSnapshot.data() == null) {
+      return Left("Course with ID $courseId not found");
+    }
+
+    final data = docSnapshot.data()!;
+    final courseModel = CourseModel.fromJson(data, docSnapshot.id);
+    return Right(courseModel);
+  } catch (e) {
+    log("Error fetching course details: $e");
+    return Left("Failed to fetch course details: ${e.toString()}");
+  }
+}
+
+
+
+
+
+
 }

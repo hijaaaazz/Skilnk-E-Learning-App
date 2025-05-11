@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tutor_app/common/widgets/app_text.dart';
-import 'package:tutor_app/features/courses/data/models/course_creation_req.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart';
 
 class ReorderableContentList extends StatelessWidget {

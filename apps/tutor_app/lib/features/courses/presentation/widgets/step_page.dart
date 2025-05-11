@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:tutor_app/common/widgets/app_text.dart';
 
 class CourseStepPage extends StatelessWidget {

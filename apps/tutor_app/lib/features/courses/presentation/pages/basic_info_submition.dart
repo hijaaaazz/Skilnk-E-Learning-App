@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:tutor_app/common/widgets/blurred_loading.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
@@ -10,6 +8,7 @@ import 'package:tutor_app/features/courses/domain/entities/language_entity.dart'
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_cubit.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_state.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/auto_complete.dart';
+import 'package:tutor_app/features/courses/presentation/widgets/course_price_form.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/custome_dropdown.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/step_page.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/text_field.dart';
@@ -57,6 +56,7 @@ class StepBasicInfo extends StatelessWidget {
 class CourseBasicInfoForm extends StatelessWidget {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _discountController = TextEditingController(text: "0");
   final int _maxTitleLength = 80;
   
   CourseBasicInfoForm({super.key});
@@ -71,8 +71,9 @@ class CourseBasicInfoForm extends StatelessWidget {
         }
         
         if (_priceController.text != state.price) {
-          _priceController.text = state.price ?? '';
+          _priceController.text = state.price.toString();
         }
+
         
         return Stack(
           children: [
@@ -174,82 +175,11 @@ class CourseBasicInfoForm extends StatelessWidget {
                               ),
                               
                               // Course Pricing Section
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Course Pricing',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10,),
-                                  SizedBox(
-                                    height: MediaQuery.of(context).size.height *0.1,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        FlutterToggleTab(
-                                          width: MediaQuery.of(context).size.width *0.09,
-                                          height: MediaQuery.of(context).size.height *0.05,
-                                          selectedTextStyle: GoogleFonts.outfit(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500
-                                          ),
-                                          
-                                          unSelectedTextStyle: GoogleFonts.outfit(
-                                            color: const Color.fromARGB(104, 80, 80, 80),
-                                            fontWeight: FontWeight.w300
-                                          ),
-                                          selectedBackgroundColors: [
-                                            Colors.deepOrange
-                                          ],
-                                          dataTabs: [
-                                            DataTab(
-                                              title: "Free",
-                                              
-                                              
-                                            ),
-                                            DataTab(
-                                              title: "Paid",
-                                            )
-                                          ],
-                                          selectedIndex: state.isPaid? 1:0,
-                                          selectedLabelIndex: (index){
-                                            context.read<AddCourseCubit>().updateIsPaid(index ==0? false: true);
-                                          },
-                                        
-                                        ),
-                                          SizedBox(
-                                            width: MediaQuery.of(context).size.width *0.35,
-                                            child: AnimatedOpacity(
-                                            opacity: state.isPaid == true ? 1.0 : 0.3,
-                                            duration: const Duration(milliseconds: 300),
-                                            child: IgnorePointer(
-                                              ignoring: state.isPaid != true,
-                                              child: AppTextField(
-                                                label: '',
-                                                hintText: 'Price',
-                                                controller: _priceController,
-                                                keyboardType: TextInputType.number,
-                                              //prefixIcon: const Icon(Icons.attach_money),
-                                                errorText: state.priceError ?? "",
-                                                onChanged: (value) {
-                                                  context.read<AddCourseCubit>().updatePrice(value);
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-
-                                ],
-                              ),
+                              CoursePriceForm(
+                                priceController: _priceController,
+                                discountController: _discountController,
+                                
+                              )
                               
                               // Price TextField - Only visible if isPaid is true
                               

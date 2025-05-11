@@ -1,3 +1,4 @@
+import 'package:tutor_app/features/courses/data/models/course_upload_progress.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart'; 
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_options.dart';
@@ -15,6 +16,7 @@ class AddCourseState {
   final String? level;
   final bool isPaid;
   final String? price;
+  final int? offer;
   
   // Error states for basic info
   final String? titleError;
@@ -22,6 +24,7 @@ class AddCourseState {
   final String? languageError;
   final String? levelError;
   final String? priceError;
+  final String? offerError;
    
   // Advanced info
   final String description;
@@ -51,7 +54,8 @@ class AddCourseState {
     this.language,
     this.level,
     this.isPaid = false,
-    this.price,
+    this.price ='',
+    this.offer,
     
     // Error states
     this.titleError,
@@ -59,6 +63,7 @@ class AddCourseState {
     this.languageError,
     this.levelError,
     this.priceError,
+    this.offerError,
     
     // Advanced info
     this.description = '',
@@ -94,12 +99,14 @@ class AddCourseState {
   String? level,
   bool? isPaid,
   String? price,
+  int?offer,
 
   String? titleError,
   String? categoryError,
   String? languageError,
   String? levelError,
   String? priceError,
+  String? offerError,
 
   String? description,
   String? thumbnailPath,
@@ -124,6 +131,7 @@ class AddCourseState {
     level: level ?? this.level,
     isPaid: isPaid ?? this.isPaid,
     price: price ?? this.price,
+    offer: offer?? this.offer,
 
     titleError: titleError ?? this.titleError,
     categoryError: categoryError ?? this.categoryError,
@@ -136,6 +144,7 @@ class AddCourseState {
     thumbnailPath: thumbnailPath ?? this.thumbnailPath,
     descriptionError: descriptionError ?? this.descriptionError,
     thumbnailError: thumbnailError ?? this.thumbnailError,
+    offerError: offerError?? this.offerError,
 
     lessons: lessons ?? this.lessons,
     currentLessonTitle: currentLessonTitle ?? this.currentLessonTitle,
@@ -158,6 +167,14 @@ static const _noChange = Object();
 
 class CourseUploadState extends AddCourseState{}
 
-class CourseUploadLoading extends CourseUploadState{}
-class CourseUploadErrorStaete extends CourseUploadState{}
+class CourseUploadLoading extends CourseUploadState{
+  UploadProgress progress;
+  String message;
+  CourseUploadLoading({required this.progress,required this.message});
+}
+class CourseUploadErrorState extends CourseUploadState{
+  String error;
+  CourseUploadErrorState({required this.error});
+}
+
 class CourseUploadSuccessStaete extends CourseUploadState{}

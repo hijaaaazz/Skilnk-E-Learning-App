@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tutor_app/features/courses/presentation/widgets/text_field.dart';
 
 class AppDropdown<T> extends StatelessWidget {
   final String label;

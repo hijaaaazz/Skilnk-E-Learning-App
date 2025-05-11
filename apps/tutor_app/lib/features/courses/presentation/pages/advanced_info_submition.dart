@@ -11,10 +11,8 @@ import 'package:tutor_app/features/courses/presentation/widgets/step_page.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/text_field.dart';
 
 class StepAdvancedInfo extends StatelessWidget {
-  // final CourseCreationReq courseReq;
 
   const StepAdvancedInfo({
-    // required this.courseReq,
     
     super.key,
    

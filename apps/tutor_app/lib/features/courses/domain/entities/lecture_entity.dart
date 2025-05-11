@@ -1,4 +1,3 @@
-import 'package:tutor_app/features/courses/domain/entities/lecture_entity.dart';
 
 
 

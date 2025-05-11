@@ -16,7 +16,9 @@ import 'package:tutor_app/features/courses/data/src/cloudinary_services.dart';
 import 'package:tutor_app/features/courses/data/src/firebase_services.dart';
 import 'package:tutor_app/features/courses/domain/repo/course_repo.dart';
 import 'package:tutor_app/features/courses/domain/usecases/create_course.dart';
+import 'package:tutor_app/features/courses/domain/usecases/get_course_details.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_course_options.dart';
+import 'package:tutor_app/features/courses/domain/usecases/get_courses.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -90,6 +92,15 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<GetCourseOptionsUseCase>(
     () => GetCourseOptionsUseCase()
   );
+
+  serviceLocator.registerLazySingleton<GetCoursesUseCase>(
+    () => GetCoursesUseCase()
+  );
+  
+  serviceLocator.registerLazySingleton<GetCourseDetailUseCase>(
+    () => GetCourseDetailUseCase()
+  );
+
 
 }
 

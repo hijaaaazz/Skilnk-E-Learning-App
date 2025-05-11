@@ -2,10 +2,11 @@ import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart
 
 class CourseCreationReq {
   final String? title;
+  
   final bool? isPaid;
   final String? description;
   final String? categoryId;
-  final int? price;
+  final String? price;
   final Duration? duration;
   final int? offerPercentage;
   final String? tutorId;
@@ -34,7 +35,7 @@ class CourseCreationReq {
     bool? isPaid,
     String? description,
     String? categoryId,
-    int? price,
+    String? price,
     Duration? duration,
     int? offerPercentage,
     String? tutorId,

@@ -5,14 +5,13 @@ class AppTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController? controller;
   final int? maxLength;
-  final IconData? icon;
   final bool showCounter;
   final String? errorText;
   final Function(String)? onChanged;
   final TextInputType keyboardType;
   final int maxLines;
   final bool obscureText;
-  final Widget? suffixIcon;
+  final IconData? suffixIcon;
   final Color primaryColor;
   final double borderRadius;
   final TextInputAction? textInputAction;
@@ -26,7 +25,6 @@ class AppTextField extends StatelessWidget {
     required this.hintText,
     this.controller,
     this.maxLength,
-    this.icon,
     this.showCounter = false,
     this.errorText,
     this.onChanged,
@@ -101,7 +99,8 @@ class AppTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               borderSide: BorderSide(color: Colors.red[700]!, width: 2),
             ),
-            suffixIcon: suffixIcon,
+            suffixIcon: Icon(suffixIcon,color: Colors.grey,size: 15)
+            
           ),
           maxLength: maxLength,
           onChanged: onChanged,
