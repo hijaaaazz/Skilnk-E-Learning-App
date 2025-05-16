@@ -1,3 +1,4 @@
+// FILE: category_model.dart
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
 
 class CategoryModel {
@@ -47,15 +48,14 @@ class CategoryModel {
   }
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
-  return CategoryModel(
-    id: json['id']?.toString() ?? '',
-    description: json['description']?.toString() ?? '',
-    title: json['title']?.toString() ?? '',
-    courses: (json['courses'] as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
-        [],
-  );
-}
-
+    return CategoryModel(
+      id: json['id']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      courses: (json['courses'] as List?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          [],
+    );
+  }
 }

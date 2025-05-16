@@ -1,22 +1,26 @@
+
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz.dart';
+// ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
 import 'package:tutor_app/features/courses/data/models/get_course_req.dart';
+import 'package:tutor_app/features/courses/data/models/toggle_params.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/couse_preview.dart';
+import 'package:tutor_app/features/courses/domain/usecases/delee_course.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_course_details.dart';
-import 'package:tutor_app/features/courses/domain/usecases/get_course_options.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_courses.dart';
-import 'package:tutor_app/features/courses/presentation/widgets/course_price_form.dart';
+import 'package:tutor_app/features/courses/domain/usecases/toggle_activation.dart';
 import 'package:tutor_app/service_locator.dart';
 part 'courses_event.dart';
 part 'courses_state.dart';
 
 class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
-  final GetCoursesUseCase  _getCourseOptionsUseCase = serviceLocator<GetCoursesUseCase>();
+  final GetCoursesUseCase  _getCourse = serviceLocator<GetCoursesUseCase>();
   final GetCourseDetailUseCase _getCourseDetailUseCase = serviceLocator<GetCourseDetailUseCase>();
-  //final ToggleCourseStatusUseCase _toggleCourseStatusUseCase = serviceLocator<ToggleCourseStatusUseCase>();
-  //final DeleteCourseUseCase _deleteCourseUseCase = serviceLocator<DeleteCourseUseCase>();
+  final ToggleCourseUseCase _toggleCourseStatusUseCase = serviceLocator<ToggleCourseUseCase>();
+  final DeleteCourseUseCase _deleteCourseUseCase = serviceLocator<DeleteCourseUseCase>();
   
   CourseParams _currentParams = const CourseParams();
   List<CoursePreview> _courses = [];
@@ -25,12 +29,13 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
 
   CoursesBloc() : super(CoursesInitial()) {
     on<LoadCourses>(_onLoadCourses);
-    on<LoadMoreCourses>(_onLoadMoreCourses);
     on<RefreshCourses>(_onRefreshCourses);
     on<SearchCourses>(_onSearchCourses);
     on<LoadCourseDetail>(_onLoadCourseDetail);
-    // on<ToggleCourseStatus>(_onToggleCourseStatus);
-    // on<DeleteCourse>(_onDeleteCourse);
+    on<ToggleCourseStatus>(_onToggleCourseStatus);
+    on<DeleteCourse>(_onDeleteCourse);
+    on<AddCourseEvent>(_onAddCourse);
+    on<UpdateCourseEvent>(_onUpdateCourse);
   }
 
   Future<void> _onLoadCourses(LoadCourses event, Emitter<CoursesState> emit) async {
@@ -38,76 +43,51 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     if (_isInitialized && !event.forceReload) {
       emit(CoursesLoaded(
         courses: _courses,
-        hasReachedMax: _hasReachedMax,
       ));
       return;
     }
     
     emit(CoursesLoading(courses: _courses));
     
-    _currentParams = const CourseParams(page: 1, limit: 10);
+    _currentParams = CourseParams(page: 1, limit: 10, tutorId: event.tutorId);
     _hasReachedMax = false;
     
-    final result = await _getCourseOptionsUseCase(params: _currentParams);
+    final result = await _getCourse(params: _currentParams);
     
     result.fold(
-      (error) => emit(CoursesError(message: error)),
+      (error) => emit(CoursesError(message: error, courses: _courses)),
       (courses) {
         _courses = courses;
         _hasReachedMax = courses.length < _currentParams.limit;
         _isInitialized = true; // Mark as initialized
         emit(CoursesLoaded(
           courses: _courses,
-          hasReachedMax: _hasReachedMax,
         ));
       },
     );
   }
 
-
-  Future<void> _onLoadMoreCourses(LoadMoreCourses event, Emitter<CoursesState> emit) async {
-    if (_hasReachedMax) return;
-    
-    emit(CoursesLoading(courses: _courses));
-    
-    _currentParams = _currentParams.copyWith(page: _currentParams.page + 1);
-    
-    final result = await _getCourseOptionsUseCase(params: _currentParams);
-    
-    result.fold(
-      (error) => emit(CoursesError(message: error)),
-      (newCourses) {
-        if (newCourses.isEmpty) {
-          _hasReachedMax = true;
-        } else {
-          _courses.addAll(newCourses);
-          _hasReachedMax = newCourses.length < _currentParams.limit;
-        }
-        
-        emit(CoursesLoaded(
-          courses: _courses,
-          hasReachedMax: _hasReachedMax,
-        ));
-      },
-    );
-  }
-
+  
   Future<void> _onRefreshCourses(RefreshCourses event, Emitter<CoursesState> emit) async {
+    // Keep existing courses during loading for better UX
     emit(CoursesLoading(courses: _courses));
     
-    _currentParams = _currentParams.copyWith(page: 1);
+    // Reset page to 1 and ensure tutorId is set
+    _currentParams = _currentParams.copyWith(
+      page: 1,
+      tutorId: event.tutorId ?? _currentParams.tutorId,
+    );
     _hasReachedMax = false;
     
-    final result = await _getCourseOptionsUseCase(params: _currentParams);
+    final result = await _getCourse(params: _currentParams);
     
     result.fold(
-      (error) => emit(CoursesError(message: error)),
+      (error) => emit(CoursesError(message: error, courses: _courses)),
       (courses) {
         _courses = courses;
         _hasReachedMax = courses.length < _currentParams.limit;
         emit(CoursesLoaded(
           courses: _courses,
-          hasReachedMax: _hasReachedMax,
         ));
       },
     );
@@ -122,76 +102,125 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     );
     _hasReachedMax = false;
     
-    final result = await _getCourseOptionsUseCase(params: _currentParams);
+    final result = await _getCourse(params: _currentParams);
     
     result.fold(
-      (error) => emit(CoursesError(message: error)),
+      (error) => emit(CoursesError(message: error, courses: _courses)),
       (courses) {
         _courses = courses;
         _hasReachedMax = courses.length < _currentParams.limit;
         emit(CoursesLoaded(
           courses: _courses,
-          hasReachedMax: _hasReachedMax,
         ));
       },
     );
   }
 
+  Future<void> _onToggleCourseStatus(ToggleCourseStatus event, Emitter<CoursesState> emit) async {
+    final currentState = state;
+    
+    if (currentState is CourseDetailLoaded) {
+      // Optimistic update
+      final updatedCourse = currentState.course.copyWith(isActive: event.isActive);
+      emit(CourseDetailLoaded(course: updatedCourse));
+      
+      final result = await _toggleCourseStatusUseCase(
+        params: courseToggleParams(courseId: event.courseId, isActive: event.isActive)
+      );
+      
+      result.fold(
+        (error) {
+          // Revert to original state on error
+          emit(CourseDetailLoaded(course: currentState.course));
+          emit(CourseDetailError(message: error));
+          emit(CourseDetailLoaded(course: currentState.course));
+        },
+        (_) {
+          // Update the course in the list as well
+          final index = _courses.indexWhere((c) => c.id == event.courseId);
+          if (index != -1) {
+            _courses[index] = _courses[index].copyWith(isActive: event.isActive);
+          }
+        },
+      );
+    }
+  }
+
   Future<void> _onLoadCourseDetail(LoadCourseDetail event, Emitter<CoursesState> emit) async {
+    // Save the current courses list state to prevent losing it
+    final currentCourses = _courses;
+    
     emit(CourseDetailLoading());
     
     final result = await _getCourseDetailUseCase(params: event.courseId);
     
     result.fold(
       (error) => emit(CourseDetailError(message: error)),
-      (course) => emit(CourseDetailLoaded(course: course)),
+      (course) {
+        log(course.categoryName.toString());
+        emit(CourseDetailLoaded(course: course));
+        
+        // Update the course in the courses list if it exists
+        final index = _courses.indexWhere((c) => c.id == event.courseId);
+        if (index != -1) {
+          _courses[index] = _courses[index].copyWith(
+            title: course.title,
+            
+            thumbnailUrl: course.courseThumbnail,
+            isActive: course.isActive,
+            offerPercentage: course.offerPercentage
+          );
+        }
+      },
     );
   }
 
-  // Future<void> _onToggleCourseStatus(ToggleCourseStatus event, Emitter<CoursesState> emit) async {
-  //   final currentState = state;
+  Future<void> _onDeleteCourse(DeleteCourse event, Emitter<CoursesState> emit) async {
+    // Keep existing courses during loading for better UX
+    emit(CoursesLoading(courses: _courses));
     
-  //   if (currentState is CourseDetailLoaded) {
-  //     // Optimistic update
-  //     final updatedCourse = currentState.course.copyWith(isActive: event.isActive);
-  //     emit(CourseDetailLoaded(course: updatedCourse));
-      
-  //     final result = await _toggleCourseStatusUseCase(
-  //       courseId: event.courseId,
-  //       isActive: event.isActive,
-  //     );
-      
-  //     result.fold(
-  //       (error) {
-  //         // Revert to original state on error
-  //         emit(CourseDetailLoaded(course: currentState.course));
-  //         emit(CourseDetailError(message: error));
-  //         emit(CourseDetailLoaded(course: currentState.course));
-  //       },
-  //       (_) {
-  //         // Update the course in the list as well
-  //         final index = _courses.indexWhere((c) => c.id == event.courseId);
-  //         if (index != -1) {
-  //           _courses[index] = _courses[index].copyWith(isActive: event.isActive);
-  //         }
-  //       },
-  //     );
-  //   }
-  // }
+    final result = await _deleteCourseUseCase(params: event.courseId);
+    
+    result.fold(
+      (error) => emit(CoursesError(message: error, courses: _courses)),
+      (_) {
+        // Remove the course from the list
+        _courses.removeWhere((course) => course.id == event.courseId);
+        emit(CoursesLoaded(
+          courses: _courses,
+        ));
+      },
+    );
+  }
 
-  // Future<void> _onDeleteCourse(DeleteCourse event, Emitter<CoursesState> emit) async {
-  //   final result = await _deleteCourseUseCase(courseId: event.courseId);
-    
-  //   result.fold(
-  //     (error) => emit(CoursesError(message: error)),
-  //     (_) {
-  //       // Remove the course from the list
-  //       _courses.removeWhere((course) => course.id == event.courseId);
-  //       emit(CoursesLoaded(
-  //         courses: _courses,
-  //         hasReachedMax: _hasReachedMax,
-  //       ));
-  //     },
-  //   );
-  // }
+ Future<void> _onAddCourse(AddCourseEvent event, Emitter<CoursesState> emit) async {
+  // Add the new course to the top of the list
+  _courses.insert(0, event.course.toPreview()); // Or use add() if you want it at the end
+  log(event.course.toString());
+  emit(CoursesLoaded(
+    courses: _courses,
+  ));
+}
+
+ Future<void> _onUpdateCourse(UpdateCourseEvent event, Emitter<CoursesState> emit) async {
+  final updatedPreview = event.course.toPreview();
+  final existingIndex = _courses.indexWhere((course) => course.id == updatedPreview.id);
+  log(existingIndex.toString());
+
+  if (existingIndex != -1) {
+    // Replace existing course
+    _courses[existingIndex] = updatedPreview;
+    log('[onUpdateCourse] ✅ Course with id ${updatedPreview.id} updated at index $existingIndex');
+  } else {
+    // Add as new course
+    _courses.insert(0, updatedPreview);
+    log('[onUpdateCourse] ➕ Course with id ${updatedPreview.id} added to top of list');
+  }
+
+  emit(CoursesLoaded(
+    courses: _courses,
+  ));
+}
+
+
 }

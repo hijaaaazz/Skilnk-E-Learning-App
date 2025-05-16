@@ -126,39 +126,64 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
     log("Started editing lecture at index $index");
   }
 
-  Future<void> updateLecture({
-    required String title,
-    String? description,
-    required String videoPath,
-    String? pdfPath,
-  }) async {
-    try {
-      if (state.editingLectureIndex == null) {
-        log("Cannot update lecture: No lecture is being edited");
-        return;
-      }
-      final duration = await getVideoDuration(videoPath);
-      final updatedLectures = List<LectureCreationReq>.from(state.lessons);
-      updatedLectures[state.editingLectureIndex!] = LectureCreationReq(
-        title: title,
-        description: description,
-        videoUrl: videoPath,
-        notesUrl: pdfPath,
-        duration: duration,
-      );
-      final totalDuration = calculateTotalDuration(updatedLectures);
-      emit(state.copyWith(
-        lessons: updatedLectures,
-        courseDuration: totalDuration,
-        selectedVideoPath: null,
-        selectedPdfPath: null,
-        editingLectureIndex: null,
-      ));
-      log("Lecture updated and editing state cleared");
-    } catch (e) {
-      log("Error updating lecture: $e");
+ Future<void> updateLecture({
+  required String title,
+  String? description,
+  required String videoPath,
+  String? pdfPath,
+}) async {
+  log('[updateLecture] Called with title: $title');
+
+  try {
+    if (state.editingLectureIndex == null) {
+      log('[updateLecture] ❌ Cannot update lecture: No lecture is being edited');
+      return;
     }
+
+    final int lectureIndex = state.editingLectureIndex!;
+    log('[updateLecture] Updating lecture at index $lectureIndex');
+    
+    // Get existing lecture to preserve data we're not changing
+    final existingLecture = state.lessons[lectureIndex];
+    
+    // Only get new video duration if the video path has changed
+    Duration? duration = existingLecture.duration;
+    if (videoPath != existingLecture.videoUrl) {
+      log('[updateLecture] Fetching video duration for new video...');
+      duration = await getVideoDuration(videoPath);
+      log('[updateLecture] ✅ Video duration fetched: $duration');
+    } else {
+      log('[updateLecture] Using existing video duration: $duration');
+    }
+
+    log('[updateLecture] Cloning existing lectures...');
+    final updatedLectures = List<LectureCreationReq>.from(state.lessons);
+
+    updatedLectures[lectureIndex] = LectureCreationReq(
+      title: title,
+      description: description ?? existingLecture.description,
+      videoUrl: videoPath,
+      notesUrl: pdfPath,
+      duration: duration,
+    );
+
+    log('[updateLecture] Calculating total course duration...');
+    final totalDuration = calculateTotalDuration(updatedLectures);
+
+    log('[updateLecture] Emitting updated state with lecture at index $lectureIndex updated');
+    emit(state.copyWith(
+      lessons: updatedLectures,
+      courseDuration: totalDuration,
+      selectedVideoPath: null,
+      selectedPdfPath: null,
+      editingLectureIndex: null,
+    ));
+
+    log('[updateLecture] ✅ Lecture updated and editing state cleared');
+  } catch (e, stack) {
+    log('[updateLecture] ❌ Error updating lecture: $e\n$stack');
   }
+}
 
   void cancelEditing() {
     log("Canceling lecture editing");
@@ -166,6 +191,7 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
       selectedVideoPath: null,
       selectedPdfPath: null,
       editingLectureIndex: null,
+      currentLessonTitle: ""
     ));
     log("Editing state cleared");
   }

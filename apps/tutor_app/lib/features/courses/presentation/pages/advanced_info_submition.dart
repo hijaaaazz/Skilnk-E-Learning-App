@@ -32,10 +32,7 @@ class StepAdvancedInfo extends StatelessWidget {
               final addCourseCubit = context.read<AddCourseCubit>();
                 
                 if (addCourseCubit.validateAdvancedInfo(context)) {
-                  // If no category is selected, find the "Others" category
-              
-                  
-                  // Navigate to next screen with course creation request
+                 
                   final cubit = context.read<AddCourseCubit>();
                   context.pushNamed(
                     AppRouteConstants.addCourseCurriculumRouteName,
@@ -50,6 +47,8 @@ class StepAdvancedInfo extends StatelessWidget {
 
 class AdvancedInfoBody extends StatelessWidget {
   final TextEditingController _descriptionController = TextEditingController();
+
+  AdvancedInfoBody({super.key});
 
   
   @override
@@ -81,73 +80,61 @@ class AdvancedInfoBody extends StatelessWidget {
                       context.read<AddCourseCubit>().pickThumbnail();
                     },
                     child: Stack(
-                      children: [
-          
-                        
-                        Container(
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.height * 0.18,
-                          padding:  EdgeInsets.all(MediaQuery.of(context).size.height * 0.005),
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                            // ignore: deprecated_member_use
-                            color: Colors.deepOrange.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(20),
-                            image: state.thumbnailPath.isNotEmpty
-                                ? DecorationImage(
-                                    image: FileImage(File(state.thumbnailPath)),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
-                          ),
-          
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                width: 1,
-                                color: const Color.fromARGB(255, 255, 255, 255),
-                              ),
-                              borderRadius: BorderRadius.circular(20)
-                            ),
-                            child: 
-                            
-                            
-                             Visibility(
-                              visible: state.thumbnailPath.isEmpty,
-                               child: Center(
-                                child:Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.image,color: Colors.white,),
-                                    
-                                    AppText(
-                                      text:   "Upload Course Thumbnail",
-                                      color: Colors.white,
-                                      weight: FontWeight.w500,
-                                      size: 15,
-                                      ),
-                                  ],
-                                )
-                                                     ),
-                             )
-                          ),
-                        ),
-                        Visibility(
-                          visible: state.thumbnailPath.isNotEmpty,
-                          child: Container(
-                            width: double.infinity,
-                            height: MediaQuery.of(context).size.height * 0.18,
-                                               
-                            decoration:
-                             BoxDecoration(
-                              color: const Color.fromARGB(83, 0, 0, 0),
-                              borderRadius: BorderRadius.circular(20),
-                           
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+   children: [
+  
+  Container(
+    width: double.infinity,
+    height: MediaQuery.of(context).size.height * 0.18,
+    padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.005),
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(
+      // ignore: deprecated_member_use
+      color: Colors.deepOrange.withOpacity(0.5),
+      borderRadius: BorderRadius.circular(20),
+      image: state.thumbnailPath.isNotEmpty
+          ? DecorationImage(
+              image: state.isEditing != null && state.isEditing == true
+                  ? (state.thumbnailPath.startsWith('http') // Check if it's a URL
+                      ? NetworkImage(state.thumbnailPath) 
+                      : FileImage(File(state.thumbnailPath))) as ImageProvider
+                  : FileImage(File(state.thumbnailPath)),
+              fit: BoxFit.cover,
+            )
+          : null,
+    ),
+    child: Visibility(
+      visible: state.thumbnailPath.isEmpty,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.image, color: Colors.white),
+            AppText(
+              text: state.thumbnailPath,
+              color: Colors.white,
+              weight: FontWeight.w500,
+              size: 15,
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+
+
+  if (state.thumbnailPath.isNotEmpty)
+    Container(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height * 0.18,
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(83, 0, 0, 0),
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
+],
+
+)
+
                   ),
                 
                   AppTextField(

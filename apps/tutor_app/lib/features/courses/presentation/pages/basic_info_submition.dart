@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tutor_app/common/widgets/blurred_loading.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
+import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/language_entity.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_cubit.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_state.dart';
@@ -13,8 +14,11 @@ import 'package:tutor_app/features/courses/presentation/widgets/custome_dropdown
 import 'package:tutor_app/features/courses/presentation/widgets/step_page.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/text_field.dart';
 
+// ignore: must_be_immutable
 class StepBasicInfo extends StatelessWidget {
-  const StepBasicInfo({super.key});
+  CourseEntity? coursetoEdit;
+  
+   StepBasicInfo({super.key,this.coursetoEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,8 @@ class StepBasicInfo extends StatelessWidget {
         return CourseStepPage(
           title: "Basic Info",
           icon: Icons.layers,
-          bodyContent: SingleChildScrollView(
+          bodyContent: 
+           SingleChildScrollView(
             child: CourseBasicInfoForm(),
           ),
           backtext: "Cancel",
@@ -58,8 +63,9 @@ class CourseBasicInfoForm extends StatelessWidget {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _discountController = TextEditingController(text: "0");
   final int _maxTitleLength = 80;
+  CourseEntity? coursetoEdit;
   
-  CourseBasicInfoForm({super.key});
+  CourseBasicInfoForm({super.key,this.coursetoEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +78,14 @@ class CourseBasicInfoForm extends StatelessWidget {
         
         if (_priceController.text != state.price) {
           _priceController.text = state.price.toString();
+        }
+
+        if (_discountController.text != state.offer.toString()) {
+          _discountController.text = state.offer.toString();
+        }
+
+        if(coursetoEdit != null){
+          context.read<AddCourseCubit>().courseToEditLoad(coursetoEdit!);
         }
 
         
@@ -105,7 +119,7 @@ class CourseBasicInfoForm extends StatelessWidget {
                               AppAutocomplete<CategoryEntity>(
                                 label: 'Course Category',
                                 hintText: 'Search for a category...',
-                                initialValue: state.category?.title,
+                                initialValue: state.categoryName,
                                 options: state.options?.categories ?? [],
                                 displayStringForOption: (option) => option.title,
                                 errorText: state.categoryError,

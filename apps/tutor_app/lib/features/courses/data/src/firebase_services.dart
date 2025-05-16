@@ -8,14 +8,29 @@ import 'package:tutor_app/features/courses/data/models/course_options_model.dart
 import 'package:tutor_app/features/courses/data/models/get_course_req.dart';
 import 'package:tutor_app/features/courses/data/models/lang_model.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_model.dart';
+import 'package:tutor_app/features/courses/data/models/toggle_params.dart';
 import 'package:tutor_app/features/courses/domain/entities/couse_preview.dart';
 
 abstract class CourseFirebaseService {
   Future<Either<String, CourseOptionsModel>> getCourseOptions();
   Future<Either<String, List<CategoryModel>>> getCategories();
   Future<Either<String, List<CoursePreview>>> getCourses({required CourseParams params});
-  Future<Either<String,CourseModel>> getCourseDetails({required String courseId});
+  Future<Either<String, CourseModel>> getCourseDetails({required String courseId});
   Future<Either<String, CourseModel>> createCourse(CourseCreationReq req);
+  Future<Either<String, bool>> deleteCourse(String courseId);
+  Future<Either<String, CourseModel>> updateCourse(CourseModel req);
+  Future<Either<String, bool>> activateToggleCourse(courseToggleParams req);
+  
+  // New methods for category management
+  Future<Either<String, bool>> updateCategoryWithCourse({
+    required String categoryId,
+    required String courseId,
+  });
+  
+  Future<Either<String, bool>> removeCourseFromCategory({
+    required String categoryId,
+    required String courseId,
+  });
 }
 
 class CoursesFirebaseServiceImpl extends CourseFirebaseService {
@@ -97,10 +112,11 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
         title: req.title ?? '',
         categoryId: req.categoryId ?? '',
         description: req.description ?? '',
-        price: int.parse(req.price?? "") ,
+        price: int.tryParse(req.price ?? "") ?? 0,
         offerPercentage: req.offerPercentage ?? 0,
         tutorId: req.tutorId ?? '',
         duration: req.duration!.inSeconds,
+        categoryName: req.categoryName,
         isActive: false,
         enrolledCount: 0,
         averageRating: 0.0,
@@ -131,7 +147,7 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
       );
       
       // Convert to map for Firestore (using the toJson method)
-      final courseData = courseModel.toJson();
+      final courseData = courseModel.toCreateJson();
       
       // Add course to Firestore
       final courseRef = await _firestore.collection('courses').add(courseData);
@@ -157,37 +173,40 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
 @override
 Future<Either<String, List<CoursePreview>>> getCourses({
   required CourseParams params,
-  
 }) async {
+  log(params.tutorId ?? "No tutor id passed");
+
+  if (params.tutorId == null) {
+    return Left("Tutor ID is required");
+  }
+
   try {
     Query query = _firestore
         .collection('courses')
-        .where('tutorId', isEqualTo: params.tutorId)
-        .orderBy('createdAt', descending: true)
-        .limit(params.limit);
+        .where('tutor', isEqualTo: params.tutorId);
 
-    // Add pagination logic if lastDoc is provided
-    if (params.lastDoc != null) {
-      query = query.startAfterDocument(params.lastDoc!);
-    }
+    // if (params.lastDoc != null) {
+    //   query = query.startAfterDocument(params.lastDoc!);
+    // }
 
     final querySnapshot = await query.get();
 
-    // Map the fetched documents to CoursePreview, extracting only necessary fields
+    log(querySnapshot.toString());
+
     final previews = querySnapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
+      log(data['title']);
+      log(data.length.toString());
 
-      // Only extract the necessary fields to reduce overhead
       return CoursePreview(
-      id: doc.id,
-      isActive: data['isActive'],
-      title: data['title'] ?? '',
-      thumbnailUrl: data['course_thumbnail'] ?? '',
-      duration: (data['duration'] ?? 0).toString(),
-      rating: calculateAverageRating(data['rating_breakdown'] ?? 0),
-      level: data['level']
-    );
-
+        id: doc.id,
+        isActive: data['isActive'],
+        title: data['title'] ?? '',
+        thumbnailUrl: data['course_thumbnail'] ?? '',
+        offerPercentage: data['offer_percentage'] ?? 0,
+        rating: calculateAverageRating(data['rating_breakdown'] ?? 0),
+        level: data['level'],
+      );
     }).toList();
 
     return Right(previews);
@@ -243,6 +262,228 @@ Future<Either<String, CourseModel>> getCourseDetails({required String courseId})
     return Left("Failed to fetch course details: ${e.toString()}");
   }
 }
+
+
+@override
+  Future<Either<String, bool>> deleteCourse(String courseId) async {
+  try {
+    final docRef = _firestore.collection('courses').doc(courseId);
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      return Left("Course not found");
+    }
+    
+    // Check if the course has enrolled students
+    final data = docSnapshot.data();
+    if (data == null) {
+      return Left("Course data not found");
+    }
+    
+    final enrolledCount = data['enrolled_count'] ?? 0;
+    
+    // Prevent deletion if there are enrolled students
+    if (enrolledCount > 0) {
+      return Left("Cannot delete a course with enrolled students");
+    }
+
+    await docRef.delete();
+    return Right(true);
+  } catch (e) {
+    log("Error deleting course: $e");
+    return Left("Failed to delete course: ${e.toString()}");
+  }
+}
+
+@override
+Future<Either<String, CourseModel>> updateCourse(CourseModel req) async {
+  try {
+    // Log the incoming request object
+    log("updateCourse called with req: ${req.toString()}");
+    
+    
+    if (req.id.isEmpty) {
+      return Left("Course ID is required for update");
+    }
+
+    final docRef = _firestore.collection('courses').doc(req.id);
+    log("Trying to get document at path: ${docRef.path}");
+    
+    final docSnapshot = await docRef.get();
+    log("Document exists: ${docSnapshot.exists}");
+
+    if (!docSnapshot.exists) {
+      return Left("Course with ID ${req.id} not found");
+    }
+
+    // Convert to JSON and inspect before update
+    final reqJson = req.toUpdateJson();
+    log("req.toJson() result: $reqJson");
+    
+    // Check for null values in key fields
+    reqJson.forEach((key, value) {
+      if (value == null) {
+        log("WARNING: Null value found for key: $key");
+      }
+    });
+
+    // Update timestamp
+    final updatedData = {
+      ...reqJson,
+      'updatedAt': DateTime.now(),
+    };
+    
+    log("Attempting to update with data: $updatedData");
+    
+    // Perform the update
+    try {
+      await docRef.update(updatedData);
+      log("Update successful");
+    } catch (updateError) {
+      log("Error during update operation: $updateError");
+      return Left("Failed to update document: $updateError");
+    }
+
+    // Fetch the updated course
+    log("Fetching updated document");
+    final updatedDoc = await docRef.get();
+    
+    final updatedModelData = updatedDoc.data();
+    log("updatedModelData: $updatedModelData");
+    
+    if (updatedModelData == null) {
+      return Left("Course data not found in the document");
+    }
+
+    // Try/catch around fromJson to catch any conversion errors
+    try {
+      log("Creating CourseModel from JSON with ID: ${updatedDoc.id}");
+      final updatedModel = CourseModel.fromJson(updatedModelData, updatedDoc.id);
+      log("CourseModel created successfully");
+      return Right(updatedModel);
+    } catch (conversionError, stackTrace) {
+      log("Error converting JSON to CourseModel: $conversionError");
+      log("Stack trace: $stackTrace");
+      log("JSON that failed conversion: $updatedModelData");
+      return Left("Failed to convert document data to CourseModel: $conversionError");
+    }
+  } catch (e, stackTrace) {
+    log("Error updating course: $e");
+    log("Stack trace: $stackTrace");
+    return Left("Failed to update course: ${e.toString()}");
+  }
+}
+@override
+Future<Either<String, bool>> updateCategoryWithCourse({
+  required String categoryId,
+  required String courseId,
+}) async {
+  try {
+    // Reference to the category document
+    final categoryDocRef = FirebaseFirestore.instance
+        .collection('categories')
+        .doc(categoryId);
+    
+    // Get the current category document
+    final categorySnapshot = await categoryDocRef.get();
+    
+    if (!categorySnapshot.exists) {
+      log('Category with ID $categoryId does not exist');
+      return const Left('Category not found');
+    }
+    
+    // Get the current courses list from the category
+    Map<String, dynamic> data = categorySnapshot.data() as Map<String, dynamic>;
+    List<dynamic> courses = data['courses'] ?? [];
+    
+    // Check if the course is already in the list
+    if (!courses.contains(courseId)) {
+      // Add the course ID to the courses list
+      courses.add(courseId);
+      
+      // Update the category document with the new courses list
+      await categoryDocRef.update({'courses': courses});
+      log('Added course $courseId to category $categoryId');
+      return const Right(true);
+    } else {
+      // Course already in the category, no need to update
+      log('Course $courseId already in category $categoryId');
+      return const Right(true);
+    }
+  } catch (e) {
+    log('Error updating category with course: $e');
+    return Left('Failed to update category with course: $e');
+  }
+}
+
+@override
+Future<Either<String, bool>> removeCourseFromCategory({
+  required String categoryId,
+  required String courseId,
+}) async {
+  try {
+    // Reference to the category document
+    final categoryDocRef = FirebaseFirestore.instance
+        .collection('categories')
+        .doc(categoryId);
+    
+    // Get the current category document
+    final categorySnapshot = await categoryDocRef.get();
+    
+    if (!categorySnapshot.exists) {
+      log('Category with ID $categoryId does not exist');
+      return const Left('Category not found');
+    }
+    
+    // Get the current courses list from the category
+    Map<String, dynamic> data = categorySnapshot.data() as Map<String, dynamic>;
+    List<dynamic> courses = List<dynamic>.from(data['courses'] ?? []);
+    
+    // Remove the course ID if it exists in the list
+    if (courses.contains(courseId)) {
+      courses.remove(courseId);
+      
+      // Update the category document with the modified courses list
+      await categoryDocRef.update({'courses': courses});
+      log('Removed course $courseId from category $categoryId');
+      return const Right(true);
+    } else {
+      // Course not in the category, no need to update
+      log('Course $courseId not found in category $categoryId');
+      return const Right(true);
+    }
+  } catch (e) {
+    log('Error removing course from category: $e');
+    return Left('Failed to remove course from category: $e');
+  }
+}
+
+  @override
+Future<Either<String, bool>> activateToggleCourse(courseToggleParams req) async {
+  try {
+  
+    String courseId = req.courseId; // Replace with actual course ID parameter
+    
+    final docRef = _firestore.collection('courses').doc(courseId);
+    final docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      return Left("Course not found");
+    }
+
+    // Update only the isActive field
+    await docRef.update({
+      'isActive': req.isActive,
+      'updatedAt': DateTime.now(),
+    });
+    
+    return Right(true);
+  } catch (e) {
+    log("Error toggling course active status: $e");
+    return Left("Failed to toggle course active status: ${e.toString()}");
+  }
+}
+
 
 
 

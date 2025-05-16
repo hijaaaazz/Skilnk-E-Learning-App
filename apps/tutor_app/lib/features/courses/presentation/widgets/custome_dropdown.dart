@@ -13,7 +13,7 @@ class AppDropdown<T> extends StatelessWidget {
   final Widget? prefixIcon;
 
   const AppDropdown({
-    Key? key,
+    super.key,
     required this.label,
     required this.hint,
     required this.value,
@@ -24,7 +24,7 @@ class AppDropdown<T> extends StatelessWidget {
     this.borderRadius = 8.0,
     this.isSearchable = false,
     this.prefixIcon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

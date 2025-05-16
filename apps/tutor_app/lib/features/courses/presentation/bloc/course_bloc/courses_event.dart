@@ -6,9 +6,10 @@ sealed class CoursesEvent {
 }
 
 class LoadCourses extends CoursesEvent {
+  final String tutorId;
   final bool forceReload;
   
-  const LoadCourses({this.forceReload = false});
+  const LoadCourses({this.forceReload = false, required this.tutorId});
 }
 
 class LoadMoreCourses extends CoursesEvent {
@@ -16,7 +17,9 @@ class LoadMoreCourses extends CoursesEvent {
 }
 
 class RefreshCourses extends CoursesEvent {
-  const RefreshCourses();
+  final String? tutorId;
+  
+  const RefreshCourses({this.tutorId});
 }
 
 class SearchCourses extends CoursesEvent {
@@ -45,4 +48,16 @@ class DeleteCourse extends CoursesEvent {
   final String courseId;
   
   const DeleteCourse(this.courseId);
+}
+
+class AddCourseEvent extends CoursesEvent{
+  final CourseEntity course;
+
+  const AddCourseEvent({required this.course});
+}
+
+class UpdateCourseEvent extends CoursesEvent{
+  final CourseEntity course;
+
+  const UpdateCourseEvent({required this.course});
 }

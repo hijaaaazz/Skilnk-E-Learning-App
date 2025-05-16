@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:tutor_app/common/widgets/app_text.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/text_field.dart';
@@ -15,7 +17,7 @@ class AppAutocomplete<T extends Object> extends StatefulWidget {
   final double borderRadius;
 
   const AppAutocomplete({
-    Key? key,
+    super.key,
     required this.label,
     required this.hintText,
     this.initialValue,
@@ -26,7 +28,7 @@ class AppAutocomplete<T extends Object> extends StatefulWidget {
     this.errorText,
     this.primaryColor = Colors.deepOrange,
     this.borderRadius = 8.0,
-  }) : super(key: key);
+  });
 
   @override
   State<AppAutocomplete<T>> createState() => _AppAutocompleteState<T>();
@@ -34,11 +36,45 @@ class AppAutocomplete<T extends Object> extends StatefulWidget {
 
 class _AppAutocompleteState<T extends Object> extends State<AppAutocomplete<T>> {
   late final TextEditingController _controller;
+  T? _selectedOption;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue ?? '');
+    _updateSelectedOption();
+  }
+
+  @override
+  void didUpdateWidget(covariant AppAutocomplete<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue || widget.options != oldWidget.options) {
+      _controller.text = widget.initialValue ?? '';
+      _updateSelectedOption();
+    }
+  }
+
+  void _updateSelectedOption() {
+    if (widget.initialValue != null && widget.initialValue!.isNotEmpty && widget.options.isNotEmpty) {
+      try {
+        _selectedOption = widget.options.firstWhere(
+          (option) => widget.displayStringForOption(option).trim().toLowerCase() == widget.initialValue!.trim().toLowerCase(),
+          // ignore: cast_from_null_always_fails
+          orElse: () => null as T,
+        );
+        if (_selectedOption != null) {
+          log('AppAutocomplete: Found matching option for initialValue "${widget.initialValue}": ${widget.displayStringForOption(_selectedOption!)}');
+          widget.onSelected(_selectedOption!);
+        } else {
+          log('AppAutocomplete: No matching option for initialValue "${widget.initialValue}" in options: ${widget.options.map(widget.displayStringForOption).toList()}');
+        }
+      } catch (e) {
+        log('AppAutocomplete: Error finding matching option: $e');
+      }
+    } else {
+      _selectedOption = null;
+      log('AppAutocomplete: initialValue="${widget.initialValue}", options length=${widget.options.length}');
+    }
   }
 
   @override
@@ -54,7 +90,7 @@ class _AppAutocompleteState<T extends Object> extends State<AppAutocomplete<T>> 
       focusNode: FocusNode(),
       optionsBuilder: (TextEditingValue textEditingValue) {
         if (textEditingValue.text.isEmpty) {
-          return Iterable<T>.empty();
+          return widget.options;
         }
         return widget.options.where((option) =>
             widget.displayStringForOption(option)
@@ -64,7 +100,9 @@ class _AppAutocompleteState<T extends Object> extends State<AppAutocomplete<T>> 
       displayStringForOption: widget.displayStringForOption,
       onSelected: (T selected) {
         _controller.text = widget.displayStringForOption(selected);
+        _selectedOption = selected;
         widget.onSelected(selected);
+        log('AppAutocomplete: Selected option: ${widget.displayStringForOption(selected)}');
       },
       optionsViewBuilder: (context, onSelected, options) {
         return Align(
@@ -85,12 +123,12 @@ class _AppAutocompleteState<T extends Object> extends State<AppAutocomplete<T>> 
                   return InkWell(
                     onTap: () => onSelected(option),
                     child: Container(
-                      width: 100,
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
                             color: index == options.length - 1
                                 ? Colors.transparent
+                                // ignore: deprecated_member_use
                                 : Colors.grey.withOpacity(0.2),
                           ),
                         ),
@@ -103,6 +141,7 @@ class _AppAutocompleteState<T extends Object> extends State<AppAutocomplete<T>> 
                                 text: widget.displayStringForOption(option),
                                 style: const TextStyle(fontSize: 14),
                               ),
+                              // ignore: deprecated_member_use
                               hoverColor: widget.primaryColor.withOpacity(0.1),
                             ),
                     ),

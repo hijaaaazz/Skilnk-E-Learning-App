@@ -1,9 +1,17 @@
 import 'package:tutor_app/features/courses/data/models/course_upload_progress.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart'; 
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
+import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_options.dart';
+import 'package:tutor_app/features/courses/domain/entities/lecture_entity.dart';
 
 class AddCourseState {
+
+  final CourseEntity? editingCourse;
+  final List<LectureEntity>? existingLectures;
+  
+
+  final bool? isEditing;
 
   final bool? isOptionsLoading;
   final String? optionsError;
@@ -17,6 +25,7 @@ class AddCourseState {
   final bool isPaid;
   final String? price;
   final int? offer;
+  final String? categoryName;
   
   // Error states for basic info
   final String? titleError;
@@ -44,6 +53,10 @@ class AddCourseState {
 
   const AddCourseState({
 
+    this.editingCourse,
+    this.existingLectures,
+    this.isEditing,
+
     this.options,
 
     this.isOptionsLoading,
@@ -56,6 +69,7 @@ class AddCourseState {
     this.isPaid = false,
     this.price ='',
     this.offer,
+    this.categoryName,
     
     // Error states
     this.titleError,
@@ -88,6 +102,11 @@ class AddCourseState {
 
 
   AddCourseState copyWith({
+
+    CourseEntity? editingCourse,
+    List<LectureEntity>? existingLectures,
+
+   bool? isEditing, 
   CourseOptionsEntity? options,
   bool? isOptionsLoading,
   String? optionsError,
@@ -100,6 +119,7 @@ class AddCourseState {
   bool? isPaid,
   String? price,
   int?offer,
+  String? categoryName,
 
   String? titleError,
   String? categoryError,
@@ -121,6 +141,11 @@ class AddCourseState {
   int? editingLectureIndex,
 }) {
   return AddCourseState(
+
+    editingCourse: editingCourse ?? this.editingCourse,
+    existingLectures: existingLectures ?? this.existingLectures,
+
+    isEditing: isEditing?? this.isEditing,
     options: options ?? this.options,
     isOptionsLoading: isOptionsLoading ?? this.isOptionsLoading,
     optionsError: optionsError ?? this.optionsError,
@@ -132,6 +157,7 @@ class AddCourseState {
     isPaid: isPaid ?? this.isPaid,
     price: price ?? this.price,
     offer: offer?? this.offer,
+    categoryName: categoryName ?? this.categoryName,
 
     titleError: titleError ?? this.titleError,
     categoryError: categoryError ?? this.categoryError,
@@ -177,4 +203,7 @@ class CourseUploadErrorState extends CourseUploadState{
   CourseUploadErrorState({required this.error});
 }
 
-class CourseUploadSuccessStaete extends CourseUploadState{}
+class CourseUploadSuccessStaete extends CourseUploadState{
+  final CourseEntity course;
+   CourseUploadSuccessStaete({required this.course});
+}

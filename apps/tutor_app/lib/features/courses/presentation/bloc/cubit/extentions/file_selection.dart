@@ -60,6 +60,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
 
   void clearLessonTempData() {
     emit(state.copyWith(
+      currentLessonTitle: "",
       selectedVideoPath: null,
       selectedPdfPath: null,
       editingLectureIndex: null,
@@ -84,6 +85,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
             return filePath;
           } else {
             log("Selected video file not found: $filePath");
+            // ignore: use_build_context_synchronously
             showAppSnackbar(context, "Selected video file not found");
           }
         }
@@ -91,6 +93,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
       return null;
     } catch (e) {
       log("Error picking video file: $e");
+      // ignore: use_build_context_synchronously
       showAppSnackbar(context, "Could not select video file");
       return null;
     }
@@ -115,6 +118,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
             return filePath;
           } else {
             log("Selected PDF file not found: $filePath");
+            // ignore: use_build_context_synchronously
             showAppSnackbar(context, "Selected PDF file not found");
           }
         }
@@ -122,6 +126,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
       return null;
     } catch (e) {
       log("Error picking PDF file: $e");
+      // ignore: use_build_context_synchronously
       showAppSnackbar(context, "Could not select PDF file");
       return null;
     }

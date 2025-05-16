@@ -11,7 +11,6 @@ Future<Duration?> getVideoDuration(String videoPath) async {
     await controller.dispose(); // Clean up
     return duration;
   } catch (e) {
-    print("Error getting video duration: $e");
     return null;
   }
 }

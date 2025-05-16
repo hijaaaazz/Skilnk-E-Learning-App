@@ -10,6 +10,7 @@ class CourseModel {
   final int price;
   final int offerPercentage;
   final String tutorId;
+  final String categoryName;
   final int duration;
   final bool isActive;
   final int enrolledCount;
@@ -38,6 +39,7 @@ class CourseModel {
     required this.duration,
     required this.isActive,
     required this.enrolledCount,
+    required this.categoryName,
     required this.averageRating,
     required this.ratingBreakdown,
     required this.totalReviews,
@@ -60,6 +62,7 @@ class CourseModel {
       categoryId: json['category'] is Map ? json['category']['_id'] ?? '' : json['category'] ?? '',
       description: json['description'] ?? '',
       price: json['price'] ?? 0,
+      categoryName: json['category_name'],
       offerPercentage: json['offer_percentage'] ?? 0,
       tutorId: json['tutor'] is Map ? json['tutor']['_id'] ?? '' : json['tutor'] ?? '',
       duration: json['duration'] ?? 0,
@@ -145,32 +148,61 @@ class CourseModel {
     return DateTime.now();
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'category': categoryId,
-      'description': description,
-      'price': price,
-      'offer_percentage': offerPercentage,
-      'tutor': tutorId,
-      'duration': duration,
-      'isActive': isActive,
-      'enrolled_count': enrolledCount,
-      'average_rating': averageRating,
-      'rating_breakdown': ratingBreakdown,
-      'total_reviews': totalReviews,
-      'reviews': reviews,
-      'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
-      'course_thumbnail': courseThumbnail,
-      'level': level,
-      'language': language ?? '',
-      'notificationSent': notificationSent,
-      'listed': listed,
-      'isBanned': isBanned,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    };
-  }
+  Map<String, dynamic> toCreateJson() {
+  return {
+    'title': title,
+    'category': categoryId,
+    'description': description,
+    'price': price,
+    'offer_percentage': offerPercentage,
+    'tutor': tutorId,
+    'duration': duration,
+    'isActive': isActive,
+    "category_name": categoryName,
+    'enrolled_count': enrolledCount,
+    'average_rating': averageRating,
+    'rating_breakdown': ratingBreakdown,
+    'total_reviews': totalReviews,
+    'reviews': reviews,
+    'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
+    'course_thumbnail': courseThumbnail,
+    'level': level,
+    'language': language ?? '',
+    'notificationSent': notificationSent,
+    'listed': listed,
+    'isBanned': isBanned,
+    "createdAt": FieldValue.serverTimestamp(),
+    "updatedAt": FieldValue.serverTimestamp(),
+  };
+}
+
+Map<String, dynamic> toUpdateJson() {
+  return {
+    'title': title,
+    'category': categoryId,
+    'description': description,
+    'price': price,
+    'offer_percentage': offerPercentage,
+    'tutor': tutorId,
+    'duration': duration,
+    'isActive': isActive,
+    "category_name": categoryName,
+    'enrolled_count': enrolledCount,
+    'average_rating': averageRating,
+    'rating_breakdown': ratingBreakdown,
+    'total_reviews': totalReviews,
+    'reviews': reviews,
+    'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
+    'course_thumbnail': courseThumbnail,
+    'level': level,
+    'language': language ?? '',
+    'notificationSent': notificationSent,
+    'listed': listed,
+    'isBanned': isBanned,
+    "updatedAt": FieldValue.serverTimestamp(), // only updatedAt
+  };
+}
+
 
   CourseModel copyWith({
     String? id,
@@ -188,6 +220,7 @@ class CourseModel {
     int? totalReviews,
     List<String>? reviews,
     List<LectureModel>? lessons,
+    String? categoryname,
     String? courseThumbnail,
     String? level,
     bool? notificationSent,
@@ -212,6 +245,7 @@ class CourseModel {
       ratingBreakdown: ratingBreakdown ?? this.ratingBreakdown,
       totalReviews: totalReviews ?? this.totalReviews,
       reviews: reviews ?? this.reviews,
+      categoryName: categoryname ?? categoryName,
       lessons: lessons ?? this.lessons,
       courseThumbnail: courseThumbnail ?? this.courseThumbnail,
       level: level ?? this.level,
@@ -235,6 +269,8 @@ class CourseModel {
       tutorId: tutorId,
       duration: duration,
       isActive: isActive,
+      categoryName: categoryName,
+      language: language ?? '',
       enrolledCount: enrolledCount,
       averageRating: averageRating,
       ratingBreakdown: ratingBreakdown,
@@ -250,4 +286,36 @@ class CourseModel {
       updatedAt: updatedAt
     );
   }
+
+factory CourseModel.fromEntity(CourseEntity entity) {
+  return CourseModel(
+    id: entity.id,
+    title: entity.title,
+    categoryId: entity.categoryId,
+    description: entity.description,
+    price: entity.price,
+    offerPercentage: entity.offerPercentage,
+    tutorId: entity.tutorId,
+
+    duration: entity.duration,
+    isActive: entity.isActive,
+    categoryName: entity.categoryName,
+    enrolledCount: entity.enrolledCount,
+    averageRating: entity.averageRating,
+    ratingBreakdown: entity.ratingBreakdown,
+    totalReviews: entity.totalReviews,
+    reviews: entity.reviews,
+    lessons: entity.lessons.map((e) => LectureModel.fromEntity(e)).toList(),
+    courseThumbnail: entity.courseThumbnail,
+    level: entity.level,
+    notificationSent: entity.notificationSent,
+    listed: entity.listed,
+    isBanned: entity.isBanned,
+    createdAt: entity.createdAt,
+    updatedAt: entity.updatedAt,
+    language: entity.language,
+  );
+}
+
+
 }

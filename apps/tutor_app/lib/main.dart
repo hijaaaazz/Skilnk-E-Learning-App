@@ -34,7 +34,7 @@ class Skilnk extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
+      providers: [ 
         BlocProvider(create: (_) => AuthBloc()),
         BlocProvider(create: (_) => CoursesBloc())
       ],

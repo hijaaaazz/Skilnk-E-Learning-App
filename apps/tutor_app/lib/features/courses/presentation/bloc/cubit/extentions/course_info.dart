@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tutor_app/core/utils/image_cropper.dart';
+import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart';
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
+import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_state.dart';
 
 mixin CourseInfoHandlers on Cubit<AddCourseState> {
@@ -146,4 +148,36 @@ void updateDiscount(String offer) {
     }
     return null;
   }
+
+  void courseToEditLoad(CourseEntity courseToEdit) {
+    log(courseToEdit.offerPercentage.toString());
+  emit(state.copyWith(
+    title: courseToEdit.title,
+    description: courseToEdit.description,
+    price: courseToEdit.price.toString(),
+    offer: courseToEdit.offerPercentage,
+    isPaid: courseToEdit.price > 0,
+    
+    
+    categoryName: courseToEdit.categoryName,
+    courseDuration: Duration(seconds: courseToEdit.duration),
+    level: courseToEdit.level,
+    thumbnailPath: courseToEdit.courseThumbnail,
+    lessons: courseToEdit.lessons.map((e) {
+      return LectureCreationReq(
+        title: e.title,
+        videoUrl: e.videoUrl,
+        notesUrl: e.notesUrl,
+        duration: e.duration,
+      );
+    }).toList(),
+    // You'll need to convert `categoryId` to a `CategoryEntity` if necessary.
+    // For now, setting category as `null` until mapping is available.
+    category: null,
+    language: courseToEdit.language, // Only set if you have this info from somewhere
+    isEditing: true,
+    editingCourse: courseToEdit
+  ));
+}
+
 }

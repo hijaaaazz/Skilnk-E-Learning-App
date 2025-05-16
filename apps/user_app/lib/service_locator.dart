@@ -10,6 +10,11 @@ import 'package:user_app/features/auth/domain/usecases/reset_pass.dart';
 import 'package:user_app/features/auth/domain/usecases/signin.dart';
 import 'package:user_app/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:user_app/features/auth/domain/usecases/signup.dart';
+import 'package:user_app/features/home/data/repos/course_repo.dart';
+import 'package:user_app/features/home/data/src/firebase_service.dart';
+import 'package:user_app/features/home/domain/repos/repository.dart';
+import 'package:user_app/features/home/domain/usecases/get_categories.dart';
+import 'package:user_app/features/home/domain/usecases/get_courses.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -19,10 +24,17 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<AuthFirebaseService>(
     () => AuthFirebaseServiceImp()
   );
+  serviceLocator.registerLazySingleton<CoursesFirebaseService>(
+    () => CoursesFirebaseServicesImp()
+  );
 
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthenticationRepoImplementation()
+  );
+
+  serviceLocator.registerLazySingleton<CoursesRepository>(
+    () => CoursesRepositoryImp()
   );
 
   // ✅ Use Cases
@@ -59,5 +71,15 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<ResetPasswordUseCase>(
     () => ResetPasswordUseCase()
   );
+
+  serviceLocator.registerLazySingleton<GetCategoriesUseCase>(
+    () => GetCategoriesUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetCoursesUseCase>(
+    () => GetCoursesUseCase()
+  );
+
+  
 }
 

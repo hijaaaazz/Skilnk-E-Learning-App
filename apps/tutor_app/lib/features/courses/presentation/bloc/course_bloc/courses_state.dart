@@ -13,18 +13,18 @@ final class CoursesLoading extends CoursesState {
 
 final class CoursesLoaded extends CoursesState {
   final List<CoursePreview> courses;
-  final bool hasReachedMax;
   
   CoursesLoaded({
     required this.courses,
-    required this.hasReachedMax,
+    
   });
 }
 
 final class CoursesError extends CoursesState {
   final String message;
+  final List<CoursePreview>? courses;
   
-  CoursesError({required this.message});
+  CoursesError({required this.message, this.courses});
 }
 
 final class CourseDetailLoading extends CoursesState {}

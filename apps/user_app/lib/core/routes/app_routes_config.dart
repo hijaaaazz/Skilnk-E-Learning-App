@@ -8,6 +8,7 @@ import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
 import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
 import 'package:user_app/features/explore/presentation/pages/explore.dart';
+import 'package:user_app/features/home/presentation/pages/cource_detailed_page.dart';
 import 'package:user_app/features/home/presentation/pages/home.dart';
 import 'package:user_app/features/library/presentation/pages/library.dart';
 import 'package:user_app/features/main_page/presentation/pages/landing.dart';
@@ -15,16 +16,22 @@ import 'package:user_app/features/splash/presentation/pages/splash.dart';
 
 class AppRoutes {
   GoRouter router = GoRouter(
-    initialLocation: "/home"
+    initialLocation: "/splash"
     ,
     routes: [
-      GoRoute(
-        name: AppRouteConstants.splashRouteName,
-        path: "/splash",
-        pageBuilder: (context, state) {
-          return MaterialPage(child: SplashPage());
-        },
-      ),
+      
+      
+      GoRoute(path: '/course',
+      name: AppRouteConstants.coursedetailsPaage,
+      pageBuilder: (context, state) {
+        return MaterialPage(child: CourseDetailPage());
+      },),
+
+      GoRoute(path: '/splash',
+      name: AppRouteConstants.splashRouteName,
+      pageBuilder: (context, state) {
+        return MaterialPage(child: SplashPage());
+      },),
 
       GoRoute(
         name: AppRouteConstants.authRouteName,

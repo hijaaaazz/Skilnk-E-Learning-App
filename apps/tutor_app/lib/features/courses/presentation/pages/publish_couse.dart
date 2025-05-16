@@ -22,26 +22,49 @@ class StepPublish extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CourseStepPage(
-      icon: Icons.publish_rounded,
-      title: "Publish",
-      bodyContent: PublishBody(),
-      backtext: "Previous",
-      onNext: () {
-        final tutorId = context.read<AuthBloc>().state.user?.tutorId;
+    return BlocBuilder<AddCourseCubit, AddCourseState>(
+      builder: (context, state) {
+        return Stack(
+          children: [
+            CourseStepPage(
+              icon: Icons.publish_rounded,
+              title: "Publish",
+              bodyContent: PublishBody(),
+              backtext: "Previous",
+             onNext: () {
+  final tutorId = context.read<AuthBloc>().state.user?.tutorId;
 
-        if (tutorId == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("User not authenticated")),
-          );
-          return;
-        }
+  if (tutorId == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("User not authenticated")),
+    );
+    return;
+  }
 
-        // Create a new cubit instance to pass to the dialog
-        final cubit = context.read<AddCourseCubit>();
-        cubit.uploadCourse(tutorId);
-        // Show dialog with BlocProvider to make cubit accessible
-        
+  final cubit = context.read<AddCourseCubit>();
+
+showDialog(
+  context: context,
+  barrierDismissible: false,
+  builder: (context) {
+    return BlocProvider.value(
+      value: cubit, // reuse the existing cubit
+      child: UploadStatusDialog(
+       
+      ),
+    );
+  },
+);
+
+
+}
+
+            ),
+             if(state is CourseUploadLoading)
+
+              BlurredLoading()
+          ],
+        );
       },
     );
   }
@@ -57,9 +80,11 @@ class PublishBody extends StatelessWidget {
       child: BlocConsumer<AddCourseCubit, AddCourseState>(
         listener:(context, state) {
           if(state is CourseUploadSuccessStaete){
+            showAppSnackbar(context, "Courses Upload Succesfull");
             context.goNamed(AppRouteConstants.exploreRouteName);
           }
           if(state is CourseUploadErrorState){
+            context.goNamed(AppRouteConstants.exploreRouteName);
             showAppSnackbar(context, "Course Upload Failed, Try Again");
           }
         },
@@ -89,10 +114,15 @@ class PublishBody extends StatelessWidget {
                       child: courseState.thumbnailPath.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                File(courseState.thumbnailPath),
-                                fit: BoxFit.cover,
-                              ),
+                              child: courseState.thumbnailPath.startsWith('http')
+                                  ? Image.network(
+                                      courseState.thumbnailPath,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.file(
+                                      File(courseState.thumbnailPath),
+                                      fit: BoxFit.cover,
+                                    ),
                             )
                           : const Center(
                               child: Icon(
@@ -102,6 +132,7 @@ class PublishBody extends StatelessWidget {
                               ),
                             ),
                     ),
+
                     const SizedBox(height: 24),
                     // Title
                     PropertyPreview(
@@ -198,9 +229,7 @@ class PublishBody extends StatelessWidget {
                   ],
                 ),
               ),
-              if(courseState is CourseUploadLoading)
-
-              BlurredLoading()
+             
 
               
 

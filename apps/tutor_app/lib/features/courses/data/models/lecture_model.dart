@@ -44,4 +44,14 @@ class LectureModel {
       durationInSeconds: durationInSeconds,
     );
   }
+  factory LectureModel.fromEntity(LectureEntity entity) {
+  return LectureModel(
+    title: entity.title,
+    description: entity.description,
+    videoUrl: entity.videoUrl,
+    notesUrl: entity.notesUrl,
+    durationInSeconds: entity.durationInSeconds,
+  );
+}
+
 }

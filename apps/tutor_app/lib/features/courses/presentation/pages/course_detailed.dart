@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/lecture_entity.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/course_bloc/courses_bloc.dart';
@@ -18,6 +21,7 @@ class CourseDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Load course details when page is opened
     context.read<CoursesBloc>().add(LoadCourseDetail(courseId));
+
 
     return Scaffold(
       body: BlocBuilder<CoursesBloc, CoursesState>(
@@ -51,6 +55,7 @@ class CourseDetailPage extends StatelessWidget {
           }
 
           if (state is CourseDetailLoaded) {
+            log(state.course.categoryName);
             final course = state.course;
             final discountedPrice = course.price - 
                 (course.price * course.offerPercentage / 100).round();
@@ -85,6 +90,7 @@ class CourseDetailPage extends StatelessWidget {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
+                                // ignore: deprecated_member_use
                                 Colors.black.withOpacity(0.7),
                               ],
                             ),
@@ -95,6 +101,7 @@ class CourseDetailPage extends StatelessWidget {
                     title: Text(
                       course.title,
                       style: const TextStyle(
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
@@ -104,9 +111,13 @@ class CourseDetailPage extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () {
-                        // Navigate to edit course page
+                        context.pushNamed(
+                          AppRouteConstants.addCourse,
+                          extra: course, // pass the course to edit
+                        );
                       },
                     ),
+
                     PopupMenuButton<String>(
                       onSelected: (value) {
                         if (value == 'delete') {
@@ -127,10 +138,10 @@ class CourseDetailPage extends StatelessWidget {
                             course.isActive ? 'Deactivate Course' : 'Activate Course',
                           ),
                         ),
-                        const PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Text('Delete Course'),
-                        ),
+                        // const PopupMenuItem<String>(
+                        //   value: 'delete',
+                        //   child: Text('Delete Course'),
+                        // ),
                       ],
                     ),
                   ],
@@ -148,7 +159,7 @@ class CourseDetailPage extends StatelessWidget {
                           children: [
                             if (course.offerPercentage > 0) ...[
                               Text(
-                                '\$${discountedPrice}',
+                                '\$$discountedPrice',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 24,
@@ -224,6 +235,21 @@ class CourseDetailPage extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 24),
+                        Row(
+                          children: [
+                         
+                        const SizedBox(height: 8),
+                        Text(
+                          course.categoryName,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[800],
+                            height: 1.5,
+                          ),
+                        ),
+                         ]),
+
+                         const SizedBox(height: 24),
 
                         // Course description
                         const Text(
@@ -243,6 +269,7 @@ class CourseDetailPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
+                         
 
                         // Course lectures
                         const Text(
@@ -267,7 +294,7 @@ class CourseDetailPage extends StatelessWidget {
                           final index = entry.key;
                           final lecture = entry.value;
                           return _buildLectureItem(context, lecture, index + 1);
-                        }).toList(),
+                        }),
                         
                         const SizedBox(height: 24),
 
@@ -336,7 +363,7 @@ class CourseDetailPage extends StatelessWidget {
                                 ),
                               ),
                             );
-                          }).toList(),
+                          }),
                           
                           if (course.reviews.length > 3)
                             TextButton(
@@ -404,10 +431,10 @@ class CourseDetailPage extends StatelessWidget {
           ),
         ),
         title: Text(lecture.title),
-        subtitle: Text('${lecture.duration} min'),
+        subtitle: Text('${lecture.duration.inMinutes} min'),
         trailing: const Icon(Icons.play_circle_outline),
         onTap: () {
-          // Navigate to lecture preview or play
+          context.pushNamed(AppRouteConstants.lectureDetails,extra: lecture);
         },
       ),
     );

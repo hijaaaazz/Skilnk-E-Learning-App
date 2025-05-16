@@ -272,7 +272,6 @@ class AuthenticationRepoImplementation extends AuthRepository {
         tutorId: currentUser.uid,
         emailVerified: true,
         infoSubmitted: true,
-        isVerified: false
       );
 
       // Save updated user to Firestore

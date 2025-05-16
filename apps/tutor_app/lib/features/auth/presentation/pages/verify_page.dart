@@ -72,6 +72,7 @@ class VerifyPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
+                          // ignore: deprecated_member_use
                           color: const Color(0xFFDF4700).withOpacity(0.2),
                           blurRadius: 15,
                           offset: const Offset(0, 4),

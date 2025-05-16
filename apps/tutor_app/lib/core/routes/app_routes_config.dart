@@ -8,7 +8,8 @@ import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
 import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/waiting_page.dart';
 import 'package:tutor_app/features/courses/data/models/course_details_args.dart';
-import 'package:tutor_app/features/courses/presentation/bloc/course_bloc/courses_bloc.dart';
+import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
+import 'package:tutor_app/features/courses/domain/entities/lecture_entity.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_cubit.dart';
 import 'package:tutor_app/features/courses/presentation/pages/add_course_warapper.dart';
 import 'package:tutor_app/features/courses/presentation/pages/add_lesson.dart';
@@ -16,10 +17,14 @@ import 'package:tutor_app/features/courses/presentation/pages/course_detailed.da
 import 'package:tutor_app/features/courses/presentation/pages/courses.dart';
 import 'package:tutor_app/features/courses/presentation/pages/advanced_info_submition.dart';
 import 'package:tutor_app/features/courses/presentation/pages/curicullum_submition.dart';
+import 'package:tutor_app/features/courses/presentation/pages/full_screen_video_player.dart';
+import 'package:tutor_app/features/courses/presentation/pages/lecture_detailed_page.dart';
 import 'package:tutor_app/features/courses/presentation/pages/publish_couse.dart';
 import 'package:tutor_app/features/courses/presentation/pages/basic_info_submition.dart';
+import 'package:tutor_app/features/courses/presentation/widgets/pdf_view.dart';
 import 'package:tutor_app/features/main_scaffold/presentation/pages/landing.dart';
 import 'package:tutor_app/features/splash/presentation/pages/splash.dart';
+import 'package:video_player/video_player.dart';
 
 class AppRoutes {
   final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -29,6 +34,31 @@ class AppRoutes {
     initialLocation: "/splash",
     routes: [
       // Authentication and Splash Routes
+
+      GoRoute(
+        name : AppRouteConstants.fullScreeenVideoPlayer,
+        path: "/video",
+        pageBuilder: (context,state){
+          final controller = state.extra as VideoPlayerController;
+          return MaterialPage(child: FullScreenVideoPlayer(controller: controller));
+        }
+      ),
+      GoRoute(
+        name : AppRouteConstants.lectureDetails,
+        path: "/lecture",
+        pageBuilder: (context,state){
+          final lecture = state.extra as LectureEntity;
+          return MaterialPage(child: LectureDetailScreen(lecture: lecture,));
+        }
+      ),
+      GoRoute(
+        name : AppRouteConstants.pdfViewer,
+        path: "/pdf",
+        pageBuilder: (context,state){
+          final path = state.extra as String;
+          return MaterialPage(child: ScreenPdfView(pathOrUrl: path));
+        }
+      ),
       GoRoute(
         name: AppRouteConstants.splashRouteName,
         path: "/splash",
@@ -60,18 +90,25 @@ class AppRoutes {
       
       // Course Creation Routes - Outside StatefulShellRoute so they don't show bottom navigation
       GoRoute(
-        path: '/courses/addnewcourse',
-        name: AppRouteConstants.addCourse,
-        pageBuilder: (context, state) {
-          // Create the cubit only when user navigates to add course flow
-          return MaterialPage(
-          
-            child: BlocProvider(
-              create: (_) => AddCourseCubit()..loadCourseOptions(),
-              child: AddCourseWrapper(state: state),
-            ),
-          );
+  path: '/courses/addnewcourse',
+  name: AppRouteConstants.addCourse,
+  pageBuilder: (context, state) {
+    final courseToEdit = state.extra as CourseEntity?;
+    return MaterialPage(
+      child: BlocProvider(
+        create: (_) {
+          final cubit = AddCourseCubit()..loadCourseOptions();
+          if (courseToEdit != null) {
+            cubit.courseToEditLoad(courseToEdit);
+          }
+          return cubit;
         },
+        child: AddCourseWrapper(state: state),
+      ),
+    );
+  },
+
+
         routes: [
           GoRoute(
             name: AppRouteConstants.addCourseBasicRouteName,
@@ -84,7 +121,7 @@ class AppRoutes {
                     final cubit = context.read<AddCourseCubit>();
                     return BlocProvider.value(
                       value: cubit,
-                      child: const StepBasicInfo(),
+                      child:  StepBasicInfo(),
                     );
                   },
                 ),

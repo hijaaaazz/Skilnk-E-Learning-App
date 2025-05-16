@@ -60,6 +60,7 @@ class ResetPasswordSent extends ResetPasswordState {}
 
 class ResetPasswordFailed extends ResetPasswordState {
   @override
+  // ignore: overridden_fields
   final String message;
 
   const ResetPasswordFailed({required this.message})

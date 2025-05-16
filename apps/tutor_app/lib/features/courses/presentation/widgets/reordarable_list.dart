@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,7 @@ class ReorderableContentList extends StatelessWidget {
   final Color? dragFeedbackColor;
 
   const ReorderableContentList({
-    Key? key,
+    super.key,
     required this.onReorder,
     required this.items,
     this.onEdit,
@@ -25,7 +24,7 @@ class ReorderableContentList extends StatelessWidget {
     this.cardColor,
     this.dragHandleColor,
     this.dragFeedbackColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +42,7 @@ class ReorderableContentList extends StatelessWidget {
             return Card(
                     color:Colors.white,
                     
+                    // ignore: deprecated_member_use
                     shadowColor: const Color.fromARGB(0, 255, 255, 255).withOpacity(0.2),
                     child: child,
                   );

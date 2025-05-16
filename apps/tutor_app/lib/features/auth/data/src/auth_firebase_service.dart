@@ -89,6 +89,7 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
 
   @override
   Future<List<String>> getSignInMethodsForEmail(String email) async {
+    // ignore: deprecated_member_use
     return await _auth.fetchSignInMethodsForEmail(email);
   }
 

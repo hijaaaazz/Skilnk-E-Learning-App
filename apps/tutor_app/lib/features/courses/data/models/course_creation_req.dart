@@ -12,6 +12,7 @@ class CourseCreationReq {
   final String? tutorId;
   final String? language;
   final String? level;
+  final String categoryName;
   final List<LectureCreationReq>? lectures;
   final String? courseThumbnail;
 
@@ -24,6 +25,7 @@ class CourseCreationReq {
     this.price,
     this.language,
     this.offerPercentage,
+    required this.categoryName,
     this.tutorId,
     this.level,
     this.lectures,
@@ -39,6 +41,7 @@ class CourseCreationReq {
     Duration? duration,
     int? offerPercentage,
     String? tutorId,
+    String? categryName,
     String? language,
     String? level,
     List<LectureCreationReq>? lectures,
@@ -50,6 +53,7 @@ class CourseCreationReq {
       description: description ?? this.description,
       categoryId: categoryId ?? this.categoryId,
       price: price ?? this.price,
+      categoryName: categryName ?? categoryName,
       duration: duration ?? this.duration,
       offerPercentage: offerPercentage ?? this.offerPercentage,
       tutorId: tutorId ?? this.tutorId,
@@ -84,6 +88,7 @@ class CourseCreationReq {
       description: json['description'],
       categoryId: json['categoryId'],
       price: json['price'],
+      categoryName: json['category_name'],
       duration: json['duration'] != null ? Duration(seconds: json['duration']) : null,
       offerPercentage: json['offerPercentage'],
       tutorId: json['tutorId'],

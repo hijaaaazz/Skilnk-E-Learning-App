@@ -36,6 +36,7 @@ class CoursePriceForm extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                
                 FlutterToggleTab(
                   width: screenWidth * 0.2,
                   height: 40,
@@ -72,9 +73,10 @@ class CoursePriceForm extends StatelessWidget {
                       width: screenWidth * 0.35,
                       child: AppTextField(
                         label: "Discount",
-                        hintText: '0',
+                        hintText: state.offer.toString(),
                         controller: discountController,
                         errorText: state.offerError ?? "",
+                        
                         keyboardType: TextInputType.number,
                         suffixIcon: Icons.percent_rounded,
                         onChanged: (value){

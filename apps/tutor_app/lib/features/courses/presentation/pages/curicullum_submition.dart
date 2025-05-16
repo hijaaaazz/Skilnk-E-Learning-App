@@ -21,7 +21,6 @@ class StepCurriculum extends StatelessWidget {
       title: "Curriculum",
       icon: Icons.play_circle_sharp,
       bodyContent: CurriculumBody(),
-      backtext: "Previus",
       onNext: () {
         // Validate curriculum before proceeding
         if (context.read<AddCourseCubit>().validateCurriculum(context)) {

@@ -18,4 +18,8 @@ class AppRouteConstants {
   static const String addCourseCurriculumRouteName = "add_course_curriculum";
   static const String addCoursePublishRouteName = "add_course_publish";
   static const String addCourseaddlectureName = "add_lesson";
+
+  static const String fullScreeenVideoPlayer = "video_player_full_screen";
+  static const String pdfViewer = "pdf_full_screen";
+  static const String lectureDetails = "lecture_screen";
 }
