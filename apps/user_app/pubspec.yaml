@@ -47,6 +47,7 @@ dependencies:
   google_sign_in: ^6.3.0
   hive_flutter: ^1.1.0
   image_picker: ^1.1.2
+  meta: ^1.15.0
   recase: ^4.1.0
 
 dev_dependencies:

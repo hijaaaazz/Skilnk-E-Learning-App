@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:dartz/dartz.dart';
 import 'package:user_app/core/usecase/usecase.dart';
 import 'package:user_app/features/home/domain/entity/category_entity.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
@@ -28,7 +27,7 @@ class CourseBlocBloc extends Bloc<CourseBlocEvent, CourseBlocState> {
         final coursesResult = await serviceLocator<GetCoursesUseCase>().call(params: NoParams());
         coursesResult.fold(
           (failure) => emit(CourseBlocError(failure)),
-          (courses) => emit(CourseBlocLoaded(categories, courses!)),
+          (courses) => emit(CourseBlocLoaded(categories, courses)),
         );
       },
     );
@@ -47,7 +46,7 @@ class CourseBlocBloc extends Bloc<CourseBlocEvent, CourseBlocState> {
         if (currentState is CourseBlocLoaded) {
           categories = currentState.categories;
         }
-        emit(CourseBlocLoaded(categories, courses!));
+        emit(CourseBlocLoaded(categories, courses));
       },
     );
   }

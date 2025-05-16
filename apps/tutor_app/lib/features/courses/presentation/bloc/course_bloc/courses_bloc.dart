@@ -24,7 +24,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
   
   CourseParams _currentParams = const CourseParams();
   List<CoursePreview> _courses = [];
-  bool _hasReachedMax = false;
   bool _isInitialized = false;
 
   CoursesBloc() : super(CoursesInitial()) {
@@ -50,7 +49,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     emit(CoursesLoading(courses: _courses));
     
     _currentParams = CourseParams(page: 1, limit: 10, tutorId: event.tutorId);
-    _hasReachedMax = false;
     
     final result = await _getCourse(params: _currentParams);
     
@@ -58,7 +56,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       (error) => emit(CoursesError(message: error, courses: _courses)),
       (courses) {
         _courses = courses;
-        _hasReachedMax = courses.length < _currentParams.limit;
         _isInitialized = true; // Mark as initialized
         emit(CoursesLoaded(
           courses: _courses,
@@ -77,7 +74,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       page: 1,
       tutorId: event.tutorId ?? _currentParams.tutorId,
     );
-    _hasReachedMax = false;
     
     final result = await _getCourse(params: _currentParams);
     
@@ -85,7 +81,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       (error) => emit(CoursesError(message: error, courses: _courses)),
       (courses) {
         _courses = courses;
-        _hasReachedMax = courses.length < _currentParams.limit;
         emit(CoursesLoaded(
           courses: _courses,
         ));
@@ -100,7 +95,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       page: 1,
       searchQuery: event.query.isNotEmpty ? event.query : null,
     );
-    _hasReachedMax = false;
     
     final result = await _getCourse(params: _currentParams);
     
@@ -108,7 +102,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
       (error) => emit(CoursesError(message: error, courses: _courses)),
       (courses) {
         _courses = courses;
-        _hasReachedMax = courses.length < _currentParams.limit;
         emit(CoursesLoaded(
           courses: _courses,
         ));
@@ -148,7 +141,6 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
 
   Future<void> _onLoadCourseDetail(LoadCourseDetail event, Emitter<CoursesState> emit) async {
     // Save the current courses list state to prevent losing it
-    final currentCourses = _courses;
     
     emit(CourseDetailLoading());
     

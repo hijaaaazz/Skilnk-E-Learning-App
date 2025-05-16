@@ -19,8 +19,9 @@ class CourseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        //context.pushNamed(AppRouteConstants.coursedetailsPaage);
+        context.pushNamed(AppRouteConstants.coursedetailsPaage,extra: course);
       },
+      borderRadius: BorderRadius.circular(16) ,
       child: Container(
         width: 200,
         decoration: BoxDecoration(
@@ -28,6 +29,7 @@ class CourseCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 5),

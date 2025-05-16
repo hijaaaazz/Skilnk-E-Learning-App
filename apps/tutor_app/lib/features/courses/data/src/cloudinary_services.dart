@@ -10,12 +10,12 @@ import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 
 abstract class CourseCloudinaryServices {
-  Future<Either<String, String>> uploadFile(String path);
+  Future<Either<String, String>> uploadFile(String path,String title,String id);
 }
 
 class CourseCloudinaryServiceImp extends CourseCloudinaryServices {
   @override
-  Future<Either<String, String>> uploadFile(String path) async {
+  Future<Either<String, String>> uploadFile(String path,String title,String id) async {
     try {
       final file = File(path);
 
@@ -40,11 +40,13 @@ class CourseCloudinaryServiceImp extends CourseCloudinaryServices {
 
       final request = http.MultipartRequest("POST", uri);
       final fileBytes = await file.readAsBytes();
+      final publicId = "courses/$id/${DateTime.now().millisecondsSinceEpoch}_$title";
+
 
       final multipartFile = http.MultipartFile.fromBytes(
         "file",
         fileBytes,
-        filename: file.path.split("/").last,
+        filename: publicId,
       );
 
       request.files.add(multipartFile);

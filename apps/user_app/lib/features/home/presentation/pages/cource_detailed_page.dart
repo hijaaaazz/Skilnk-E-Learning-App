@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:user_app/features/home/domain/entity/course-entity.dart';
+import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 import 'package:user_app/features/home/presentation/widgets/course_fueture_.item.dart';
 import 'package:user_app/features/home/presentation/widgets/course_review_card.dart';
 import 'package:user_app/features/home/presentation/widgets/section_tile.dart';
 import 'package:user_app/features/home/presentation/widgets/tab_selecter.dart';
+
 class CourseDetailPage extends StatefulWidget {
-  //final String courseId;
+  final CourseEntity course;
 
   const CourseDetailPage({
     Key? key,
-    //required this.courseId,
+    required this.course,
   }) : super(key: key);
 
   @override
   State<CourseDetailPage> createState() => _CourseDetailPageState();
 }
 
+// 
+
 class _CourseDetailPageState extends State<CourseDetailPage> {
   int _selectedTabIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final course = widget.course;
+    
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -31,12 +38,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 Container(
                   height: 400,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.black,
                     image: DecorationImage(
-                      image: NetworkImage(
-                        "https://images.unsplash.com/photo-1626785774573-4b799315345d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2071&q=80",
-                      ),
+                      image: NetworkImage(course.courseThumbnail),
                       fit: BoxFit.cover,
                       opacity: 0.7,
                     ),
@@ -89,9 +94,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                'Graphic Design',
-                                style: TextStyle(
+                              Text(
+                                course.categoryName,
+                                style: const TextStyle(
                                   color: Color(0xFFFF6B00),
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
@@ -106,9 +111,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '4.2',
-                                    style: TextStyle(
-                                      color: const Color(0xFF202244),
+                                    course.averageRating.toStringAsFixed(1),
+                                    style: const TextStyle(
+                                      color: Color(0xFF202244),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -120,9 +125,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                           const SizedBox(height: 8),
 
                           // Course Title
-                          const Text(
-                            'Design Principles: Organizing Visual Elements',
-                            style: TextStyle(
+                          Text(
+                            course.title,
+                            style: const TextStyle(
                               color: Color(0xFF202244),
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
@@ -140,15 +145,15 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                '21 Classes',
-                                style: TextStyle(
-                                  color: const Color(0xFF202244),
+                                '${course.lessons.length} Classes',
+                                style: const TextStyle(
+                                  color: Color(0xFF202244),
                                   fontSize: 11,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Text(
+                              const Text(
                                 '|',
                                 style: TextStyle(
                                   color: Colors.black,
@@ -164,22 +169,33 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                '42 Hours',
-                                style: TextStyle(
-                                  color: const Color(0xFF202244),
+                                '${course.duration} Hours',
+                                style: const TextStyle(
+                                  color: Color(0xFF202244),
                                   fontSize: 11,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
                               const Spacer(),
-                              Text(
-                                '₹499',
-                                style: TextStyle(
-                                  color: const Color(0xFFFF6636),
-                                  fontSize: 21,
-                                  fontWeight: FontWeight.w800,
+                              // Show discounted price if there's an offer
+                              if (course.offerPercentage > 0)
+                                Text(
+                                  '₹${calculateDiscountedPrice(course.price, course.offerPercentage)}',
+                                  style: const TextStyle(
+                                    color: Color(0xFFFF6636),
+                                    fontSize: 21,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                )
+                              else
+                                Text(
+                                  '₹${course.price}',
+                                  style: const TextStyle(
+                                    color: Color(0xFFFF6636),
+                                    fontSize: 21,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         ],
@@ -201,8 +217,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: _selectedTabIndex == 0
-                          ? _buildAboutTab()
-                          : _buildCurriculumTab(),
+                          ? _buildAboutTab(course)
+                          : _buildCurriculumTab(course),
                     ),
                   ],
                 ),
@@ -234,7 +250,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
               ),
             ),
 
-            // Instructor Section
+            // Instructor Section (You would need to fetch instructor details from a service)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -242,46 +258,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 children: [
                   const SectionTitle(title: 'Instructor'),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        width: 54,
-                        height: 54,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Robert Jr',
-                            style: TextStyle(
-                              color: Color(0xFF202244),
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Graphic Design',
-                            style: TextStyle(
-                              color: const Color(0xFF545454),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                  // You would need to get instructor details based on course.tutorId
+                  _buildInstructorWidget(),
                 ],
               ),
             ),
@@ -295,66 +273,48 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                 children: [
                   const SectionTitle(title: 'What You\'ll Get'),
                   const SizedBox(height: 16),
-                  _buildFeaturesList(),
+                  _buildFeaturesList(course),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
             // Reviews Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const SectionTitle(title: 'Reviews'),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          'SEE ALL',
-                          style: TextStyle(
-                            color: Color(0xFFFF6636),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
+            if (course.totalReviews > 0)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const SectionTitle(title: 'Reviews'),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text(
+                            'SEE ALL',
+                            style: TextStyle(
+                              color: Color(0xFFFF6636),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  const CourseReviewCard(
-                    name: 'Will',
-                    rating: 4.5,
-                    review:
-                        'This course has been very useful. Mentor was well spoken totally loved it.',
-                    likes: 578,
-                    timeAgo: '2 Weeks Ago',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80',
-                  ),
-                  const SizedBox(height: 16),
-                  const CourseReviewCard(
-                    name: 'Martha E. Thompson',
-                    rating: 4.5,
-                    review:
-                        'This course has been very useful. Mentor was well spoken totally loved it. It had fun sessions as well.',
-                    likes: 578,
-                    timeAgo: '2 Weeks Ago',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80',
-                  ),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // You would need to fetch actual review data based on course.reviews
+                    _buildReviewsSection(course),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 32),
 
             // Enroll Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: _buildEnrollButton(),
+              child: _buildEnrollButton(course),
             ),
             const SizedBox(height: 16),
           ],
@@ -363,37 +323,47 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 
-  Widget _buildAboutTab() {
+  int calculateDiscountedPrice(int originalPrice, int discountPercentage) {
+    if (discountPercentage <= 0 || discountPercentage > 100) {
+      return originalPrice;
+    }
+    
+    final discount = (originalPrice * discountPercentage) ~/ 100;
+    return originalPrice - discount;
+  }
+
+  Widget _buildAboutTab(CourseEntity course) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Graphic Design now a popular profession graphic design by off your carrer about tantas regiones barbarorum pedibus obiit',
-          style: TextStyle(
-            color: const Color(0xFFA0A4AB),
+          course.description,
+          style: const TextStyle(
+            color: Color(0xFFA0A4AB),
             fontSize: 13,
             fontWeight: FontWeight.w700,
             height: 1.46,
           ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 16),
         RichText(
           text: TextSpan(
             children: [
               TextSpan(
-                text:
-                    'Graphic Design n a popular profession l Cur tantas regiones barbarorum pedibus obiit, maria transmi Et ne nimium beatus est; Addidisti ad extremum etiam ',
-                style: TextStyle(
-                  color: const Color(0xFFA0A4AB),
+                text: course.description,
+                style: const TextStyle(
+                  color: Color(0xFFA0A4AB),
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   height: 1.46,
                 ),
               ),
-              TextSpan(
+              const TextSpan(
                 text: 'Read More',
                 style: TextStyle(
-                  color: const Color(0xFFFF6636),
+                  color: Color(0xFFFF6636),
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   decoration: TextDecoration.underline,
@@ -407,11 +377,13 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 
-  Widget _buildCurriculumTab() {
+  Widget _buildCurriculumTab(CourseEntity course) {
+    final lessons = course.lessons;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(
-        5,
+        lessons.length,
         (index) => Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(16),
@@ -445,7 +417,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Module ${index + 1}: Introduction to Design',
+                      lessons[index].title,
                       style: const TextStyle(
                         color: Color(0xFF202244),
                         fontSize: 14,
@@ -454,9 +426,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '4 lessons • 45 minutes',
-                      style: TextStyle(
-                        color: const Color(0xFF545454),
+                      '${lessons[index].duration} minutes',
+                      style: const TextStyle(
+                        color: Color(0xFF545454),
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -464,9 +436,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                   ],
                 ),
               ),
-              const Icon(
-                Icons.lock_open,
-                color: Color(0xFF202244),
+              Icon(
+                true ? Icons.lock : Icons.lock_open,
+                color: const Color(0xFF202244),
                 size: 20,
               ),
             ],
@@ -476,14 +448,58 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 
-  Widget _buildFeaturesList() {
+  // Temporary instructor widget until you implement instructor data fetching
+  Widget _buildInstructorWidget() {
+    return Row(
+      children: [
+        Container(
+          width: 54,
+          height: 54,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
+              image: NetworkImage(
+                "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
+              ),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: const [
+            Text(
+              'Instructor Name', // Replace with actual instructor name
+              style: TextStyle(
+                color: Color(0xFF202244),
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Specialization', // Replace with actual specialization
+              style: TextStyle(
+                color: Color(0xFF545454),
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeaturesList(CourseEntity course) {
     final features = [
-      {'icon': Icons.book, 'text': '25 Lessons'},
+      {'icon': Icons.book, 'text': '${course.lessons.length} Lessons'},
       {'icon': Icons.devices, 'text': 'Access Mobile, Desktop & TV'},
-      {'icon': Icons.signal_cellular_alt, 'text': 'Beginner Level'},
-      {'icon': Icons.headphones, 'text': 'Audio Book'},
+      {'icon': Icons.signal_cellular_alt, 'text': '${course.level} Level'},
+      {'icon': Icons.language, 'text': '${course.language}'},
       {'icon': Icons.access_time, 'text': 'Lifetime Access'},
-      {'icon': Icons.quiz, 'text': '100 Quizzes'},
+      {'icon': Icons.quiz, 'text': 'Quizzes & Tests'},
       {'icon': Icons.workspace_premium, 'text': 'Certificate of Completion'},
     ];
 
@@ -497,7 +513,44 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 
-  Widget _buildEnrollButton() {
+  // Temporary review section - you would need to fetch actual review data
+  Widget _buildReviewsSection(CourseEntity course) {
+    // Showing dummy reviews for now
+    return Column(
+      children: [
+        const CourseReviewCard(
+          name: 'Student Name',
+          rating: 4.5,
+          review: 'This course has been very useful. Mentor was well spoken and I totally loved it.',
+          likes: 34,
+          timeAgo: '2 Weeks Ago',
+          imageUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36',
+        ),
+        const SizedBox(height: 16),
+        if (course.totalReviews > 1)
+          const CourseReviewCard(
+            name: 'Another Student',
+            rating: 4.0,
+            review: 'Great content and well-structured lessons. I learned a lot from this course.',
+            likes: 21,
+            timeAgo: '3 Weeks Ago',
+            imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
+          ),
+      ],
+    );
+  }
+
+  Widget _buildEnrollButton(CourseEntity course) {
+    String buttonText = 'Enroll Course';
+    if (course.price > 0) {
+      if (course.offerPercentage > 0) {
+        final discountedPrice = calculateDiscountedPrice(course.price, course.offerPercentage);
+        buttonText = 'Enroll Course - ₹$discountedPrice';
+      } else {
+        buttonText = 'Enroll Course - ₹${course.price}';
+      }
+    }
+
     return Container(
       height: 60,
       decoration: BoxDecoration(
@@ -515,7 +568,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         children: [
           Center(
             child: Text(
-              'Enroll Course - ₹499',
+              buttonText,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
@@ -544,3 +597,21 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 }
+
+// You'll need to add or update the LectureEntity class if it doesn't exist
+// This is based on usage in the code above, adjust as needed
+/*
+class LectureEntity {
+  final String id;
+  final String title;
+  final int duration; // in minutes
+  final bool isLocked;
+  
+  LectureEntity({
+    required this.id,
+    required this.title,
+    required this.duration,
+    this.isLocked = true,
+  });
+}
+*/

@@ -8,7 +8,9 @@ import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
 import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
 import 'package:user_app/features/explore/presentation/pages/explore.dart';
+import 'package:user_app/features/home/domain/entity/course-entity.dart';
 import 'package:user_app/features/home/presentation/pages/cource_detailed_page.dart';
+import 'package:user_app/features/home/presentation/pages/dummmy%20.dart';
 import 'package:user_app/features/home/presentation/pages/home.dart';
 import 'package:user_app/features/library/presentation/pages/library.dart';
 import 'package:user_app/features/main_page/presentation/pages/landing.dart';
@@ -24,7 +26,10 @@ class AppRoutes {
       GoRoute(path: '/course',
       name: AppRouteConstants.coursedetailsPaage,
       pageBuilder: (context, state) {
-        return MaterialPage(child: CourseDetailPage());
+        final course = state.extra as CourseEntity;
+        return MaterialPage(child: CourseDetailPage(
+          course: course,
+        ));
       },),
 
       GoRoute(path: '/splash',

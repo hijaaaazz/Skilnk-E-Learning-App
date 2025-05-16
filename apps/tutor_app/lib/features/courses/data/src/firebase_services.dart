@@ -31,6 +31,12 @@ abstract class CourseFirebaseService {
     required String categoryId,
     required String courseId,
   });
+
+  Future<Either<String, bool>> saveCourseForUser({
+  required String userId,
+  required String courseId,
+});
+
 }
 
 class CoursesFirebaseServiceImpl extends CourseFirebaseService {
@@ -483,6 +489,24 @@ Future<Either<String, bool>> activateToggleCourse(courseToggleParams req) async 
     return Left("Failed to toggle course active status: ${e.toString()}");
   }
 }
+
+  @override
+Future<Either<String, bool>> saveCourseForUser({
+  required String userId,
+  required String courseId,
+}) async {
+  try {
+    log("course adding started in mentor collection");
+    final userDoc = FirebaseFirestore.instance.collection('mentors').doc(userId);
+    await userDoc.update({
+      'courses': FieldValue.arrayUnion([courseId]),
+    });
+    return Right(true);
+  } catch (e) {
+    return Left("Failed to save course: ${e.toString()}");
+  }
+}
+
 
 
 
