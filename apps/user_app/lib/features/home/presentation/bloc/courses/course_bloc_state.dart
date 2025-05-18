@@ -9,7 +9,7 @@ final class CourseBlocLoading extends CourseBlocState {}
 
 final class CourseBlocLoaded extends CourseBlocState {
   final List<CategoryEntity> categories;
-  final List<CourseEntity> courses;
+  final List<CoursePreview> courses;
 
   CourseBlocLoaded(this.categories, this.courses);
 }

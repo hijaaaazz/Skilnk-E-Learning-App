@@ -6,3 +6,5 @@ sealed class CourseBlocEvent {}
 class FetchCategories extends CourseBlocEvent {}
 
 class FetchCourses extends CourseBlocEvent {}
+
+

@@ -1,0 +1,47 @@
+import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+
+class MentorModel {
+  final String id;
+  final String imageUrl;
+  final String name;
+  final List<String> courseIds;
+
+  MentorModel({
+    required this.id,
+    required this.imageUrl,
+    required this.name,
+    required this.courseIds
+  });
+
+  // From JSON (Map) to MentorModel object
+  factory MentorModel.fromJson(Map<String, dynamic> json) {
+  return MentorModel(
+    id: json['tutor_id'] as String,
+    imageUrl: json['profile_image'] as String,
+    name: json['full_name'] as String,
+    courseIds: (json["savedCourses"] as List<dynamic>).map((e) => e.toString()).toList(),
+  );
+}
+
+
+  // To JSON (MentorModel object to Map)
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'imageUrl': imageUrl,
+      'name': name,
+    };
+  }
+
+  MentorEntity toEntity(){
+    return MentorEntity(
+      id: id,
+      imageUrl: imageUrl,
+      name: name,
+      sessions: courseIds,
+      rating: 2,
+      specialization: "Good"
+
+    );
+  }
+}

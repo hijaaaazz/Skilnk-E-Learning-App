@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recase/recase.dart';
 
 class CourseFeatureItem extends StatelessWidget {
   final IconData icon;
@@ -31,7 +32,7 @@ class CourseFeatureItem extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            text,
+            ReCase(text).titleCase,
             style: TextStyle(
               color: const Color(0xFF545454),
               fontSize: 14,

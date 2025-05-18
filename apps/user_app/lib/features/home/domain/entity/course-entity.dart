@@ -1,3 +1,4 @@
+import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 
 class CourseEntity {
@@ -10,7 +11,7 @@ class CourseEntity {
   final String categoryName;
   final String tutorId;
   final String language;
-  final int duration;
+  final Duration duration;
   final bool isActive;
   final int enrolledCount;
   final double averageRating;
@@ -25,6 +26,7 @@ class CourseEntity {
   final bool isBanned;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final MentorEntity mentor;
 
   const CourseEntity({
     required this.id,
@@ -51,9 +53,11 @@ class CourseEntity {
     required this.isBanned,
     required this.createdAt,
     required this.updatedAt,
+    required this.mentor
   });
 
   CourseEntity copyWith({
+  MentorEntity? mentor,
   String? id,
   String? title,
   String? categoryId,
@@ -63,7 +67,7 @@ class CourseEntity {
   int? offerPercentage,
   String? tutorId,
   String? categoryName,
-  int? duration,
+  Duration? duration,
   bool? isActive,
   int? enrolledCount,
   double? averageRating,
@@ -81,6 +85,7 @@ class CourseEntity {
 }) {
   return CourseEntity(
     id: id ?? this.id,
+    mentor: mentor ?? this.mentor,
     title: title ?? this.title,
     categoryId: categoryId ?? this.categoryId,
     description: description ?? this.description,
@@ -110,47 +115,47 @@ class CourseEntity {
 }
 
 
-extension CourseEntityCopyWith on CourseEntity {
-  CourseEntity copyWith({
-    String? title,
-    String? description,
-    String? categoryId,
-    String? categoryName,
-    bool? isPaid,
-    int? price,
-    int? offerPercentage,
-    String? language,
-    String? level,
-    int? duration,
-    List<LectureEntity>? lessons,
-    String? courseThumbnail,
-  }) {
-    return CourseEntity(
-      id: id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      categoryId: categoryId ?? this.categoryId,
-      categoryName: categoryName ?? this.categoryName,
-      price: price ?? this.price,
-      offerPercentage: offerPercentage ?? this.offerPercentage,
-      language: language ?? this.language,
-      level: level ?? this.level,
-      duration: duration ?? this.duration,
-      lessons: lessons ?? this.lessons,
-      courseThumbnail: courseThumbnail ?? this.courseThumbnail,
-      // Keep other values unchanged
-      tutorId: tutorId,
-      isActive: isActive,
-      enrolledCount: enrolledCount,
-      averageRating: averageRating,
-      ratingBreakdown: ratingBreakdown,
-      totalReviews: totalReviews,
-      reviews: reviews,
-      notificationSent: notificationSent,
-      listed: listed,
-      isBanned: isBanned,
-      createdAt: createdAt,
-      updatedAt: DateTime.now(),
-    );
-  }
-}
+// extension CourseEntityCopyWith on CourseEntity {
+//   CourseEntity copyWith({
+//     String? title,
+//     String? description,
+//     String? categoryId,
+//     String? categoryName,
+//     bool? isPaid,
+//     int? price,
+//     int? offerPercentage,
+//     String? language,
+//     String? level,
+//     int? duration,
+//     List<LectureEntity>? lessons,
+//     String? courseThumbnail,
+//   }) {
+//     return CourseEntity(
+//       id: id,
+//       title: title ?? this.title,
+//       description: description ?? this.description,
+//       categoryId: categoryId ?? this.categoryId,
+//       categoryName: categoryName ?? this.categoryName,
+//       price: price ?? this.price,
+//       offerPercentage: offerPercentage ?? this.offerPercentage,
+//       language: language ?? this.language,
+//       level: level ?? this.level,
+//       duration: duration ?? this.duration,
+//       lessons: lessons ?? this.lessons,
+//       courseThumbnail: courseThumbnail ?? this.courseThumbnail,
+//       // Keep other values unchanged
+//       tutorId: tutorId,
+//       isActive: isActive,
+//       enrolledCount: enrolledCount,
+//       averageRating: averageRating,
+//       ratingBreakdown: ratingBreakdown,
+//       totalReviews: totalReviews,
+//       reviews: reviews,
+//       notificationSent: notificationSent,
+//       listed: listed,
+//       isBanned: isBanned,
+//       createdAt: createdAt,
+//       updatedAt: DateTime.now(),
+//     );
+//   }
+// }

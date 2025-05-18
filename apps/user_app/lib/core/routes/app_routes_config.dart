@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:user_app/core/routes/app_route_constants.dart';
 import 'package:user_app/features/account/presentation/pages%20/account.dart';
@@ -7,18 +8,21 @@ import 'package:user_app/features/auth/domain/entity/user.dart';
 import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
 import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
+import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
+import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
 import 'package:user_app/features/explore/presentation/pages/explore.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/presentation/pages/cource_detailed_page.dart';
-import 'package:user_app/features/home/presentation/pages/dummmy%20.dart';
+import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
+import 'package:user_app/features/home/presentation/pages/course_detailed_page.dart';
 import 'package:user_app/features/home/presentation/pages/home.dart';
+import 'package:user_app/features/home/presentation/widgets/course_card.dart';
 import 'package:user_app/features/library/presentation/pages/library.dart';
 import 'package:user_app/features/main_page/presentation/pages/landing.dart';
 import 'package:user_app/features/splash/presentation/pages/splash.dart';
 
 class AppRoutes {
   GoRouter router = GoRouter(
-    initialLocation: "/splash"
+    initialLocation: "/home"
     ,
     routes: [
       
@@ -26,9 +30,12 @@ class AppRoutes {
       GoRoute(path: '/course',
       name: AppRouteConstants.coursedetailsPaage,
       pageBuilder: (context, state) {
-        final course = state.extra as CourseEntity;
-        return MaterialPage(child: CourseDetailPage(
-          course: course,
+        final courseId = state.extra as String;
+        return MaterialPage(child: BlocProvider(
+          create: (context) => CourseCubit(),
+          child: CourseDetailPage(
+                  id: courseId,
+                ),
         ));
       },),
 
@@ -85,7 +92,10 @@ class AppRoutes {
               GoRoute(
                 path: "/explore",
                 name: AppRouteConstants.exploreRouteName,
-                builder: (context, state) => ExplorePage(),
+                builder: (context, state) => BlocProvider(
+                  create: (context) => ExploreBloc()..add(InitializeExplore()),
+                  child: ExplorePage(),
+                ),
               ),
             ],
           ),

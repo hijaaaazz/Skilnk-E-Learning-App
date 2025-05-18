@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/course_bloc_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
 import 'package:user_app/features/home/presentation/widgets/category_chip.dart';
 
 class CategoriesSection extends StatelessWidget {

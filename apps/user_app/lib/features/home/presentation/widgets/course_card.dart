@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:user_app/core/routes/app_route_constants.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
+import 'package:user_app/features/home/domain/entity/course_privew.dart';
 
 class CourseCard extends StatelessWidget {
-  final CourseEntity course;
+  final CoursePreview course;
   
   final bool isPartiallyVisible;
 
@@ -19,7 +20,7 @@ class CourseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        context.pushNamed(AppRouteConstants.coursedetailsPaage,extra: course);
+        context.pushNamed(AppRouteConstants.coursedetailsPaage,extra: course.id);
       },
       borderRadius: BorderRadius.circular(16) ,
       child: Container(
@@ -44,9 +45,9 @@ class CourseCard extends StatelessWidget {
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
-              child: course.courseThumbnail.isNotEmpty
+              child: course.thumbnail.isNotEmpty
                   ? Image.network(
-                      course.courseThumbnail,
+                      course.thumbnail,
                       height: 120,
                       width: 200,
                       fit: BoxFit.cover,
@@ -69,7 +70,7 @@ class CourseCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    course.categoryName,
+                    course.categoryname,
                     style: const TextStyle(
                       color: Colors.deepOrange,
                       fontSize: 12,
@@ -77,7 +78,7 @@ class CourseCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    course.title,
+                    course.courseTitle,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -87,9 +88,12 @@ class CourseCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
+                        num.parse(course.price) == 0 ?
+                        "Free":
                         course.price.toString(),
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
+                          color: Colors.deepOrange
                         ),
                       ),
                       const SizedBox(width: 8),

@@ -29,9 +29,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 24),
                   const CoursesSection(),
                   const SizedBox(height: 24),
-                  const CategoriesSection(),
-                  const SizedBox(height: 24),
-                  const CoursesSection(),
+                  
                   
                 ]),
               ),

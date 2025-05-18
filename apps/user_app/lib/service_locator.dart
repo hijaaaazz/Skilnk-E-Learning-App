@@ -10,10 +10,15 @@ import 'package:user_app/features/auth/domain/usecases/reset_pass.dart';
 import 'package:user_app/features/auth/domain/usecases/signin.dart';
 import 'package:user_app/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:user_app/features/auth/domain/usecases/signup.dart';
+import 'package:user_app/features/explore/data/repos/search_repo.dart';
+import 'package:user_app/features/explore/data/src/firebase_services.dart';
+import 'package:user_app/features/explore/domain/repos/search_repo.dart';
+import 'package:user_app/features/explore/domain/usecases/get_search_results.dart';
 import 'package:user_app/features/home/data/repos/course_repo.dart';
 import 'package:user_app/features/home/data/src/firebase_service.dart';
 import 'package:user_app/features/home/domain/repos/repository.dart';
 import 'package:user_app/features/home/domain/usecases/get_categories.dart';
+import 'package:user_app/features/home/domain/usecases/get_course_details.dart';
 import 'package:user_app/features/home/domain/usecases/get_courses.dart';
 
 final serviceLocator = GetIt.instance;
@@ -27,6 +32,9 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<CoursesFirebaseService>(
     () => CoursesFirebaseServicesImp()
   );
+  serviceLocator.registerLazySingleton<ExploreFirebaseService>(
+    () => ExploreFirebaseServicesImp()
+  );
 
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
@@ -35,6 +43,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<CoursesRepository>(
     () => CoursesRepositoryImp()
+  );
+
+  serviceLocator.registerLazySingleton<SearchAndFilterRepository>(
+    () => SearchAndFilterRepositoryImp()
   );
 
   // ✅ Use Cases
@@ -79,6 +91,16 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<GetCoursesUseCase>(
     () => GetCoursesUseCase()
   );
+
+  serviceLocator.registerLazySingleton<GetCourseDetailsUseCase>(
+    () => GetCourseDetailsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetSearchResultsUseCase>(
+    () => GetSearchResultsUseCase()
+  );
+
+  
 
   
 }

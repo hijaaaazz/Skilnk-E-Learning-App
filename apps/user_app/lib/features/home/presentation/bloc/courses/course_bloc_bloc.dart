@@ -1,9 +1,14 @@
+
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:user_app/core/usecase/usecase.dart';
 import 'package:user_app/features/home/domain/entity/category_entity.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
+import 'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'package:user_app/features/home/domain/usecases/get_categories.dart';
+import 'package:user_app/features/home/domain/usecases/get_course_details.dart';
 import 'package:user_app/features/home/domain/usecases/get_courses.dart';
 import 'package:user_app/service_locator.dart';
 
@@ -14,6 +19,7 @@ class CourseBlocBloc extends Bloc<CourseBlocEvent, CourseBlocState> {
   CourseBlocBloc() : super(CourseBlocInitial()) {
     on<FetchCategories>(_onFetchCategories);
     on<FetchCourses>(_onFetchCourses);
+    
   }
 
   Future<void> _onFetchCategories(FetchCategories event, Emitter<CourseBlocState> emit) async {
@@ -50,4 +56,6 @@ class CourseBlocBloc extends Bloc<CourseBlocEvent, CourseBlocState> {
       },
     );
   }
+
+  
 }

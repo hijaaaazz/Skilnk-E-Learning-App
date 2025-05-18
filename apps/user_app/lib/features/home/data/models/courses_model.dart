@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:user_app/features/home/data/models/lecture_model.dart';
+import 'package:user_app/features/home/data/models/mentor_mode.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
+import 'package:user_app/features/home/domain/entity/course_privew.dart';
 
 class CourseModel {
   final String id;
@@ -27,8 +29,10 @@ class CourseModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? language;
+  final MentorModel? mentor;
 
   CourseModel({
+     this.mentor,
     required this.id,
     required this.title,
     required this.categoryId,
@@ -57,6 +61,7 @@ class CourseModel {
 
   factory CourseModel.fromJson(Map<String, dynamic> json, String docId) {
     return CourseModel(
+      
       id: docId,
       title: json['title'] ?? '',
       categoryId: json['category'] is Map ? json['category']['_id'] ?? '' : json['category'] ?? '',
@@ -201,8 +206,10 @@ class CourseModel {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? language,
+    MentorModel? mentor,
   }) {
     return CourseModel(
+      mentor: mentor ?? this.mentor,
       id: id ?? this.id,
       title: title ?? this.title,
       categoryId: categoryId ?? this.categoryId,
@@ -239,7 +246,7 @@ class CourseModel {
       price: price,
       offerPercentage: offerPercentage,
       tutorId: tutorId,
-      duration: duration,
+      duration: Duration(seconds: duration),
       isActive: isActive,
       categoryName: categoryName ?? "webbrrr",
       language: language ?? '',
@@ -255,7 +262,8 @@ class CourseModel {
       listed: listed,
       isBanned: isBanned,
       createdAt: createdAt,
-      updatedAt: updatedAt
+      updatedAt: updatedAt,
+      mentor: mentor!.toEntity()
     );
   }
 
@@ -268,7 +276,7 @@ factory CourseModel.fromEntity(CourseEntity entity) {
     price: entity.price,
     offerPercentage: entity.offerPercentage,
     tutorId: entity.tutorId,
-    duration: entity.duration,
+    duration: entity.duration.inSeconds,
     isActive: entity.isActive,
     categoryName: entity.categoryName,
     enrolledCount: entity.enrolledCount,
@@ -286,6 +294,18 @@ factory CourseModel.fromEntity(CourseEntity entity) {
     updatedAt: entity.updatedAt,
     language: entity.language,
   );
+}
+
+CoursePreview toPreview(){
+  return CoursePreview(
+    id: id,
+    averageRating: averageRating,
+    categoryname: categoryName!,
+    courseTitle: title,
+    price: price.toString(),
+    thumbnail: courseThumbnail,
+    
+    );
 }
 
 

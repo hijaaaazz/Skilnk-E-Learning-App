@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_app/core/configs/theme/theme.dart';
 import 'package:user_app/core/routes/app_routes_config.dart';
 import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/course_bloc_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
 import 'package:user_app/firebase_options.dart';
 import 'package:user_app/service_locator.dart';
 

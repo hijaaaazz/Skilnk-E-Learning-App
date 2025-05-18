@@ -47,7 +47,7 @@ class Destination {
 
 const destinations = [
   Destination(label: "Home", icon: Icon(Icons.home_outlined)),
-  Destination(label: "Explore", icon: Icon(Icons.explore_outlined)),
+  Destination(label: "Explore", icon: Icon(Icons.search_sharp)),
   Destination(label: "Library", icon: Icon(Icons.library_books_outlined)),
   Destination(label: "Profile", icon: Icon(Icons.person_outline)),
 ];

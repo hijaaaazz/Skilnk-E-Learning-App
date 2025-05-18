@@ -49,6 +49,7 @@ dependencies:
   image_picker: ^1.1.2
   meta: ^1.15.0
   recase: ^4.1.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
 
