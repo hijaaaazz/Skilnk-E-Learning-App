@@ -1,4 +1,5 @@
 import 'package:user_app/features/auth/domain/entity/user.dart';
+import 'package:user_app/features/home/data/models/courses_model.dart';
 
 class UserModel {
   final String userId;
@@ -7,6 +8,7 @@ class UserModel {
   final String? image;
   final bool emailVerified;
   final DateTime createdDate;
+  final List<String> savedCourses;
 
   UserModel({
     required this.userId,
@@ -15,19 +17,22 @@ class UserModel {
     this.image,
     required this.emailVerified,
     required this.createdDate,
+    required this.savedCourses,
   });
 
   // ✅ From JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      userId: json['userId'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      image: json['image'],
-      emailVerified: json['emailVerified'] ?? false,
-      createdDate: DateTime.parse(json['createdDate'] ?? DateTime.now().toIso8601String()),
-    );
-  }
+  return UserModel(
+    userId: json['userId'] ?? '',
+    name: json['name'] ?? '',
+    email: json['email'] ?? '',
+    image: json['image'],
+    emailVerified: json['emailVerified'] ?? false,
+    createdDate: DateTime.parse(json['createdDate'] ?? DateTime.now().toIso8601String()),
+    savedCourses: List<String>.from(json['savedCourses'] ?? []),
+  );
+}
+
 
   // ✅ To JSON
   Map<String, dynamic> toJson() {
@@ -38,6 +43,7 @@ class UserModel {
       'image': image,
       'emailVerified': emailVerified,
       'createdAt': createdDate.toIso8601String(),
+      'savedCourses' : savedCourses,
     };
   }
 
@@ -50,6 +56,7 @@ class UserModel {
       image: entity.image,
       emailVerified: entity.emailVerified,
       createdDate: entity.createdDate,
+      savedCourses: entity.savedCourses
     );
   }
 
@@ -62,6 +69,7 @@ class UserModel {
       image: image,
       emailVerified: emailVerified,
       createdDate: createdDate,
+      savedCourses: savedCourses
     );
   }
 
@@ -73,6 +81,7 @@ class UserModel {
     String? image,
     bool? emailVerified,
     DateTime? createdDate,
+    List<String>? savedCourses,
   }) {
     return UserModel(
       userId: userId ?? this.userId,
@@ -81,6 +90,7 @@ class UserModel {
       image: image ?? this.image,
       emailVerified: emailVerified ?? this.emailVerified,
       createdDate: createdDate ?? this.createdDate,
+      savedCourses: savedCourses ?? this.savedCourses
     );
   }
 }

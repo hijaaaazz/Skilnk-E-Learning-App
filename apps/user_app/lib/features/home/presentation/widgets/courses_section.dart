@@ -1,6 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/features/explore/data/models/search_args.dart';
+import 'package:user_app/features/explore/data/models/search_params_model.dart';
 import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
 import 'package:user_app/features/home/presentation/widgets/course_card.dart';
 
@@ -27,7 +31,9 @@ class CoursesSection extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.goNamed(AppRouteConstants.exploreRouteName,extra:SearchParams(query: "", type: SearchType.course) );
+                    },
                     child: Row(
                       children: const [
                         Text(

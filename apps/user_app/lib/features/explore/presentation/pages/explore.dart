@@ -1,6 +1,9 @@
 // lib/features/explore/presentation/pages/explore_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/core/debouncer.dart';
+import 'package:user_app/features/explore/data/models/search_args.dart';
+import 'package:user_app/features/explore/data/models/search_params_model.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
@@ -13,16 +16,18 @@ import 'package:user_app/features/explore/presentation/widgets/mentors_list.dart
 import 'package:user_app/features/explore/presentation/widgets/search_bar.dart';
 
 class ExplorePage extends StatelessWidget {
-  const ExplorePage({super.key});
+  final SearchParams? queryParams;
+  const ExplorePage({super.key,  this.queryParams});
 
   @override
   Widget build(BuildContext context) {
-    return const ExplorePageView();
+    return  ExplorePageView(queryParams:queryParams );
   }
 }
 
 class ExplorePageView extends StatefulWidget {
-  const ExplorePageView({super.key});
+  final SearchParams? queryParams;
+  const ExplorePageView({super.key,this.queryParams});
 
   @override
   State<ExplorePageView> createState() => _ExplorePageViewState();
@@ -37,19 +42,34 @@ class _ExplorePageViewState extends State<ExplorePageView> {
     _searchController.addListener(_onSearchChanged);
     
     // Initialize the explore page
-    context.read<ExploreBloc>().add(InitializeExplore());
-  }
-
-  void _onSearchChanged() {
-    context.read<ExploreBloc>().add(SearchExplore(_searchController.text));
+     context.read<ExploreBloc>().add(InitializeExplore(params : widget.queryParams ?? SearchParams(query: "", type: SearchType.course)));
   }
 
   @override
-  void dispose() {
-    _searchController.removeListener(_onSearchChanged);
-    _searchController.dispose();
-    super.dispose();
+void didUpdateWidget(covariant ExplorePageView oldWidget) {
+  super.didUpdateWidget(oldWidget);
+  if (widget.queryParams != oldWidget.queryParams) {
+    context.read<ExploreBloc>().add(InitializeExplore(params:  widget.queryParams?? SearchParams(query: "", type:SearchType.course) ));
   }
+}
+
+// In your _ExplorePageViewState class
+final Debouncer _debouncer = Debouncer(milliseconds: 200); // 5 seconds
+
+void _onSearchChanged() {
+  _debouncer.run(() {
+    context.read<ExploreBloc>().add(SearchExplore(_searchController.text));
+  });
+}
+
+@override
+void dispose() {
+  _searchController.removeListener(_onSearchChanged);
+  _searchController.dispose();
+  _debouncer.dispose();
+  super.dispose();
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +117,7 @@ class _ExplorePageViewState extends State<ExplorePageView> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<ExploreBloc>().add(InitializeExplore());
+                      context.read<ExploreBloc>().add(InitializeExplore(params: widget.queryParams?? SearchParams(query: "", type: SearchType.course)));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ExploreTheme.primaryColor,
@@ -114,10 +134,11 @@ class _ExplorePageViewState extends State<ExplorePageView> {
             children: [  
               SearchBarWidget(controller: _searchController),
               MainChipsWidget(
+                searchController: _searchController,
                 chips: state.mainChips,
                 selectedChip: state.selectedMainChip,
               ),
-              if (state.selectedMainChip == 'Courses') 
+              if (state.selectedMainChip == SearchType.course) 
                 const CoursesFiltersWidget(),
               _buildContent(state),
             ],
@@ -148,14 +169,15 @@ class _ExplorePageViewState extends State<ExplorePageView> {
     }
 
     switch (state.selectedMainChip) {
-      case 'Categories':
-        return CategoriesGridWidget(categories: state.filteredCategories);
-      case 'Courses':
+      case SearchType.category:
+        return CategoriesListWidget(
+          searchController: _searchController,
+          categories: state.filteredCategories);
+      case SearchType.course:
         return CoursesListWidget(courses: state.filteredCourses);
-      case 'Mentors':
+      case SearchType.mentor:
         return MentorsListWidget(mentors: state.filteredMentors);
-      default:
-        return const SizedBox.shrink();
+      
     }
   }
 }

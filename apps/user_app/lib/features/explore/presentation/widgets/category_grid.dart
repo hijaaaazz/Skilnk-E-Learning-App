@@ -1,65 +1,79 @@
-// lib/features/explore/presentation/widgets/categories_grid_widget.dart
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
-import 'package:user_app/features/explore/presentation/theme.dart';
+import 'package:flutter/material.dart'; 
+import 'package:flutter_bloc/flutter_bloc.dart'; 
+import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart'; 
+import 'package:user_app/features/explore/presentation/bloc/explore_event.dart'; 
+import 'package:user_app/features/explore/presentation/theme.dart'; 
 import 'package:user_app/features/home/domain/entity/category_entity.dart';
 
-class CategoriesGridWidget extends StatelessWidget {
+class CategoriesListWidget extends StatelessWidget {
   final List<CategoryEntity> categories;
+  final TextEditingController searchController;
   
-  const CategoriesGridWidget({
+  const CategoriesListWidget({
     Key? key,
     required this.categories,
+    required this.searchController,
   }) : super(key: key);
-
+  
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GridView.builder(
-        padding: const EdgeInsets.all(20.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 3/2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16.0),
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
           
-          return GestureDetector(
-            onTap: () {
-              context.read<ExploreBloc>().add(SelectCategory(category.id));
-            },
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: Colors.grey.shade100),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: [
-                      ExploreTheme.primaryColor.withOpacity(0.9),
-                      ExploreTheme.primaryColor.withOpacity(0.7),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: GestureDetector(
+              onTap: () {
+                context.read<ExploreBloc>().add(SelectCategory(category));
+                searchController.text = context.read<ExploreBloc>().state.coursesQuery;
+              },
+              child: Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: Colors.grey.shade100),
                 ),
-                child: Center(
-                  child: Text(
-                    category.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                child: Container(
+                  height: 56,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white.withOpacity(0.9),
+                        Colors.white.withOpacity(0.9),
+                      ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
                     ),
-                    textAlign: TextAlign.center,
+                  ),
+                  child: Padding(
+                    padding:  EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width *0.1),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          category.title,
+                          style: const TextStyle(
+                            color: Colors.deepOrange,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(category.courses.length.toString(),
+                         style: const TextStyle(
+                            color: Colors.deepOrange,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -10,4 +10,6 @@ class AppRouteConstants {
   static const String verificationRouteName = "verification";
   static const String personalInfoSubmitingPageName = "infosubmition";
   static const String coursedetailsPaage = "courseDetils";
+  static const String enrolledCoursedetailsPaage = "enrolledCourseDetils";
+  static const String lecturedetailsPaage = "lectureDetailsPage";
 } 

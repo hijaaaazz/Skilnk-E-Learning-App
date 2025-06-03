@@ -36,9 +36,11 @@ class AuthStatusState {
   factory AuthStatusState.initial() =>
       AuthStatusState(status: AuthStatus.unauthenticated);
 }
+
 class ResetPasswordState extends AuthStatusState{
   ResetPasswordState({required super.status});
 }
+
 class ResetPasswordSentState extends ResetPasswordState{
   ResetPasswordSentState({required super.status});
 }
@@ -51,22 +53,35 @@ class ResetPasswordFailedState extends ResetPasswordState {
     required super.status,
     required this.message,
   });
-
 }
 
 class AuthStatusCubit extends Cubit<AuthStatusState> {
   AuthStatusCubit() : super(AuthStatusState.initial());
 
+  // Get Current User - Call this on app startup
+  Future<void> getCurrentUser() async {
+    // Already checking for current user, no need to emit loading state immediately
+    final result = await serviceLocator<GetCurrentUserUseCase>().call(params: NoParams());
+    result.fold(
+      (l) => emit(AuthStatusState(status: AuthStatus.unauthenticated)),
+      (userModel) {
+        final isVerified = userModel.emailVerified;
+        emit(AuthStatusState(
+          status: isVerified ? AuthStatus.emailVerified : AuthStatus.authenticated,
+          user: userModel.toEntity(),
+        ));
+      },
+    );
+  }
+
   // Sign Up
   Future<void> signUp(UserCreationReq req) async {
     emit(AuthStatusState(status: AuthStatus.loading));
     final result = await serviceLocator<SignupUseCase>().call(params: req);
-
     
     result.fold(
       (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),
       (r) {
-        
         emit(AuthStatusState(status: AuthStatus.authenticated, user: r));
       }
     );
@@ -89,7 +104,6 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
         }else{
           emit(AuthStatusState(status: AuthStatus.authenticated, user: r));
         }
-        
       } 
     );
   }
@@ -100,7 +114,7 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
     final result = await serviceLocator<SignInWithGoogleUseCase>().call(params: NoParams());
     result.fold(
       (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),
-      (r) => emit(AuthStatusState(status: AuthStatus.emailVerified,user: r)),
+      (r) => emit(AuthStatusState(status: AuthStatus.emailVerified, user: r)),
     );
   }
 
@@ -111,22 +125,6 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
     result.fold(
       (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),
       (r) => emit(AuthStatusState.initial()),
-    );
-  }
-
-  // Get Current User
-  Future<void> getCurrentUser() async {
-    emit(AuthStatusState(status: AuthStatus.loading));
-    final result = await serviceLocator<GetCurrentUserUseCase>().call(params: NoParams());
-    result.fold(
-      (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),
-      (userModel) {
-        final isVerified = userModel.emailVerified;
-        emit(AuthStatusState(
-          status: isVerified ? AuthStatus.emailVerified : AuthStatus.authenticated,
-          user: userModel.toEntity(), // assume `toEntity()` exists
-        ));
-      },
     );
   }
 
@@ -163,15 +161,17 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
 
   // Reset Password
   Future<void> resetPassword(String email) async {
+    emit(AuthStatusState(status: AuthStatus.loading)); // Add loading state
     final result = await serviceLocator<ResetPasswordUseCase>().call(params: email);
     result.fold(
-      (l) => emit(ResetPasswordFailedState(status: AuthStatus.unauthenticated,message: l )),
+      (l) => emit(ResetPasswordFailedState(status: AuthStatus.unauthenticated, message: l)),
       (r) => emit(ResetPasswordSentState(status: AuthStatus.unauthenticated)),
     );
   }
 
   // Register User (Optional - Post-SignUp processing)
   Future<void> registerUser(UserEntity user) async {
+    emit(AuthStatusState(status: AuthStatus.loading));
     final result = await serviceLocator<RegisterUserUseCase>().call(params: user);
     result.fold(
       (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),

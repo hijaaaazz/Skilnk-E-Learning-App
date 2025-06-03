@@ -25,11 +25,13 @@ class CourseModel {
   final String level;
   final bool notificationSent;
   final bool listed;
+  final bool isSaved;
   final bool isBanned;
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? language;
   final MentorModel? mentor;
+  final bool isEnrolled;
 
   CourseModel({
      this.mentor,
@@ -43,6 +45,7 @@ class CourseModel {
     required this.duration,
     required this.isActive,
     required this.enrolledCount,
+    required this.isEnrolled,
      this.categoryName,
     required this.averageRating,
     required this.ratingBreakdown,
@@ -53,16 +56,18 @@ class CourseModel {
     required this.level,
     required this.notificationSent,
     required this.listed,
+    required this.isSaved,
     required this.isBanned,
     required this.createdAt,
     required this.updatedAt,
     this.language,
   });
 
-  factory CourseModel.fromJson(Map<String, dynamic> json, String docId) {
+  factory CourseModel.fromJson(Map<String, dynamic> json, String docId,bool isSaved,bool isEnrolled) {
     return CourseModel(
       
       id: docId,
+      
       title: json['title'] ?? '',
       categoryId: json['category'] is Map ? json['category']['_id'] ?? '' : json['category'] ?? '',
       description: json['description'] ?? '',
@@ -86,6 +91,8 @@ class CourseModel {
       createdAt: _parseTimestamp(json['createdAt']),
       updatedAt: _parseTimestamp(json['updatedAt']),
       language: json['language'],
+      isSaved: isSaved,
+      isEnrolled: isEnrolled
     );
   }
 
@@ -203,10 +210,12 @@ class CourseModel {
     bool? notificationSent,
     bool? listed,
     bool? isBanned,
+    bool? isSaved,
     DateTime? createdAt,
     DateTime? updatedAt,
     String? language,
     MentorModel? mentor,
+    bool? isEnrolled
   }) {
     return CourseModel(
       mentor: mentor ?? this.mentor,
@@ -234,6 +243,8 @@ class CourseModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       language: language ?? this.language,
+      isSaved: isSaved ?? this.isSaved,
+      isEnrolled: isEnrolled ?? this.isEnrolled
     );
   }
 
@@ -263,7 +274,9 @@ class CourseModel {
       isBanned: isBanned,
       createdAt: createdAt,
       updatedAt: updatedAt,
-      mentor: mentor!.toEntity()
+      isSaved: isSaved,
+      mentor: mentor!.toEntity(),
+      isEnrolled: isEnrolled
     );
   }
 
@@ -293,6 +306,8 @@ factory CourseModel.fromEntity(CourseEntity entity) {
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
     language: entity.language,
+    isSaved: entity.isSaved,
+    isEnrolled: entity.isEnrolled
   );
 }
 

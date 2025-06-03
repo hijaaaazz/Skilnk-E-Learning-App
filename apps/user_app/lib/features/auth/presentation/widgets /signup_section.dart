@@ -59,8 +59,10 @@ class SignUpForm extends StatelessWidget {
           ),
           BlocConsumer<AuthStatusCubit, AuthStatusState>(
             listener: (context, state) {
-              if (state.message != null) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
+              if (state.status == AuthStatus.failure && state.message != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.message!))
+                );
               }
 
               if (state.status == AuthStatus.emailVerified) {
@@ -70,17 +72,18 @@ class SignUpForm extends StatelessWidget {
               }
             },
             builder: (context, state) {
+              // Don't automatically trigger loading state when widget builds
               return PrimaryAuthButton(
                 text: "Continue",
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
                     context.read<AuthStatusCubit>().signUp(
-                          UserCreationReq(
-                            name: nameController.text.trim(),
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim(),
-                          ),
-                        );
+                      UserCreationReq(
+                        name: nameController.text.trim(),
+                        email: emailController.text.trim(),
+                        password: passwordController.text.trim(),
+                      ),
+                    );
                   }
                 },
               );

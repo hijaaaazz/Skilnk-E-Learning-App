@@ -1,3 +1,5 @@
+import 'package:user_app/features/home/domain/entity/course-entity.dart';
+
 class UserEntity {
   final String userId;
   final String name;
@@ -5,6 +7,7 @@ class UserEntity {
   final String? image;
   final bool emailVerified;
   final DateTime createdDate;
+  final List<String> savedCourses;
 
   UserEntity({
     required this.userId,
@@ -12,6 +15,7 @@ class UserEntity {
      this.image,
     required this.name,
     required this.emailVerified,
-    required this.createdDate
+    required this.createdDate,
+    required this.savedCourses
   });
 }

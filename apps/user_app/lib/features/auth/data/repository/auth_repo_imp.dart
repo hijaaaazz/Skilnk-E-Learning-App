@@ -50,7 +50,8 @@ class AuthenticationRepoImplementation extends AuthRepository {
             name: user.name ?? '',
             image: firebaseUser.photoURL ?? '',
             emailVerified: false,
-            createdDate: DateTime.now()
+            createdDate: DateTime.now(),
+            savedCourses: []
           );
 
           // Save to Firestore
@@ -115,7 +116,8 @@ class AuthenticationRepoImplementation extends AuthRepository {
                     name: firebaseUser.displayName ?? '',
                     image: firebaseUser.photoURL ?? '',
                     emailVerified: isVerified,
-                    createdDate: DateTime.now()
+                    createdDate: DateTime.now(),
+                    savedCourses: []
                   );
                   
                   // If not verified, send verification email and return basic model
@@ -180,7 +182,8 @@ class AuthenticationRepoImplementation extends AuthRepository {
                 name: firebaseUser.displayName ?? 'User',
                 image: firebaseUser.photoURL ?? '',
                 emailVerified: true,
-                createdDate: DateTime.now()
+                createdDate: DateTime.now(),
+                savedCourses: []
               );
               
               // Save to Firestore

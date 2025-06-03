@@ -69,8 +69,6 @@ class AuthButtonsContainer extends StatelessWidget {
   }
 }
 
-
-
 class AuthFormContainer extends StatelessWidget {
   final String title;
   final List<Widget> fields;
@@ -82,7 +80,6 @@ class AuthFormContainer extends StatelessWidget {
     super.key,
     required this.title,
     required this.fields,
-
     required this.switchText,
     required this.onSwitchPressed,
     required this.isSignIn
@@ -90,64 +87,57 @@ class AuthFormContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthStatusCubit,AuthStatusState>(
-      listener: (context, state) {
-         if(state.message != null){
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message!)));
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.85,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 139, 33, 0),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ...fields,
+          const SizedBox(height: 30),
+          
+          const SizedBox(height: 15),
+          if(isSignIn)
+            TextButton(
+              onPressed: () {
+                context.read<AuthUiCubit>().switchToForm(AuthFormType.resetPass);
+              },
+              child: const Text(
+                "Forgot Password ?",
+                style: TextStyle(
+                  color: Color.fromARGB(255, 139, 33, 0),
+                ),
+              ),
+            ),
+          
+          // Only show Google Sign In button without triggering loading state
+          GoogleSignInButton(
+            onPressed: () {
+              context.read<AuthStatusCubit>().signInWithGoogle();
             }
-      },
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        width: MediaQuery.of(context).size.width * 0.85,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              title,
+          ),
+          
+          TextButton(
+            onPressed: onSwitchPressed,
+            child: Text(
+              switchText,
               style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 139, 33, 0),
               ),
             ),
-            const SizedBox(height: 20),
-            ...fields,
-            const SizedBox(height: 30),
-      
-            
-            
-            const SizedBox(height: 15),
-            if(isSignIn)
-              TextButton(
-              onPressed: (){
-                context.read<AuthUiCubit>().switchToForm(AuthFormType.resetPass);
-              },
-              child: Text(
-                "Forgot Password ?",
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 139, 33, 0),
-                ),
-              ),
-            ),
-             GoogleSignInButton(
-                onPressed: (){
-                   context.read<AuthStatusCubit>().signInWithGoogle();
-                }
-                ),
-            TextButton(
-              onPressed: onSwitchPressed,
-              child: Text(
-                switchText,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 139, 33, 0),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

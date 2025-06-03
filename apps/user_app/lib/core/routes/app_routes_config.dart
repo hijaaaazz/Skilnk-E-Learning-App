@@ -8,21 +8,21 @@ import 'package:user_app/features/auth/domain/entity/user.dart';
 import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
 import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
+import 'package:user_app/features/explore/data/models/search_params_model.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
 import 'package:user_app/features/explore/presentation/pages/explore.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
 import 'package:user_app/features/home/presentation/pages/course_detailed_page.dart';
+import 'package:user_app/features/home/presentation/pages/course_enrolled_page.dart';
 import 'package:user_app/features/home/presentation/pages/home.dart';
-import 'package:user_app/features/home/presentation/widgets/course_card.dart';
+import 'package:user_app/features/home/presentation/pages/video_player_page.dart';
 import 'package:user_app/features/library/presentation/pages/library.dart';
 import 'package:user_app/features/main_page/presentation/pages/landing.dart';
 import 'package:user_app/features/splash/presentation/pages/splash.dart';
 
 class AppRoutes {
   GoRouter router = GoRouter(
-    initialLocation: "/home"
+    initialLocation: "/splash"
     ,
     routes: [
       
@@ -44,6 +44,20 @@ class AppRoutes {
       pageBuilder: (context, state) {
         return MaterialPage(child: SplashPage());
       },),
+
+      GoRoute(path: "/enrolled_course",
+      name: AppRouteConstants.enrolledCoursedetailsPaage,
+      pageBuilder: (context, state) {
+        return MaterialPage(child: CourseProgressPage(courseId: 'uuhu',courseTitle: "uhuh",));
+      },
+      ),
+
+      GoRoute(path: "/lecture",
+      name: AppRouteConstants.lecturedetailsPaage,
+      pageBuilder:(context,state){
+         return MaterialPage(
+        child:VideoPlayerPage(courseId: "",lectureId: "",) );
+        }),
 
       GoRoute(
         name: AppRouteConstants.authRouteName,
@@ -92,10 +106,14 @@ class AppRoutes {
               GoRoute(
                 path: "/explore",
                 name: AppRouteConstants.exploreRouteName,
-                builder: (context, state) => BlocProvider(
-                  create: (context) => ExploreBloc()..add(InitializeExplore()),
-                  child: ExplorePage(),
-                ),
+                builder: (context, state) {
+                  final query = state.extra as SearchParams?;
+                  return BlocProvider(
+                  
+                  create: (context) => ExploreBloc(),
+                  child: ExplorePage(queryParams: query,),
+                );
+                } 
               ),
             ],
           ),

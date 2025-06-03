@@ -1,9 +1,14 @@
 import 'package:user_app/features/explore/data/models/search_args.dart';
 import 'package:user_app/features/explore/data/models/search_params_model.dart';
+import 'package:user_app/features/home/domain/entity/category_entity.dart';
 
 abstract class ExploreEvent {}
 
-class InitializeExplore extends ExploreEvent {}
+class InitializeExplore extends ExploreEvent {
+  final SearchParams? params;
+
+  InitializeExplore({this.params}); 
+}
 
 class SearchExplore extends ExploreEvent {
   final String query;
@@ -12,13 +17,13 @@ class SearchExplore extends ExploreEvent {
 }
 
 class SelectMainChip extends ExploreEvent {
-  final String chipName;
+  final SearchType chipName;
   
   SelectMainChip(this.chipName);
 }
 
 class SelectCategory extends ExploreEvent {
-  final String categoryId;
+  final CategoryEntity categoryId;
   
   SelectCategory(this.categoryId);
 }
@@ -54,4 +59,11 @@ class FetchCategories extends ExploreEvent {
   final bool refresh;
   
   FetchCategories({this.refresh = false});
+}
+
+
+
+class ClearSorting extends ExploreEvent {
+  
+  ClearSorting();
 }

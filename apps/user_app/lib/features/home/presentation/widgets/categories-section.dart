@@ -1,6 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/features/explore/data/models/search_args.dart';
+import 'package:user_app/features/explore/data/models/search_params_model.dart';
 import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
 import 'package:user_app/features/home/presentation/widgets/category_chip.dart';
 
@@ -22,7 +26,10 @@ class CategoriesSection extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.goNamed(AppRouteConstants.exploreRouteName,
+                extra: SearchParams(query: "", type: SearchType.category));
+              },
               child: Row(
                 children: const [
                   Text(
@@ -58,8 +65,9 @@ class CategoriesSection extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: CategoryChip(
-                        label: category.title,
-                        isSelected: index == 1, // Example: Select second category
+                        category : category,
+                        
+                        
                       ),
                     );
                   }).toList(),

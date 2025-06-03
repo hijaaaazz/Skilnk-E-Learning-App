@@ -23,7 +23,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<ExploreBloc, ExploreState>(
       builder: (context, state) {
-        String hintText = 'Search ${state.selectedMainChip.toLowerCase()}...';
+        String hintText = 'Search ${state.selectedMainChip.toString().toLowerCase()}...';
         
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),

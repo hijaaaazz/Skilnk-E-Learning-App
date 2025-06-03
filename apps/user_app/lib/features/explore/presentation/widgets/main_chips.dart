@@ -1,24 +1,30 @@
-// lib/features/explore/presentation/widgets/main_chips_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:recase/recase.dart';
+import 'package:user_app/features/explore/data/models/search_args.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
 import 'package:user_app/features/explore/presentation/theme.dart';
 
 class MainChipsWidget extends StatelessWidget {
-  final List<String> chips;
-  final String selectedChip;
-  
+  final List<SearchType> chips;
+  final SearchType selectedChip;
+  final TextEditingController searchController;
+
   const MainChipsWidget({
     Key? key,
     required this.chips,
+    required this.searchController,
     required this.selectedChip,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final ExploreBloc bloc = context.read<ExploreBloc>();
+
     return Container(
-      height: 48,
+      width: MediaQuery.of(context).size.width,
+      height: 36,
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -26,34 +32,41 @@ class MainChipsWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           final chip = chips[index];
           final isSelected = chip == selectedChip;
-          
+
           return Padding(
             padding: const EdgeInsets.only(right: 12.0),
-            child: ChoiceChip(
-              label: Text(chip),
-              selected: isSelected,
-              onSelected: (selected) {
-                if (selected) {
-                  context.read<ExploreBloc>().add(SelectMainChip(chip));
+            child: GestureDetector(
+              onTap: () {
+                bloc.add(SelectMainChip(chip));
+                switch (chip) {
+                  case SearchType.course:
+                    searchController.text = bloc.state.coursesQuery;
+                    break;
+                  case SearchType.mentor:
+                    searchController.text = bloc.state.mentorsQuery;
+                    break;
+                  case SearchType.category:
+                    searchController.text = bloc.state.categoriesQuery;
+                    break;
                 }
               },
-              backgroundColor: ExploreTheme.backgroundColor,
-              selectedColor: ExploreTheme.primaryColor.withOpacity(0.1),
-              labelStyle: TextStyle(
-                color: isSelected ? ExploreTheme.primaryColor : ExploreTheme.secondaryTextColor,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 14,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-                side: BorderSide(
-                  color: isSelected ? ExploreTheme.primaryColor : Colors.grey.shade200,
-                  width: 1.5,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? ExploreTheme.secondaryColor
+                      : Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  ReCase(chip.toString().split('.').last).titleCase,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : Colors.black54,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              elevation: isSelected ? 0 : 0,
-              pressElevation: 0,
             ),
           );
         },

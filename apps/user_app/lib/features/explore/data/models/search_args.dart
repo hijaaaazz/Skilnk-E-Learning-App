@@ -1,6 +1,6 @@
 enum SearchType {
-  mentor,
   course,
+  mentor,
   category,
 }
 

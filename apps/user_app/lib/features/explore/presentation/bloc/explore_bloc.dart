@@ -8,7 +8,9 @@ import 'package:user_app/features/explore/domain/entities.dart/search-results.da
 import 'package:user_app/features/explore/domain/usecases/get_search_results.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
+import 'package:user_app/features/home/domain/entity/category_entity.dart';
 import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import 'package:user_app/service_locator.dart';
 
 class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
@@ -25,94 +27,105 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
     on<FetchCourses>(_onFetchCourses);
     on<FetchMentors>(_onFetchMentors);
     on<FetchCategories>(_onFetchCategories);
+    on<ClearSorting>(_onClearSorting);
   }
 
   void _onInitializeExplore(InitializeExplore event, Emitter<ExploreState> emit) async {
-    emit(state.copyWith(isLoading: true));
+  final selectedType = event.params?.type ?? SearchType.course;
 
-    try {
-      // Fetch courses
-      final courseResult = await _getSearchResultsUseCase(params: SearchParams(
-        query: '',
-        type: SearchType.course,
-        filter: FilterOption.all,
-      ));
-      final courses = courseResult.fold(
-        (error) => throw Exception(error),
-        (result) => (result as CourseResult).courses,
-      );
+  emit(state.copyWith(
+    isLoading: true,
+    selectedMainChip: selectedType,
+  ));
 
-      // Fetch mentors
-      final mentorResult = await _getSearchResultsUseCase(params: SearchParams(
-        query: '',
-        type: SearchType.mentor,
-        filter: FilterOption.all,
-      ));
-      final mentors = mentorResult.fold(
-        (error) => throw Exception(error),
-        (result) => (result as MentorResult).mentors,
-      );
+  try {
+    // Variables to hold results
+    List<CoursePreview>? courses;
+    List<MentorEntity>? mentors;
+    List<CategoryEntity>? categories;
 
-      // Fetch categories
-      final categoryResult = await _getSearchResultsUseCase(params: SearchParams(
-        query: '',
-        type: SearchType.category,
-        filter: FilterOption.all,
-      ));
-      final categories = categoryResult.fold(
-        (error) => throw Exception(error),
-        (result) => (result as CategoryResult).categories,
-      );
+    final result = await _getSearchResultsUseCase(
+      params: event.params ??
+          SearchParams(
+            query: '',
+            type: selectedType,
+            filter: FilterOption.all,
+          ),
+    );
 
-      emit(state.copyWith(
-        allCourses: courses,
-        filteredCourses: courses,
-        allMentors: mentors,
-        filteredMentors: mentors,
-        allCategories: categories,
-        filteredCategories: categories,
-        isLoading: false,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        errorMessage: 'Failed to initialize: ${e.toString()}',
-        isLoading: false,
-      ));
-    }
+    // Use fold pattern
+    result.fold(
+      (error) => throw Exception(error),
+      (res) {
+        if (res is CourseResult) {
+          courses = res.courses;
+        } else if (res is MentorResult) {
+          mentors = res.mentors;
+        } else if (res is CategoryResult) {
+          categories = res.categories;
+        } else {
+          throw Exception('Unexpected result type');
+        }
+      },
+    );
+
+    emit(state.copyWith(
+      allCourses: courses ?? state.allCourses,
+      filteredCourses: courses ?? state.filteredCourses,
+      allMentors: mentors ?? state.allMentors,
+      filteredMentors: mentors ?? state.filteredMentors,
+      allCategories: categories ?? state.allCategories,
+      filteredCategories: categories ?? state.filteredCategories,
+      isLoading: false,
+    ));
+  } catch (e) {
+    emit(state.copyWith(
+      errorMessage: 'Failed to initialize: ${e.toString()}',
+      isLoading: false,
+    ));
   }
+}
+
 
   void _onSearchExplore(SearchExplore event, Emitter<ExploreState> emit) async {
     final query = event.query.toLowerCase();
-    emit(state.copyWith(searchQuery: query, isLoading: true));
+  
+  // Update the appropriate query based on selected main chip
+  switch (state.selectedMainChip) {
+    case SearchType.course:
+      emit(state.copyWith(coursesQuery: query, isLoading: true));
+      break;
+    case SearchType.mentor:
+      emit(state.copyWith(mentorsQuery: query, isLoading: true));
+      break;
+    case SearchType.category:
+      emit(state.copyWith(categoriesQuery: query, isLoading: true));
+      break;
+  }
 
     try {
       switch (state.selectedMainChip) {
-        case 'Courses':
+        case SearchType.course:
           final result = await _getSearchResultsUseCase(params: SearchParams(
             query: query,
             type: SearchType.course,
             filter: state.selectedFilter,
-            category: state.selectedCategoryId,
+            category: state.selectedCategory?.id,
+            sort: state.selectedSortArgs,
+            sortOption: state.selectedSortOption,
           ));
           final courses = result.fold(
             (error) => throw Exception(error),
             (result) => (result as CourseResult).courses,
           );
           
-          // Apply sorting after fetching
-          final sortedCourses = _applySortingToList(
-            courses,
-            state.selectedSortArgs,
-            state.selectedSortOption,
-          );
-          
           emit(state.copyWith(
-            filteredCourses: sortedCourses,
+            filteredCourses: courses,
             isLoading: false,
           ));
           break;
 
-        case 'Mentors':
+        case SearchType.mentor:
           final result = await _getSearchResultsUseCase(params: SearchParams(
             query: query,
             type: SearchType.mentor,
@@ -128,7 +141,7 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
           ));
           break;
 
-        case 'Categories':
+        case SearchType.category:
           final result = await _getSearchResultsUseCase(params: SearchParams(
             query: query,
             type: SearchType.category,
@@ -152,43 +165,75 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
     }
   }
 
-  void _onSelectMainChip(SelectMainChip event, Emitter<ExploreState> emit) async {
-    emit(state.copyWith(
-      selectedMainChip: event.chipName,
-      searchQuery: '',
-      isLoading: true,
-    ));
+ void _onSelectMainChip(SelectMainChip event, Emitter<ExploreState> emit) async {
+  // Only process if we're actually changing tabs
+  if (event.chipName == state.selectedMainChip) {
+    return;
+  }
 
+  String currentQuery = '';
+  
+  // Determine the current query for the selected chip
+  switch (event.chipName) {
+    case SearchType.course:
+      currentQuery = state.coursesQuery;
+      break;
+    case SearchType.mentor:
+      currentQuery = state.mentorsQuery;
+      break;
+    case SearchType.category:
+      currentQuery = state.categoriesQuery;
+      break;
+  }
+
+  // First emit just the chip change without loading state
+  // This prevents flickering while maintaining visual feedback
+  emit(state.copyWith(
+    selectedMainChip: event.chipName,
+    searchQuery: currentQuery,
+    isLoading: false, // Keep as false to avoid unnecessary flicker
+  ));
+
+  // Check if we already have data for this tab
+  bool shouldFetchData = false;
+  switch (event.chipName) {
+    case SearchType.course:
+      shouldFetchData = state.filteredCourses.isEmpty;
+      break;
+    case SearchType.mentor:
+      shouldFetchData = state.filteredMentors.isEmpty;
+      break;
+    case SearchType.category:
+      shouldFetchData = state.filteredCategories.isEmpty;
+      break;
+  }
+
+  // Only fetch if we need to
+  if (shouldFetchData) {
+    // Now set loading state
+    emit(state.copyWith(isLoading: true));
+    
     try {
       switch (event.chipName) {
-        case 'Courses':
+        case SearchType.course:
           final result = await _getSearchResultsUseCase(params: SearchParams(
-            query: '',
+            query: currentQuery,
             type: SearchType.course,
             filter: state.selectedFilter,
-            category: state.selectedCategoryId,
+            category: state.selectedCategory?.id,
+            sort: state.selectedSortArgs,
+            sortOption: state.selectedSortOption,
           ));
           final courses = result.fold(
             (error) => throw Exception(error),
             (result) => (result as CourseResult).courses,
           );
-          
-          // Apply sorting after fetching
-          final sortedCourses = _applySortingToList(
-            courses,
-            state.selectedSortArgs,
-            state.selectedSortOption,
-          );
-          
-          emit(state.copyWith(
-            filteredCourses: sortedCourses,
-            isLoading: false,
-          ));
+          emit(state.copyWith(filteredCourses: courses, isLoading: false));
           break;
 
-        case 'Mentors':
+        case SearchType.mentor:
           final result = await _getSearchResultsUseCase(params: SearchParams(
-            query: '',
+            query: currentQuery,
             type: SearchType.mentor,
             filter: state.selectedFilter,
           ));
@@ -196,15 +241,12 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
             (error) => throw Exception(error),
             (result) => (result as MentorResult).mentors,
           );
-          emit(state.copyWith(
-            filteredMentors: mentors,
-            isLoading: false,
-          ));
+          emit(state.copyWith(filteredMentors: mentors, isLoading: false));
           break;
 
-        case 'Categories':
+        case SearchType.category:
           final result = await _getSearchResultsUseCase(params: SearchParams(
-            query: '',
+            query: currentQuery,
             type: SearchType.category,
             filter: state.selectedFilter,
           ));
@@ -212,10 +254,7 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
             (error) => throw Exception(error),
             (result) => (result as CategoryResult).categories,
           );
-          emit(state.copyWith(
-            filteredCategories: categories,
-            isLoading: false,
-          ));
+          emit(state.copyWith(filteredCategories: categories, isLoading: false));
           break;
       }
     } catch (e) {
@@ -225,34 +264,33 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
       ));
     }
   }
+}
+
 
   void _onSelectCategory(SelectCategory event, Emitter<ExploreState> emit) async {
+    
     emit(state.copyWith(isLoading: true));
     
     try {
       final result = await _getSearchResultsUseCase(params: SearchParams(
-        query: state.searchQuery,
+        query: state.coursesQuery,
         type: SearchType.course,
         filter: state.selectedFilter,
-        category: event.categoryId,
+        category: event.categoryId.id,
+        sort: state.selectedSortArgs,
+        sortOption: state.selectedSortOption,
       ));
       
       final courses = result.fold(
         (error) => throw Exception(error),
         (result) => (result as CourseResult).courses,
       );
-      
-      // Apply sorting after fetching
-      final sortedCourses = _applySortingToList(
-        courses,
-        state.selectedSortArgs,
-        state.selectedSortOption,
-      );
 
       emit(state.copyWith(
-        selectedCategoryId: event.categoryId,
-        selectedMainChip: 'Courses',
-        filteredCourses: sortedCourses,
+        selectedCategory: event.categoryId,
+        selectedMainChip: SearchType.course,
+
+        filteredCourses: courses,
         isLoading: false,
       ));
     } catch (e) {
@@ -268,25 +306,21 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
 
     try {
       final result = await _getSearchResultsUseCase(params: SearchParams(
-        query: state.searchQuery,
+        query: state.coursesQuery,
         type: SearchType.course,
         filter: state.selectedFilter,
+        sort: state.selectedSortArgs,
+        sortOption: state.selectedSortOption,
       ));
+      
       final courses = result.fold(
         (error) => throw Exception(error),
         (result) => (result as CourseResult).courses,
       );
-      
-      // Apply sorting after fetching
-      final sortedCourses = _applySortingToList(
-        courses,
-        state.selectedSortArgs,
-        state.selectedSortOption,
-      );
 
       emit(state.copyWith(
-        selectedCategoryId: null,
-        filteredCourses: sortedCourses,
+        clearSelectedCategory: true,  // This will set selectedCategory to null
+        filteredCourses: courses,
         isLoading: false,
       ));
     } catch (e) {
@@ -305,23 +339,19 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
         query: state.searchQuery,
         type: SearchType.course,
         filter: event.filter,
-        category: state.selectedCategoryId,
+        category: state.selectedCategory?.id,
+        sort: state.selectedSortArgs,
+        sortOption: state.selectedSortOption,
       ));
+      
       final courses = result.fold(
         (error) => throw Exception(error),
         (result) => (result as CourseResult).courses,
       );
-      
-      // Apply sorting after fetching
-      final sortedCourses = _applySortingToList(
-        courses,
-        state.selectedSortArgs,
-        state.selectedSortOption,
-      );
 
       emit(state.copyWith(
         selectedFilter: event.filter,
-        filteredCourses: sortedCourses,
+        filteredCourses: courses,
         isLoading: false,
       ));
     } catch (e) {
@@ -332,21 +362,29 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
     }
   }
 
-  void _onApplySorting(ApplySorting event, Emitter<ExploreState> emit) {
+  void _onApplySorting(ApplySorting event, Emitter<ExploreState> emit) async {
     emit(state.copyWith(isLoading: true));
     
     try {
-      // Apply sorting to the existing filteredCourses list
-      final sortedCourses = _applySortingToList(
-        state.filteredCourses,
-        event.sortArgs,
-        event.sortOption,
+      // Request sorted results from backend
+      final result = await _getSearchResultsUseCase(params: SearchParams(
+        query: state.searchQuery,
+        type: SearchType.course,
+        filter: state.selectedFilter,
+        category: state.selectedCategory?.id,
+        sort: event.sortArgs,
+        sortOption: event.sortOption,
+      ));
+      
+      final courses = result.fold(
+        (error) => throw Exception(error),
+        (result) => (result as CourseResult).courses,
       );
 
       emit(state.copyWith(
         selectedSortOption: event.sortOption,
         selectedSortArgs: event.sortArgs,
-        filteredCourses: sortedCourses,
+        filteredCourses: courses,
         isLoading: false,
       ));
     } catch (e) {
@@ -367,23 +405,19 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
         query: state.searchQuery,
         type: SearchType.course,
         filter: state.selectedFilter,
-        category: state.selectedCategoryId,
+        category: state.selectedCategory?.id,
+        sort: state.selectedSortArgs,
+        sortOption: state.selectedSortOption,
       ));
+      
       final courses = result.fold(
         (error) => throw Exception(error),
         (result) => (result as CourseResult).courses,
       );
-      
-      // Apply sorting after fetching
-      final sortedCourses = _applySortingToList(
-        courses,
-        state.selectedSortArgs,
-        state.selectedSortOption,
-      );
 
       emit(state.copyWith(
         allCourses: courses,
-        filteredCourses: sortedCourses,
+        filteredCourses: courses,
         isLoading: false,
       ));
     } catch (e) {
@@ -452,53 +486,37 @@ class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
     }
   }
 
-  // Helper method to apply sorting to a list of courses
-  List<CoursePreview> _applySortingToList(
-    List<CoursePreview> courses,
-    SortArgs? sortArgs,
-    SortOption? sortOption
-  ) {
-    if (sortArgs == null || sortOption == null) {
-      return courses;
-    }
+ void _onClearSorting(ClearSorting event, Emitter<ExploreState> emit) async {
+  emit(state.copyWith(isLoading: true));
+  
+  try {
+    // Request results from backend without sorting parameters
+    final result = await _getSearchResultsUseCase(params: SearchParams(
+      query: state.searchQuery,
+      type: SearchType.course,
+      filter: state.selectedFilter,
+      category: state.selectedCategory?.id,
+      // No sort parameters here
+    ));
     
-    // Create a copy of the list to avoid modifying the original
-    final List<CoursePreview> result = List.from(courses);
+    final courses = result.fold(
+      (error) => throw Exception(error),
+      (result) => (result as CourseResult).courses,
+    );
     
-    switch (sortArgs) {
-      case SortArgs.price:
-        if (sortOption == SortOption.ascending) {
-          result.sort((a, b) {
-            double priceA = _parsePrice(a.price);
-            double priceB = _parsePrice(b.price);
-            return priceA.compareTo(priceB);
-          });
-        } else {
-          result.sort((a, b) {
-            double priceA = _parsePrice(a.price);
-            double priceB = _parsePrice(b.price);
-            return priceB.compareTo(priceA);
-          });
-        }
-        break;
-      case SortArgs.rating:
-        if (sortOption == SortOption.ascending) {
-          result.sort((a, b) => a.averageRating.compareTo(b.averageRating));
-        } else {
-          result.sort((a, b) => b.averageRating.compareTo(a.averageRating));
-        }
-        break;
-    }
-    
-    return result;
+    // Make sure to explicitly set these to null
+    emit(state.copyWith(
+      selectedSortOption: null,
+      selectedSortArgs: null,
+      filteredCourses: courses,
+      isLoading: false,
+    ));
+  } catch (e) {
+    emit(state.copyWith(
+      errorMessage: 'Error clearing sorting: ${e.toString()}',
+      isLoading: false,
+    ));
   }
 
-  // Helper method to parse price string to double
-  double _parsePrice(String price) {
-    if (price.toLowerCase() == 'free') return 0.0;
-    
-    // Remove currency symbol and parse as double
-    final numericString = price.replaceAll(RegExp(r'[^\d.]'), '');
-    return double.tryParse(numericString) ?? 0.0;
-  }
+}
 }
