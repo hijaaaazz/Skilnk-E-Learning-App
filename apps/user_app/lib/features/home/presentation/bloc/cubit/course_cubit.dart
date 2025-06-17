@@ -1,9 +1,7 @@
 import 'dart:developer';
 
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meta/meta.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';

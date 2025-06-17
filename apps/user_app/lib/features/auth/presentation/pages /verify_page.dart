@@ -64,7 +64,7 @@ class VerifyPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    user.email!,
+                    user.email,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.bold,

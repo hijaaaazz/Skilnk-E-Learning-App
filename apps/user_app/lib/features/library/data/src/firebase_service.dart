@@ -54,7 +54,7 @@ Future<Either<String, List<CoursePreview>>> getSavedCourses(List<String> courseI
     // Firestore supports whereIn with up to 10 elements
     final querySnapshot = await _firestore
         .collection('courses')
-        .where(FieldPath.documentId, whereIn: courseIds)
+        .where(FieldPath.documentId, whereIn: courseIds).limit(3)
         .get();
 
     final savedCourses = querySnapshot.docs.map((doc) {

@@ -1,4 +1,12 @@
 import 'package:get_it/get_it.dart';
+import 'package:user_app/features/account/data/models/update_dp_params.dart';
+import 'package:user_app/features/account/data/repo/profile_repo.dart';
+import 'package:user_app/features/account/data/service/profile_cloudinary_service.dart';
+import 'package:user_app/features/account/data/service/profile_firebase_service.dart';
+import 'package:user_app/features/account/domain/repo/profile_repo.dart';
+import 'package:user_app/features/account/domain/usecase/get_recent_activities.dart';
+import 'package:user_app/features/account/domain/usecase/update_user_profile_pic.dart';
+import 'package:user_app/features/account/domain/usecase/update_username.dart';
 import 'package:user_app/features/auth/data/repository/auth_repo_imp.dart';
 import 'package:user_app/features/auth/data/src/auth_firebase_service.dart';
 import 'package:user_app/features/auth/domain/repository/auth.dart';
@@ -10,20 +18,30 @@ import 'package:user_app/features/auth/domain/usecases/reset_pass.dart';
 import 'package:user_app/features/auth/domain/usecases/signin.dart';
 import 'package:user_app/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:user_app/features/auth/domain/usecases/signup.dart';
+import 'package:user_app/features/course_list/domain/usecase/get_list.dart';
 import 'package:user_app/features/explore/data/repos/search_repo.dart';
 import 'package:user_app/features/explore/data/src/firebase_services.dart';
 import 'package:user_app/features/explore/domain/repos/search_repo.dart';
 import 'package:user_app/features/explore/domain/usecases/get_search_results.dart';
 import 'package:user_app/features/home/data/repos/course_repo.dart';
+import 'package:user_app/features/home/data/repos/mentors_repo_imp.dart';
+import 'package:user_app/features/home/data/src/banner_firebase.dart';
+import 'package:user_app/features/home/data/src/course_progress_service.dart';
 import 'package:user_app/features/home/data/src/firebase_service.dart';
+import 'package:user_app/features/home/domain/repos/mentors_repo.dart';
 import 'package:user_app/features/home/domain/repos/repository.dart';
+import 'package:user_app/features/home/domain/usecases/get_banner_info.dart';
 import 'package:user_app/features/home/domain/usecases/get_categories.dart';
 import 'package:user_app/features/home/domain/usecases/get_course_details.dart';
 import 'package:user_app/features/home/domain/usecases/get_courses.dart';
+import 'package:user_app/features/home/domain/usecases/get_mentor_courses.dart';
+import 'package:user_app/features/home/domain/usecases/get_mentors.dart';
 import 'package:user_app/features/home/domain/usecases/save_course.dart';
 import 'package:user_app/features/library/data/repo/library_repo.dart';
 import 'package:user_app/features/library/data/src/firebase_service.dart';
 import 'package:user_app/features/library/domain/repo/library_repo.dart';
+import 'package:user_app/features/library/domain/usecases/get_enrolled_courses_ids.dart';
+import 'package:user_app/features/library/domain/usecases/get_saved_courses_ids.dart';
 import 'package:user_app/features/library/domain/usecases/get_user_courses.dart';
 import 'package:user_app/features/library/domain/usecases/getsaved_usecase.dart';
 import 'package:user_app/features/payment/data/repo/enrollment_repo.dart';
@@ -54,6 +72,18 @@ Future<void> initializeDependencies() async {
     () => EnrollmentFirebaseServiceImp()
   );
 
+  serviceLocator.registerLazySingleton<BannerFirebaseService>(
+    () => BannerFirebaseServiceImp()
+  );
+
+  serviceLocator.registerLazySingleton<ProfileCloudinaryService>(
+    () => ProfileCloudinaryServiceImp()
+  );
+
+  serviceLocator.registerLazySingleton<FirebaseProfileService>(
+    () => FirebaseProfileServiceImp()
+  );
+
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthenticationRepoImplementation()
@@ -73,6 +103,14 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<EnrollmentRepository>(
     () => EnrollmentRepositoryImp()
+  );
+
+  serviceLocator.registerLazySingleton<MentorsRepo>(
+    () => MentorsRepoImp()
+  );
+
+  serviceLocator.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepoImp()
   );
 
 
@@ -143,6 +181,44 @@ Future<void> initializeDependencies() async {
     () => GetEnrolledCoursesUseCase()
   );
 
+  serviceLocator.registerLazySingleton<CourseProgressService>(
+    () => CourseProgressServiceImpl()
+  );
+
+  serviceLocator.registerLazySingleton<GetMentorsUseCase>(
+    () => GetMentorsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetMentorCoursesUseCase>(
+    () => GetMentorCoursesUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetBannerInfoUseCase>(
+    () => GetBannerInfoUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetCourseListUseCase>(
+    () => GetCourseListUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetEnrolledCoursesIdsUseCase>(
+    () => GetEnrolledCoursesIdsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetSavedCoursesIdsUseCase>(
+    () => GetSavedCoursesIdsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<UpdateDpUserUseCase>(
+    () => UpdateDpUserUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<UpdateNameUserUseCase>(
+    () => UpdateNameUserUseCase()
+  );
+  serviceLocator.registerLazySingleton<GetRecentActivitiesUseCase>(
+    () => GetRecentActivitiesUseCase()
+  );
   
 
   

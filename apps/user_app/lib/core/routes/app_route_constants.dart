@@ -12,4 +12,6 @@ class AppRouteConstants {
   static const String coursedetailsPaage = "courseDetils";
   static const String enrolledCoursedetailsPaage = "enrolledCourseDetils";
   static const String lecturedetailsPaage = "lectureDetailsPage";
+  static const String mentordetailsPaage = "mentorDetailsPage";
+  static const String courselistPaage = "courseListPage";
 } 

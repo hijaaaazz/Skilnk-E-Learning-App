@@ -18,12 +18,13 @@ Widget buildOptionTile(
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 194, 45, 0).withOpacity(0.1),
+                  // ignore: deprecated_member_use
+                  color: Colors.deepOrange.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,
-                  color: const Color.fromARGB(255, 194, 45, 0),
+                  color: Colors.deepOrange,
                   size: 24,
                 ),
               ),

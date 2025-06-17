@@ -1,4 +1,3 @@
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
 
 class UserEntity {
   final String userId;

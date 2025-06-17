@@ -1,6 +1,7 @@
 // lib/features/explore/presentation/widgets/search_bar_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:recase/recase.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
@@ -23,7 +24,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<ExploreBloc, ExploreState>(
       builder: (context, state) {
-        String hintText = 'Search ${state.selectedMainChip.toString().toLowerCase()}...';
+        String hintText = 'Search ${ReCase(state.selectedMainChip.toString().split('.').last.toLowerCase()).titleCase}...';
         
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),

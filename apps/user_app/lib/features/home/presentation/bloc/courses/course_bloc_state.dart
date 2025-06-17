@@ -10,8 +10,10 @@ final class CourseBlocLoading extends CourseBlocState {}
 final class CourseBlocLoaded extends CourseBlocState {
   final List<CategoryEntity> categories;
   final List<CoursePreview> courses;
+  final List<MentorEntity> mentors;
+  final List<BannerModel> banners;
 
-  CourseBlocLoaded(this.categories, this.courses);
+  CourseBlocLoaded(this.categories, this.courses,this.mentors,this.banners);
 }
 
 final class CourseBlocError extends CourseBlocState {

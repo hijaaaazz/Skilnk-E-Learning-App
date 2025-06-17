@@ -22,6 +22,10 @@ import 'package:tutor_app/features/courses/domain/usecases/get_course_details.da
 import 'package:tutor_app/features/courses/domain/usecases/get_course_options.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_courses.dart';
 import 'package:tutor_app/features/courses/domain/usecases/toggle_activation.dart';
+import 'package:tutor_app/features/dashboard/data/repo/dash_board_repo.dart';
+import 'package:tutor_app/features/dashboard/data/src/firebase_dashboard_service.dart';
+import 'package:tutor_app/features/dashboard/domain/repo/dashboard_repo.dart';
+import 'package:tutor_app/features/dashboard/domain/usecase/get_dashboard_item_usecase.dart';
 
 final serviceLocator = GetIt.instance;
 
@@ -40,6 +44,10 @@ Future<void> initializeDependencies() async {
     () => CourseCloudinaryServiceImp()
   );
 
+  serviceLocator.registerLazySingleton<FirebaseDashboardService>(
+    () => FirebaseDashboardServiceImp()
+  );
+
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthenticationRepoImplementation()
@@ -47,6 +55,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<CoursesRepository>(
     () => CoursesRepoImplementation()
+  );
+
+  serviceLocator.registerLazySingleton<DashBoardRepo>(
+    () => DashBoardRepoImp()
   );
 
   // ✅ Use Cases
@@ -114,6 +126,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<ToggleCourseUseCase>(
     () => ToggleCourseUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetDashboardItemUsecase>(
+    () => GetDashboardItemUsecase()
   );
 
 

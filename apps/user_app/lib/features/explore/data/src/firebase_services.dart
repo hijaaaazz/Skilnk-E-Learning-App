@@ -122,8 +122,11 @@ class ExploreFirebaseServicesImp extends ExploreFirebaseService {
               query = query.orderBy(fieldName, descending: descending);
             } else {
               // Default sort if no sort specified
-              log('[COURSE] Using default sort (by title ascending)');
-              query = query.orderBy('title_lower');
+              if (params.category == null) {
+                log('[COURSE] Using default sort (by title ascending)');
+                query = query.orderBy('title_lower');
+              }
+
             }
           }
 

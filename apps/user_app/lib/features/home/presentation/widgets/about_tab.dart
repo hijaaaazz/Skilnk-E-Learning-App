@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/presentation/pages/course_detailed_page.dart';
 import 'package:user_app/features/home/presentation/widgets/course_fueture_.item.dart';
+import 'package:user_app/features/home/presentation/widgets/section_tile.dart';
 
 class AboutTab extends StatefulWidget {
   final CourseEntity course;
   
-  const AboutTab({Key? key, required this.course}) : super(key: key);
+  const AboutTab({super.key, required this.course});
   
   @override
+  // ignore: library_private_types_in_public_api
   _AboutTabState createState() => _AboutTabState();
 }
 

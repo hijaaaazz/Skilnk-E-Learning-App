@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_app/features/home/data/models/banner_model.dart';
 import 'package:user_app/features/home/presentation/widgets/categories-section.dart';
 import 'package:user_app/features/home/presentation/widgets/courses_section.dart';
 import 'package:user_app/features/home/presentation/widgets/header_section.dart';
@@ -15,19 +16,21 @@ class HomePage extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             // Use the HeaderSectionSliver component here
-            const HeaderSectionSliver(),
+            SliverPadding(
+              padding: EdgeInsets.only(top: 15),
+              sliver: const HeaderSectionSliver()),
             
             // Convert your other sections to slivers
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  const SizedBox(height: 16),
-                  const PromotionCardSection(),
-                  const SizedBox(height: 24),
+                  PromotionCardSection(),
                   const CategoriesSection(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   const CoursesSection(),
+                  const SizedBox(height: 16),
+                  const MentorsSection(),
                   const SizedBox(height: 24),
                   
                   

@@ -2,23 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:user_app/features/account/presentation/pages%20/account.dart';
 import 'package:user_app/features/account/presentation/pages%20/profile.dart';
 import 'package:user_app/features/auth/domain/entity/user.dart';
 import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
 import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
+import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
+import 'package:user_app/features/course_list/presentation/bloc/course_list_bloc.dart';
 import 'package:user_app/features/explore/data/models/search_params_model.dart';
 import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
 import 'package:user_app/features/explore/presentation/pages/explore.dart';
+import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
 import 'package:user_app/features/home/presentation/pages/course_detailed_page.dart';
 import 'package:user_app/features/home/presentation/pages/course_enrolled_page.dart';
 import 'package:user_app/features/home/presentation/pages/home.dart';
+import 'package:user_app/features/home/presentation/pages/mentor_details.dart';
 import 'package:user_app/features/home/presentation/pages/video_player_page.dart';
 import 'package:user_app/features/library/presentation/pages/library.dart';
 import 'package:user_app/features/main_page/presentation/pages/landing.dart';
 import 'package:user_app/features/splash/presentation/pages/splash.dart';
+import 'package:user_app/features/course_list/presentation/pages/courselist.dart';
 
 class AppRoutes {
   GoRouter router = GoRouter(
@@ -39,25 +47,74 @@ class AppRoutes {
         ));
       },),
 
+      GoRoute(path: '/mentor',
+      name: AppRouteConstants.mentordetailsPaage,
+      pageBuilder: (context, state) {
+        final mentor = state.extra as MentorEntity;
+        return MaterialPage(child: BlocProvider(
+          create: (context) => CourseCubit(),
+          child: MentorDetailsPage(
+                  mentor: mentor,
+                ),
+        ));
+      },),
+
+      GoRoute(path: '/courses_list',
+      name: AppRouteConstants.courselistPaage,
+      pageBuilder: (context, state) {
+        final args = state.extra as CourseListPageArgs;
+        return MaterialPage(child: BlocProvider(
+          create: (context) => CourseListBloc(),
+          child: CourseList(
+            args: args,
+            
+                ),
+        ));
+      },),
+
       GoRoute(path: '/splash',
       name: AppRouteConstants.splashRouteName,
       pageBuilder: (context, state) {
         return MaterialPage(child: SplashPage());
       },),
 
-      GoRoute(path: "/enrolled_course",
-      name: AppRouteConstants.enrolledCoursedetailsPaage,
-      pageBuilder: (context, state) {
-        return MaterialPage(child: CourseProgressPage(courseId: 'uuhu',courseTitle: "uhuh",));
-      },
+      GoRoute(
+        path: "/enrolled_course",
+        name: AppRouteConstants.enrolledCoursedetailsPaage,
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+
+          final courseId = extra?['courseId'] ?? '';
+          final courseTitle = extra?['courseTitle'] ?? '';
+
+          return MaterialPage(
+            child: CourseProgressPage(
+              courseId: courseId,
+              courseTitle: courseTitle,
+            ),
+          );
+        },
       ),
 
-      GoRoute(path: "/lecture",
-      name: AppRouteConstants.lecturedetailsPaage,
-      pageBuilder:(context,state){
-         return MaterialPage(
-        child:VideoPlayerPage(courseId: "",lectureId: "",) );
-        }),
+
+      GoRoute(
+        path: "/lecture",
+        name: AppRouteConstants.lecturedetailsPaage,
+        pageBuilder: (context, state) {
+          final extras = state.extra as Map<String, dynamic>?;
+
+          final lectures = extras?['lectures']as List<LectureProgressModel>;
+          final lectureId = extras?['currentId']as int;
+
+          return MaterialPage(
+            child: VideoPlayerPage(
+              lectures: lectures,
+              currentIndex: lectureId,
+            ),
+          );
+        },
+      ),
+
 
       GoRoute(
         name: AppRouteConstants.authRouteName,
@@ -136,7 +193,10 @@ class AppRoutes {
                   GoRoute(
                     path: "/profile",
                     name: AppRouteConstants.profileRouteName,
-                    builder:(context, state) => ProfilePage(),
+                    builder:(context, state) => BlocProvider(
+                      create: (context) => ProfileCubit(),
+                      child: ProfilePage(),
+                    ),
                     )
                 ]
               ),

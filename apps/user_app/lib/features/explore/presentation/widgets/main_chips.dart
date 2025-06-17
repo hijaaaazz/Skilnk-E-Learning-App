@@ -12,11 +12,11 @@ class MainChipsWidget extends StatelessWidget {
   final TextEditingController searchController;
 
   const MainChipsWidget({
-    Key? key,
+    super.key,
     required this.chips,
     required this.searchController,
     required this.selectedChip,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

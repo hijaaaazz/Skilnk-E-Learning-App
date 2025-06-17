@@ -28,16 +28,7 @@ class _InfoSubmitionPageState extends State<InfoSubmitionPage> {
   }
 
   void _submitDetails() {
-    final phone = phoneController.text.trim();
-    final bio = bioController.text.trim();
-    final tutorId = tutorIdController.text.trim();
-    final courseIds = coursesController.text.split(',').map((e) => e.trim()).toList();
-
-    print("Phone: $phone");
-    print("Bio: $bio");
-    print("Tutor ID: $tutorId");
-    print("Courses: $courseIds");
-    print("Profile Image: ${_profileImage?.path}");
+   
   }
 
   @override

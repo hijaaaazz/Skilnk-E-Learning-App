@@ -14,6 +14,7 @@ import 'package:user_app/features/explore/presentation/widgets/course_list.dart'
 import 'package:user_app/features/explore/presentation/widgets/main_chips.dart';
 import 'package:user_app/features/explore/presentation/widgets/mentors_list.dart';
 import 'package:user_app/features/explore/presentation/widgets/search_bar.dart';
+import 'package:user_app/presentation/account/widgets/app_bar.dart';
 
 class ExplorePage extends StatelessWidget {
   final SearchParams? queryParams;
@@ -75,24 +76,10 @@ void dispose() {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ExploreTheme.backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'Explore',
-          style: TextStyle(
-            color: ExploreTheme.textColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: ExploreTheme.backgroundColor,
-        elevation: 0,
-      ),
+      appBar: SkilnkAppBar(title: "Explore"),
       body: BlocBuilder<ExploreBloc, ExploreState>(
         builder: (context, state) {
-          if (state.isLoading && state.allCourses.isEmpty && state.allMentors.isEmpty && state.allCategories.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+         
           
           if (state.errorMessage != null && state.allCourses.isEmpty && state.allMentors.isEmpty && state.allCategories.isEmpty) {
             return Center(
@@ -149,13 +136,7 @@ void dispose() {
   }
 
   Widget _buildContent(ExploreState state) {
-    if (state.isLoading) {
-      return const Expanded(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
+    
 
     if (state.errorMessage != null) {
       return Expanded(

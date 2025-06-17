@@ -1,5 +1,4 @@
 import 'package:user_app/features/auth/domain/entity/user.dart';
-import 'package:user_app/features/home/data/models/courses_model.dart';
 
 class UserModel {
   final String userId;

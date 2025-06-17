@@ -1,15 +1,17 @@
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
 class InstructorCard extends StatelessWidget {
-  final String name;
-  final String imageUrl;
+  final MentorEntity mentor;
+  
 
   const InstructorCard({
-    Key? key,
-    required this.name,
-    required this.imageUrl,
-  }) : super(key: key);
+    super.key,
+    required this.mentor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,26 +23,31 @@ class InstructorCard extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             image: DecorationImage(
-              image: NetworkImage(imageUrl),
+              image: NetworkImage(mentor.imageUrl),
               fit: BoxFit.cover,
             ),
           ),
         ),
         const SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              name,
-              style: const TextStyle(
-                color: Color(0xFF202244),
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
+        InkWell(
+          onTap: () {
+            context.pushNamed(AppRouteConstants.mentordetailsPaage, extra: mentor);
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                mentor.name,
+                style: const TextStyle(
+                  color: Color(0xFF202244),
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            
-          ],
+              const SizedBox(height: 4),
+              
+            ],
+          ),
         ),
       ],
     );

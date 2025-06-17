@@ -20,14 +20,14 @@ class AuthInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool _obscureText = isPassword;
+    bool obscureText = isPassword;
 
     return StatefulBuilder(
       builder: (context, setState) => Container(
         margin: const EdgeInsets.only(bottom: 15),
         child: TextFormField(
           controller: controller,
-          obscureText: isPassword && _obscureText,
+          obscureText: isPassword && obscureText,
           keyboardType: keyboardType,
           validator: validator, // ✅ Use validator here
           decoration: InputDecoration(
@@ -37,12 +37,12 @@ class AuthInputField extends StatelessWidget {
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
-                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                      obscureText ? Icons.visibility : Icons.visibility_off,
                       color: Colors.grey.shade600,
                     ),
                     onPressed: () {
                       setState(() {
-                        _obscureText = !_obscureText;
+                        obscureText = !obscureText;
                       });
                     },
                   )

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:user_app/core/usecase/usecase.dart';
 import 'package:user_app/features/auth/data/models/user_creation_req.dart';
+import 'package:user_app/features/auth/data/models/user_model.dart';
 import 'package:user_app/features/auth/data/models/user_signin_model.dart';
 import 'package:user_app/features/auth/domain/entity/user.dart';
 import 'package:user_app/features/auth/domain/usecases/check_verification.dart';
@@ -47,6 +48,7 @@ class ResetPasswordSentState extends ResetPasswordState{
 
 class ResetPasswordFailedState extends ResetPasswordState {
   @override
+  // ignore: overridden_fields
   final String message;
 
   ResetPasswordFailedState({
@@ -57,6 +59,15 @@ class ResetPasswordFailedState extends ResetPasswordState {
 
 class AuthStatusCubit extends Cubit<AuthStatusState> {
   AuthStatusCubit() : super(AuthStatusState.initial());
+
+
+
+  Future<void> updateUserDp(String imagePath) async {
+    emit(AuthStatusState(
+          status: state.status,
+          user: UserModel.fromEntity(state.user!).copyWith(image: imagePath).toEntity()
+        ));
+  }
 
   // Get Current User - Call this on app startup
   Future<void> getCurrentUser() async {

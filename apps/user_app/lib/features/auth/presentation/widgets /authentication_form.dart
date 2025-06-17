@@ -6,7 +6,6 @@ import 'package:user_app/features/account/presentation/blocs/animation_cubit/cub
 import 'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
 import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:user_app/features/account/presentation/widgets/buttons.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/forgot_password_dialog.dart';
 import 'package:user_app/features/auth/presentation/widgets%20/signin_section.dart';
 import 'package:user_app/features/auth/presentation/widgets%20/signup_section.dart';
 

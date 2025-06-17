@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:user_app/features/home/domain/entity/lecture_details.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 import 'package:user_app/features/home/presentation/widgets/download_progress_dialog.dart';
-import 'package:user_app/features/home/presentation/widgets/lecture_note_sheets.dart';
 import 'package:user_app/features/home/presentation/widgets/video_controllers.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
+import 'dart:io';
 
 class VideoPlayerPage extends StatefulWidget {
-  final String lectureId;
-  final String courseId;
+  final List<LectureProgressModel> lectures;
+  final int currentIndex;
 
   const VideoPlayerPage({
     super.key,
-    required this.lectureId,
-    required this.courseId,
+    required this.lectures,
+    required this.currentIndex,
   });
 
   @override
@@ -24,7 +29,6 @@ class VideoPlayerPage extends StatefulWidget {
 class _VideoPlayerPageState extends State<VideoPlayerPage>
     with TickerProviderStateMixin {
   VideoPlayerController? _videoController;
-  LectureDetail? lectureDetail;
   bool isLoading = true;
   bool isFullScreen = false;
   bool showControls = true;
@@ -32,10 +36,16 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
   Timer? _hideControlsTimer;
   late AnimationController _controlsAnimationController;
   late Animation<double> _controlsAnimation;
+  late int currentIndex;
+
+  LectureProgressModel get currentLecture => widget.lectures[currentIndex];
+  bool get hasNextLecture => currentIndex < widget.lectures.length - 1;
+  bool get hasPreviousLecture => currentIndex > 0;
 
   @override
   void initState() {
     super.initState();
+    currentIndex = widget.currentIndex;
     _controlsAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -47,7 +57,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
       parent: _controlsAnimationController,
       curve: Curves.easeInOut,
     ));
-    _loadLectureDetail();
+    _initializeVideoPlayer();
   }
 
   @override
@@ -58,52 +68,16 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
     super.dispose();
   }
 
-  Future<void> _loadLectureDetail() async {
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 1));
-    
-    final mockLectureDetail = LectureDetail(
-      id: widget.lectureId,
-      title: 'Introduction to Flutter Development',
-      description: 'Learn the basics of Flutter development including widgets, layouts, and state management. This comprehensive introduction will give you a solid foundation to build amazing mobile applications.',
-      videoUrl: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-      notesUrl: 'https://example.com/notes.pdf',
-      duration: const Duration(minutes: 15, seconds: 30),
-      lectureNumber: 1,
-      courseId: widget.courseId,
-      courseTitle: 'Complete Flutter Development Course',
-      hasNextLecture: true,
-      hasPreviousLecture: false,
-      nextLectureId: '2',
-      notes: [
-        LectureNote(
-          id: '1',
-          title: 'Flutter Overview',
-          content: 'Flutter is Google\'s UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase.',
-          timestamp: DateTime.now().subtract(const Duration(days: 1)),
-        ),
-        LectureNote(
-          id: '2',
-          title: 'Key Concepts',
-          content: 'Everything in Flutter is a widget. Widgets describe what their view should look like given their current configuration and state.',
-          timestamp: DateTime.now().subtract(const Duration(hours: 2)),
-        ),
-      ],
-      isDownloadable: true,
-      isDownloaded: false,
-    );
-
+  Future<void> _initializeVideoPlayer() async {
     setState(() {
-      lectureDetail = mockLectureDetail;
-      isLoading = false;
+      isLoading = true;
     });
 
-    _initializeVideoPlayer();
-  }
+    // Dispose previous controller if exists
+    await _videoController?.dispose();
 
-  Future<void> _initializeVideoPlayer() async {
-    if (lectureDetail?.videoUrl != null) {
-      _videoController = VideoPlayerController.network(lectureDetail!.videoUrl);
+    if (currentLecture.lecture.videoUrl.isNotEmpty) {
+      _videoController = VideoPlayerController.networkUrl(Uri.parse(currentLecture.lecture.videoUrl));
       
       _videoController!.addListener(() {
         if (mounted) {
@@ -115,11 +89,21 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
 
       try {
         await _videoController!.initialize();
-        setState(() {});
+        setState(() {
+          isLoading = false;
+        });
         _showControlsTemporarily();
       } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
         _showErrorSnackBar('Failed to load video');
       }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      _showErrorSnackBar('Video URL not available');
     }
   }
 
@@ -168,56 +152,86 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
   }
 
   void _showNotesSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => LectureNotesSheet(
-        notes: lectureDetail?.notes ?? [],
-        lectureTitle: lectureDetail?.title ?? '',
-      ),
-    );
+    _openPdfNotes(currentLecture.lecture.notesUrl);
   }
 
-  void _showDownloadDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => DownloadProgressDialog(
-        lectureTitle: lectureDetail?.title ?? '',
-        onDownloadComplete: () {
-          setState(() {
-            // Update download status
-          });
-        },
-      ),
-    );
+  Future<void> _openPdfNotes(String pdfUrl) async {
+    if (pdfUrl.isEmpty) {
+      _showErrorSnackBar('PDF URL not available');
+      return;
+    }
+
+    final Uri uri = Uri.parse(pdfUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      _showErrorSnackBar('Could not open PDF');
+    }
+  }
+
+  Future<void> _showDownloadDialog() async {
+    // Request storage permission for Android
+    if (Platform.isAndroid) {
+      var status = await Permission.storage.request();
+      if (status != PermissionStatus.granted) {
+        _showErrorSnackBar('Storage permission denied');
+        return;
+      }
+    }
+
+    // Initialize download
+    final String pdfUrl = currentLecture.lecture.notesUrl;
+    if (pdfUrl.isEmpty) {
+      _showErrorSnackBar('PDF URL not available');
+      return;
+    }
+
+    try {
+      final String fileName = 'lecture_${currentIndex + 1}_${currentLecture.lecture.title}.pdf';
+      final String? taskId = await FlutterDownloader.enqueue(
+        url: pdfUrl,
+        savedDir: '/storage/emulated/0/Download', // Android default download directory
+        fileName: fileName,
+        showNotification: true,
+        openFileFromNotification: true,
+      );
+
+      if (taskId != null) {
+        showDialog(
+          context: context,
+          builder: (context) => DownloadProgressDialog(
+            lectureTitle: currentLecture.lecture.title,
+            onDownloadComplete: () {
+              setState(() {
+                // Update download status if needed
+              });
+              _showErrorSnackBar('Download completed: $fileName');
+            },
+          ),
+        );
+      } else {
+        _showErrorSnackBar('Failed to start download');
+      }
+    } catch (e) {
+      _showErrorSnackBar('Download error: $e');
+    }
   }
 
   void _navigateToNextLecture() {
-    if (lectureDetail?.hasNextLecture == true && lectureDetail?.nextLectureId != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoPlayerPage(
-            lectureId: lectureDetail!.nextLectureId!,
-            courseId: widget.courseId,
-          ),
-        ),
-      );
+    if (hasNextLecture) {
+      setState(() {
+        currentIndex++;
+      });
+      _initializeVideoPlayer();
     }
   }
 
   void _navigateToPreviousLecture() {
-    if (lectureDetail?.hasPreviousLecture == true && lectureDetail?.previousLectureId != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VideoPlayerPage(
-            lectureId: lectureDetail!.previousLectureId!,
-            courseId: widget.courseId,
-          ),
-        ),
-      );
+    if (hasPreviousLecture) {
+      setState(() {
+        currentIndex--;
+      });
+      _initializeVideoPlayer();
     }
   }
 
@@ -229,6 +243,18 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    
+    if (duration.inHours > 0) {
+      return "${duration.inHours}:$twoDigitMinutes:$twoDigitSeconds";
+    } else {
+      return "$twoDigitMinutes:$twoDigitSeconds";
+    }
   }
 
   @override
@@ -290,8 +316,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
                     controller: _videoController,
                     isFullScreen: isFullScreen,
                     onFullScreenToggle: _toggleFullScreen,
-                    onNext: lectureDetail?.hasNextLecture == true ? _navigateToNextLecture : null,
-                    onPrevious: lectureDetail?.hasPreviousLecture == true ? _navigateToPreviousLecture : null,
+                    onNext: hasNextLecture ? _navigateToNextLecture : null,
+                    onPrevious: hasPreviousLecture ? _navigateToPreviousLecture : null,
                   ),
                 );
               },
@@ -347,8 +373,8 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
                     controller: _videoController,
                     isFullScreen: isFullScreen,
                     onFullScreenToggle: _toggleFullScreen,
-                    onNext: lectureDetail?.hasNextLecture == true ? _navigateToNextLecture : null,
-                    onPrevious: lectureDetail?.hasPreviousLecture == true ? _navigateToPreviousLecture : null,
+                    onNext: hasNextLecture ? _navigateToNextLecture : null,
+                    onPrevious: hasPreviousLecture ? _navigateToPreviousLecture : null,
                   ),
                 );
               },
@@ -410,7 +436,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Lecture ${lectureDetail?.lectureNumber}',
+          'Lecture ${currentIndex + 1}',
           style: const TextStyle(
             color: Color(0xFFFF6636),
             fontSize: 14,
@@ -419,7 +445,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
         ),
         const SizedBox(height: 4),
         Text(
-          lectureDetail?.title ?? '',
+          currentLecture.lecture.title,
           style: const TextStyle(
             color: Color(0xFF202244),
             fontSize: 24,
@@ -428,13 +454,32 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          lectureDetail?.courseTitle ?? '',
-          style: const TextStyle(
-            color: Color(0xFF545454),
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+        Row(
+          children: [
+            const Icon(
+              Icons.access_time,
+              size: 16,
+              color: Color(0xFF545454),
+            ),
+            const SizedBox(width: 4),
+            Text(
+              _formatDuration(currentLecture.lecture.duration),
+              style: const TextStyle(
+                color: Color(0xFF545454),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              '${currentIndex + 1} of ${widget.lectures.length}',
+              style: const TextStyle(
+                color: Color(0xFF545454),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -445,19 +490,17 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
       children: [
         Expanded(
           child: _buildActionButton(
-            icon: Icons.note_alt_outlined,
-            label: 'Notes',
+            icon: Icons.picture_as_pdf,
+            label: 'PDF Notes',
             onTap: _showNotesSheet,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildActionButton(
-            icon: lectureDetail?.isDownloaded == true 
-                ? Icons.download_done 
-                : Icons.download_outlined,
-            label: lectureDetail?.isDownloaded == true ? 'Downloaded' : 'Download',
-            onTap: lectureDetail?.isDownloaded == true ? null : _showDownloadDialog,
+            icon: Icons.download_outlined,
+            label: 'Download',
+            onTap: _showDownloadDialog,
           ),
         ),
       ],
@@ -528,7 +571,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
         ),
         const SizedBox(height: 12),
         Text(
-          lectureDetail?.description ?? '',
+          currentLecture.lecture.description,
           style: const TextStyle(
             color: Color(0xFF545454),
             fontSize: 16,
@@ -542,7 +585,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
   Widget _buildNavigationButtons() {
     return Column(
       children: [
-        if (lectureDetail?.hasPreviousLecture == true)
+        if (hasPreviousLecture)
           _buildNavigationButton(
             icon: Icons.skip_previous,
             label: 'Previous Lecture',
@@ -550,10 +593,10 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
             isPrimary: false,
           ),
         
-        if (lectureDetail?.hasPreviousLecture == true && lectureDetail?.hasNextLecture == true)
+        if (hasPreviousLecture && hasNextLecture)
           const SizedBox(height: 12),
         
-        if (lectureDetail?.hasNextLecture == true)
+        if (hasNextLecture)
           _buildNavigationButton(
             icon: Icons.skip_next,
             label: 'Next Lecture',

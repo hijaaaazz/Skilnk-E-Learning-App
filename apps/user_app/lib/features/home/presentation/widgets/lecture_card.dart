@@ -48,6 +48,7 @@ class LectureCard extends StatelessWidget {
           boxShadow: isAccessible
               ? [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.06),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
@@ -75,6 +76,7 @@ class LectureCard extends StatelessWidget {
                             : lecture.isLocked
                                 ? const Color(0xFF9E9E9E)
                                 : const Color(0xFFFF6636))
+                        // ignore: deprecated_member_use
                         .withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
@@ -95,7 +97,7 @@ class LectureCard extends StatelessWidget {
                             size: 22,
                           )
                         : Text(
-                            '${lecture.lectureNumber}',
+                            '${lecture.index}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w700,
@@ -113,7 +115,7 @@ class LectureCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    lecture.title,
+                    lecture.lecture.title,
                     style: TextStyle(
                       color: isAccessible
                           ? const Color(0xFF202244)
@@ -136,7 +138,7 @@ class LectureCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        _formatDuration(lecture.duration),
+                        _formatDuration(lecture.lecture.duration),
                         style: TextStyle(
                           color: isAccessible
                               ? const Color(0xFF545454)

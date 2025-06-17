@@ -87,6 +87,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog>
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
@@ -103,6 +104,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog>
                 decoration: BoxDecoration(
                   color: isCompleted 
                       ? const Color(0xFF4CAF50) 
+                      // ignore: deprecated_member_use
                       : const Color(0xFFFF6636).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
@@ -272,6 +274,7 @@ class _DownloadProgressDialogState extends State<DownloadProgressDialog>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: isSelected ? const Color(0xFFFF6636).withOpacity(0.1) : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(

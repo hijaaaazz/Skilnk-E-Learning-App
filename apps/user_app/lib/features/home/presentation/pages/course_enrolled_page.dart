@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:user_app/features/home/data/models/course_progress.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import 'package:user_app/features/home/domain/usecases/get_course_progress.dart';
+import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_event.dart';
+import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_state.dart';
 import 'dart:developer';
 import '../widgets/lecture_card.dart';
 import '../widgets/progress_overview_card.dart';
 
-class CourseProgressPage extends StatefulWidget {
+class CourseProgressPage extends StatelessWidget {
   final String courseId;
   final String courseTitle;
 
@@ -18,133 +24,65 @@ class CourseProgressPage extends StatefulWidget {
   });
 
   @override
-  State<CourseProgressPage> createState() => _CourseProgressPageState();
-}
-
-class _CourseProgressPageState extends State<CourseProgressPage> {
-  late CourseProgressModel courseProgress;
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCourseProgress();
-  }
-
-  void _loadCourseProgress() {
-    // Simulate API call delay
-    Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        courseProgress = _createDummyCourseProgress();
-        isLoading = false;
-      });
-    });
-  }
-
-  CourseProgressModel _createDummyCourseProgress() {
-    final lectures = [
-      LectureProgressModel(
-        id: '1',
-        title: 'Introduction to Flutter Development',
-        duration: const Duration(minutes: 15),
-        watchedDuration: const Duration(minutes: 15),
-        isCompleted: true,
-        isLocked: false,
-        videoUrl: 'dummy_url_1',
-        lectureNumber: 1,
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => CourseProgressBloc(
+        getCourseProgressUseCase: GetCourseProgressUseCase(),
+      )..add(LoadCourseProgressEvent(
+        courseId: courseId,
+        userId: context.read<AuthStatusCubit>().state.user!.userId,
+      )),
+      child: CourseProgressView(
+        courseId: courseId,
+        courseTitle: courseTitle,
       ),
-      LectureProgressModel(
-        id: '2',
-        title: 'Setting up Development Environment',
-        duration: const Duration(minutes: 20),
-        watchedDuration: const Duration(minutes: 12),
-        isCompleted: false,
-        isLocked: false,
-        videoUrl: 'dummy_url_2',
-        lectureNumber: 2,
-      ),
-      LectureProgressModel(
-        id: '3',
-        title: 'Understanding Widgets and Layouts',
-        duration: const Duration(minutes: 25),
-        watchedDuration: const Duration(minutes: 8),
-        isCompleted: false,
-        isLocked: false,
-        videoUrl: 'dummy_url_3',
-        lectureNumber: 3,
-      ),
-      LectureProgressModel(
-        id: '4',
-        title: 'State Management Basics',
-        duration: const Duration(minutes: 30),
-        watchedDuration: Duration.zero,
-        isCompleted: false,
-        isLocked: false,
-        videoUrl: 'dummy_url_4',
-        lectureNumber: 4,
-      ),
-      LectureProgressModel(
-        id: '5',
-        title: 'Advanced State Management',
-        duration: const Duration(minutes: 35),
-        watchedDuration: Duration.zero,
-        isCompleted: false,
-        isLocked: true,
-        videoUrl: 'dummy_url_5',
-        lectureNumber: 5,
-      ),
-      LectureProgressModel(
-        id: '6',
-        title: 'Building Your First App',
-        duration: const Duration(minutes: 40),
-        watchedDuration: Duration.zero,
-        isCompleted: false,
-        isLocked: true,
-        videoUrl: 'dummy_url_6',
-        lectureNumber: 6,
-      ),
-    ];
-
-    final completedCount = lectures.where((l) => l.isCompleted).length;
-    final overallProgress = completedCount / lectures.length;
-
-    return CourseProgressModel(
-      id: "",
-      userId: "",
-      enrolledAt: DateTime(2000),
-      lastAccessedAt:DateTime(2000),
-      courseId: widget.courseId,
-      courseTitle: widget.courseTitle,
-      courseThumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=200&fit=crop',
-      lectures: lectures,
-      overallProgress: overallProgress,
-      completedLectures: completedCount,
     );
   }
+}
 
-  void _onLectureTap(LectureProgressModel lecture) {
-    if (lecture.isLocked) {
-      _showLockedLectureMessage();
+class CourseProgressView extends StatelessWidget {
+  final String courseId;
+  final String courseTitle;
+
+  const CourseProgressView({
+    super.key,
+    required this.courseId,
+    required this.courseTitle,
+  });
+
+  void _onLectureTap(BuildContext context, List<LectureProgressModel> lectures,int currentIndex) {
+    if (lectures[currentIndex].isLocked) {
+      _showLockedLectureMessage(context);
       return;
     }
 
-    try {
-      // Navigate to video player page
-      context.pushNamed(
-        AppRouteConstants.lecturedetailsPaage
-        ).then((result) {
-        // Refresh progress when returning from video player
-        if (result == true) {
-          _loadCourseProgress();
-        }
-      });
-    } catch (e) {
-      log('Error navigating to video player: $e');
-      _showErrorMessage('Failed to open lecture');
+      try {
+  context.pushNamed(
+    AppRouteConstants.lecturedetailsPaage,
+    extra: {
+      'course_title' : courseTitle,
+      'lectures': lectures,      // List<LectureEntity>
+      'currentId': currentIndex,    // int
+    },
+  ).then((result) {
+    if (result == true) {
+      context.read<CourseProgressBloc>().add(
+        RefreshCourseProgressEvent(
+          courseId: courseId,
+          userId: context.read<AuthStatusCubit>().state.user!.userId,
+        ),
+      );
     }
+  });
+} catch (e) {
+  log('Error navigating to video player: $e');
+  _showErrorMessage(context, 'Failed to open lecture');
+}
+
+
   }
 
-  void _showLockedLectureMessage() {
+  void _showLockedLectureMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Complete previous lectures to unlock this one'),
@@ -154,7 +92,7 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
     );
   }
 
-  void _showErrorMessage(String message) {
+  void _showErrorMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -168,7 +106,23 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      body: isLoading ? _buildLoadingState() : _buildContent(),
+      body: BlocConsumer<CourseProgressBloc, CourseProgressState>(
+        listener: (context, state) {
+          if (state is CourseProgressError) {
+            _showErrorMessage(context, state.message);
+          }
+        },
+        builder: (context, state) {
+          if (state is CourseProgressLoading) {
+            return _buildLoadingState();
+          } else if (state is CourseProgressLoaded) {
+            return _buildContent(context, state.courseProgress);
+          } else if (state is CourseProgressError) {
+            return _buildErrorState(context, state.message);
+          }
+          return _buildLoadingState();
+        },
+      ),
     );
   }
 
@@ -195,18 +149,63 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(
+            Icons.error_outline,
+            color: Color(0xFFFF6636),
+            size: 64,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: const TextStyle(
+              color: Color(0xFF545454),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () {
+              context.read<CourseProgressBloc>().add(
+                LoadCourseProgressEvent(
+                  courseId: courseId,
+                  userId: context.read<AuthStatusCubit>().state.user!.userId,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF6636),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
+              ),
+            ),
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, CourseProgressModel courseProgress) {
     return CustomScrollView(
       slivers: [
-        _buildSliverAppBar(),
+        _buildSliverAppBar(context, courseProgress),
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.all( 20),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: [
                 ProgressOverviewCard(courseProgress: courseProgress),
                 const SizedBox(height: 24),
-                _buildLecturesSection(),
+                _buildLecturesSection(context, courseProgress),
               ],
             ),
           ),
@@ -215,7 +214,7 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(BuildContext context, CourseProgressModel courseProgress) {
     return SliverAppBar(
       expandedHeight: 200,
       floating: false,
@@ -231,6 +230,7 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
         IconButton(
           icon: const Icon(
             Icons.more_vert,
@@ -244,7 +244,7 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
       ],
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
-          widget.courseTitle,
+          courseTitle,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 16,
@@ -295,7 +295,7 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
     );
   }
 
-  Widget _buildLecturesSection() {
+  Widget _buildLecturesSection(BuildContext context, CourseProgressModel courseProgress) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -308,13 +308,19 @@ class _CourseProgressPageState extends State<CourseProgressPage> {
           ),
         ),
         const SizedBox(height: 16),
-        ...courseProgress.lectures.map((lecture) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: LectureCard(
-            lecture: lecture,
-            onTap: () => _onLectureTap(lecture),
-          ),
-        )),
+        ...courseProgress.lectures.asMap().entries.map((entry) {
+  final index = entry.key;
+  final lecture = entry.value;
+
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: LectureCard(
+      lecture: lecture,
+      onTap: () => _onLectureTap(context, courseProgress.lectures, index),
+    ),
+  );
+}),
+
       ],
     );
   }

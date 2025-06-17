@@ -5,5 +5,7 @@ abstract class LibraryRepository {
 
   Future<Either<String,List<CoursePreview>>>getSavedCourses(String userId);
   Future<Either<String,List<CoursePreview>>>getEnrolledCourses(String userId);
+  Future<Either<String,List<String>>>getSavedCoursesIds(String userId);
+  Future<Either<String,List<String>>>getEnrolledCoursesIds(String userId);
 
 }

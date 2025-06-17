@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
 class MentorModel {
@@ -15,11 +17,12 @@ class MentorModel {
 
   // From JSON (Map) to MentorModel object
   factory MentorModel.fromJson(Map<String, dynamic> json) {
+    log(json["courses"].toString());
   return MentorModel(
     id: json['tutor_id'] as String,
     imageUrl: json['profile_image'] as String,
     name: json['full_name'] as String,
-    courseIds: (json["savedCourses"] as List<dynamic>).map((e) => e.toString()).toList(),
+    courseIds: (json["courses"] as List<dynamic>).map((e) => e.toString()).toList(),
   );
 }
 

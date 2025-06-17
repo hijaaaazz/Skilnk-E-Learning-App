@@ -1,11 +1,16 @@
-
 // Updated LibraryPage
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:user_app/core/routes/app_route_constants.dart';
 import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
+import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
 import 'package:user_app/features/home/presentation/widgets/course_card.dart';
 import 'package:user_app/features/library/presentation/bloc/library_bloc.dart';
+import 'package:user_app/presentation/account/widgets/app_bar.dart';
+// Import your skeleton widget here
+// import 'package:user_app/path/to/your/course_card_skeleton.dart';
 
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
@@ -33,18 +38,17 @@ void didChangeDependencies() {
   }
 }
 
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Library',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
+      appBar: SkilnkAppBar(title: "Library"),
       body: BlocBuilder<AuthStatusCubit, AuthStatusState>(
         builder: (context, authState) {
           if (authState.user == null) {
@@ -97,48 +101,55 @@ void didChangeDependencies() {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // My Courses
+            // My Courses Section
             BlocBuilder<LibraryBloc, LibraryState>(
-              builder: (context, courseState) {
-                if (courseState is LibraryLoaded) {
-                  final myCourses = courseState.enrolledCourses.take(3).toList();
-                  return _buildCourseSection(context, title: 'My Courses', courses: myCourses);
-                }
-                return const SizedBox.shrink();
+              builder: (context, state) {
+                return _buildStaticSection(
+                  title: 'My Courses',
+                  ids: state is LibraryLoaded ? state.enrolledIds : [],
+                  isLoaded: state is LibraryLoaded,
+                  content: BlocBuilder<LibraryBloc, LibraryState>(
+                    builder: (context, courseState) {
+                      if (courseState is LibraryLoaded) {
+                        final myCourses = courseState.enrolledCourses.take(3).toList();
+                        return _buildCourseContent(context, courses: myCourses, ids: courseState.enrolledIds, title: 'My Courses');
+                      }
+                      return _buildSkeletonContent();
+                    },
+                  ),
+                );
               },
             ),
             const SizedBox(height: 24),
 
+            // Saved Courses Section
             BlocBuilder<LibraryBloc, LibraryState>(
-              builder: (context, libraryState) {
-                if (libraryState is LibraryLoading) {
-                  return _buildLoadingSection('Saved Courses');
-                } else if (libraryState is LibraryLoaded) {
-                  return _buildCourseSection(context, title: 'Saved Courses', courses: libraryState.savedCourses);
-                } else if (libraryState is LibraryError) {
-                  return _buildErrorSection(
-                    'Saved Courses',
-                    libraryState.message,
-                    () => context.read<LibraryBloc>().add(
-                      LoadSavedCoursesEvent(userId: authState.user!.userId),
-                    ),
-                  );
-                }
-                return const SizedBox.shrink();
+              builder: (context, state) {
+                return _buildStaticSection(
+                  title: 'Saved Courses',
+                  ids: state is LibraryLoaded ? state.savedIds : [],
+                  isLoaded: state is LibraryLoaded,
+                  content: BlocBuilder<LibraryBloc, LibraryState>(
+                    builder: (context, libraryState) {
+                      if (libraryState is LibraryLoaded) {
+                        return _buildCourseContent(context, courses: libraryState.savedCourses, ids: libraryState.savedIds, title: 'Saved Courses');
+                      } else if (libraryState is LibraryError) {
+                        return _buildErrorContent(
+                          libraryState.message,
+                          () => context.read<LibraryBloc>().add(
+                            LoadSavedCoursesEvent(userId: authState.user!.userId),
+                          ),
+                        );
+                      }
+                      return _buildSkeletonContent();
+                    },
+                  ),
+                );
               },
             ),
             const SizedBox(height: 24),
 
-            // Completed Courses
-            // BlocBuilder<CourseBlocBloc, CourseBlocState>(
-            //   builder: (context, courseState) {
-            //     if (courseState is CourseBlocLoaded) {
-            //       final completedCourses = courseState.courses.skip(5).take(1).toList();
-            //       return _buildCourseSection(context, title: 'Completed Courses', courses: completedCourses);
-            //     }
-            //     return const SizedBox.shrink();
-            //   },
-            // ),
+            
           ],
         ),
       ),
@@ -146,10 +157,11 @@ void didChangeDependencies() {
   }
 
 
-  Widget _buildCourseSection(
-    BuildContext context, {
+  Widget _buildStaticSection({
     required String title,
-    required List courses,
+    required Widget content,
+    required List<String> ids,
+    required bool isLoaded,
   }) {
     return Column(
       children: [
@@ -163,13 +175,16 @@ void didChangeDependencies() {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            if (courses.isNotEmpty)
+            if (isLoaded)
               TextButton(
                 onPressed: () {
-                  // Navigate to full list view
-                  // context.goNamed(routeName);
+                  context.pushNamed(
+                    AppRouteConstants.courselistPaage,
+                    extra: CourseListPageArgs(courseIds: ids, title: title),
+                  );
                 },
                 child: const Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'SEE ALL',
@@ -186,108 +201,106 @@ void didChangeDependencies() {
                     ),
                   ],
                 ),
+              )
+            else
+              Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  width: 60,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
               ),
           ],
         ),
         const SizedBox(height: 16),
-        courses.isEmpty
-            ? _buildEmptyState(title)
-            : SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(courses.length, (index) {
-                    final course = courses[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: CourseCard(
-                        course: course,
-                        isPartiallyVisible: index == courses.length - 1,
-                      ),
-                    );
-                  }),
-                ),
-              ),
+        content,
       ],
     );
   }
 
-  Widget _buildLoadingSection(String title) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildCourseContent(
+    BuildContext context, {
+    required List courses,
+    required List<String> ids,
+    required String title,
+  }) {
+    if (courses.isEmpty) {
+      return _buildEmptyState(title);
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(courses.length, (index) {
+          final course = courses[index];
+          return Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: CourseCard(
+              course: course,
+              isPartiallyVisible: index == courses.length - 1,
             ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        const Center(
-          child: CircularProgressIndicator(),
-        ),
-      ],
+          );
+        }),
+      ),
     );
   }
 
-  Widget _buildErrorSection(String title, String error, VoidCallback onRetry) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildSkeletonContent() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(2, (index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: CourseCardSkeleton(), // Replace with your skeleton widget
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildErrorContent(String error, VoidCallback onRetry) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red.shade200),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Error loading courses',
+            style: TextStyle(
+              color: Colors.red.shade700,
+              fontWeight: FontWeight.w500,
             ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.red.shade50,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.red.shade200),
           ),
-          child: Column(
-            children: [
-              Text(
-                'Error loading $title',
-                style: TextStyle(
-                  color: Colors.red.shade700,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                error,
-                style: TextStyle(
-                  color: Colors.red.shade600,
-                  fontSize: 12,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: onRetry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade700,
-                  foregroundColor: Colors.white,
-                ),
-                child: const Text('Retry'),
-              ),
-            ],
+          const SizedBox(height: 8),
+          Text(
+            error,
+            style: TextStyle(
+              color: Colors.red.shade600,
+              fontSize: 12,
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-      ],
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: onRetry,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade700,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Retry'),
+          ),
+        ],
+      ),
     );
   }
 

@@ -1,9 +1,15 @@
 import 'package:dartz/dartz.dart';
+import 'package:user_app/features/course_list/data/models/load_course_params.dart';
+import 'package:user_app/features/home/data/models/banner_model.dart';
 import 'package:user_app/features/home/data/models/category_model.dart';
+import 'package:user_app/features/home/data/models/course_progress.dart';
 import 'package:user_app/features/home/data/models/courses_model.dart';
+import 'package:user_app/features/home/data/models/get_progress_params.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
 import 'package:user_app/features/home/data/models/mentor_mode.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
+import 'package:user_app/features/home/data/src/banner_firebase.dart';
+import 'package:user_app/features/home/data/src/course_progress_service.dart';
 import 'package:user_app/features/home/data/src/firebase_service.dart';
 import 'package:user_app/features/home/domain/entity/category_entity.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
@@ -21,7 +27,7 @@ class CoursesRepositoryImp extends CoursesRepository {
         r.map((data) {
           final categoryModel = CategoryModel.fromJson(data);
           return categoryModel.toEntity();
-        }).where((entity) => entity.courses.isNotEmpty).toList(),
+        }).toList(),
       ),
     );
   }
@@ -123,6 +129,51 @@ class CoursesRepositoryImp extends CoursesRepository {
       },
     );
   }
+
+ @override
+Future<Either<String, CourseProgressModel>> getProgress(GetCourseProgressParams params) async {
+  final result = await serviceLocator<CourseProgressService>().getCourseProgress(
+    userId: params.userId,
+    courseId: params.courseId,
+  );
+
+  return result.fold(
+    (l) => Left(l),
+    (r) => Right(r),
+  );
+}
+
+  @override
+  Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> params)async {
+    final result = await serviceLocator<CoursesFirebaseService>().getMentorCourses(params);
+
+  return result.fold(
+    (l) => Left(l),
+    (r) => Right(r),
+  );
+  }
+
+  @override
+  Future<Either<String, List<BannerModel>>> getBannerInfo()async{
+    final result = await serviceLocator<BannerFirebaseService>().getLatestBanners();
+
+  return result.fold(
+    (l) => Left(l),
+    (r) => Right(r),
+  );
+  }
+  
+  @override
+  Future<Either<String, Map<String, dynamic>>> getCourseList(LoadCourseParams params)async{
+    final result = await serviceLocator<CoursesFirebaseService>().getCourseList(params: params);
+
+  return result.fold(
+    (l) => Left(l),
+    (r) => Right(r),
+  );
+  }
+  
+  
 
  
 }

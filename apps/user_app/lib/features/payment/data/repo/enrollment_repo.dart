@@ -1,6 +1,10 @@
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
+import 'package:user_app/features/home/data/models/course_progress.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
+import 'package:user_app/features/home/data/models/lecture_model.dart';
+import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import 'package:user_app/features/home/data/src/course_progress_service.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
 import 'package:user_app/features/home/domain/repos/repository.dart';
 import 'package:user_app/features/payment/data/models/add_purchase_params.dart';
@@ -40,18 +44,47 @@ class EnrollmentRepositoryImp extends EnrollmentRepository {
       );
 
       final courseResult = await serviceLocator<CoursesRepository>()
-          .getCoursedetails(courseDetailsParams);
+    .getCoursedetails(courseDetailsParams);
 
-      return courseResult.fold(
+      return await courseResult.fold(
         (error) {
           log('[EnrollmentRepo] Error fetching course details: $error');
           return Left("Failed to fetch course details: $error");
         },
-        (courseEntity) {
+        (courseEntity) async {
           log('[EnrollmentRepo] Course details fetched successfully');
+
+          await serviceLocator<CourseProgressService>().createCourseProgress(
+            initialprogress: CourseProgressModel(
+              id: "",
+              userId: params.userId,
+              courseId: params.courseId,
+              courseTitle: courseEntity.title,
+              courseThumbnail: courseEntity.courseThumbnail,
+             lectures: courseEntity.lessons.asMap().entries.map((entry) {
+              final index = entry.key;
+              final lesson = entry.value;
+
+              return LectureProgressModel(
+                lecture: lesson,
+                watchedDuration: Duration.zero,
+                isCompleted: false,
+                isLocked: index != 0, // Unlock only the first lecture
+                index: index,
+              );
+            }).toList(),
+
+              overallProgress:0,
+              completedLectures: 0,
+              enrolledAt:DateTime.now(),
+              lastAccessedAt:DateTime.now()),
+
+          );
+
           return Right(courseEntity);
         },
       );
+
 
     } catch (e, stackTrace) {
       log('[EnrollmentRepo] Unexpected error: $e');

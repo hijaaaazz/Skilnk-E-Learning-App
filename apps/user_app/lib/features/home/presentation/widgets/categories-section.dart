@@ -1,4 +1,4 @@
-
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +9,7 @@ import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_blo
 import 'package:user_app/features/home/presentation/widgets/category_chip.dart';
 
 class CategoriesSection extends StatelessWidget {
-  const CategoriesSection({Key? key}) : super(key: key);
+  const CategoriesSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,33 +52,41 @@ class CategoriesSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         BlocBuilder<CourseBlocBloc, CourseBlocState>(
-          builder: (context, state) {
-            if (state is CourseBlocLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is CourseBlocLoaded) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: state.categories.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final category = entry.value;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: CategoryChip(
-                        category : category,
-                        
-                        
-                      ),
-                    );
-                  }).toList(),
-                ),
-              );
-            } else if (state is CourseBlocError) {
-              return Center(child: Text(state.message));
-            }
-            return const SizedBox.shrink();
-          },
+  builder: (context, state) {
+     if (state is CourseBlocLoading || state is CourseBlocError) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(3, (index) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: CategoryChipSkeleton(width: 100,),
+            );
+          }),
         ),
+      );
+    } else if (state is CourseBlocLoaded) {
+      final categories = state.categories;
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(categories.length, (index) {
+            final category = categories[index];
+            return Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: CategoryChip(
+                category: category,
+              ),
+            );
+          }),
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
+  },
+)
+
       ],
     );
   }

@@ -22,6 +22,8 @@ import 'package:tutor_app/features/courses/presentation/pages/lecture_detailed_p
 import 'package:tutor_app/features/courses/presentation/pages/publish_couse.dart';
 import 'package:tutor_app/features/courses/presentation/pages/basic_info_submition.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/pdf_view.dart';
+import 'package:tutor_app/features/dashboard/presentation/bloc/dash_board_bloc.dart';
+import 'package:tutor_app/features/dashboard/presentation/pages/dashboard.dart';
 import 'package:tutor_app/features/main_scaffold/presentation/pages/landing.dart';
 import 'package:tutor_app/features/splash/presentation/pages/splash.dart';
 import 'package:video_player/video_player.dart';
@@ -216,7 +218,10 @@ class AppRoutes {
               GoRoute(
                 path: "/dashboard",
                 name: AppRouteConstants.homeRouteName,
-                builder: (context, state) => DashBoardPage(),
+                builder: (context, state) => BlocProvider(
+                  create: (context) => DashboardBloc(),
+                  child: DashboardPage(),
+                ),
               ),
             ],
           ),
@@ -286,11 +291,3 @@ class ChatPage extends StatelessWidget {
   }
 }
 
-class DashBoardPage extends StatelessWidget {
-  const DashBoardPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

@@ -1,8 +1,8 @@
-
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 
 class CourseProgressModel {
   final String id;
@@ -46,21 +46,25 @@ class CourseProgressModel {
 
   static List<LectureProgressModel> _parseLectureProgress(dynamic data) {
     if (data == null) return [];
-    
+
     try {
       return (data as List<dynamic>).map((lectureData) {
         if (lectureData is Map<String, dynamic>) {
           return LectureProgressModel.fromJson(lectureData);
         }
+        // Fallback for invalid data
         return LectureProgressModel(
-          id: '',
-          title: '',
-          duration: const Duration(),
           watchedDuration: const Duration(),
           isCompleted: false,
           isLocked: true,
-          videoUrl: '',
-          lectureNumber: 0,
+          index: 0,
+          lecture: const LectureEntity(
+            title: '',
+            description: '',
+            videoUrl: '',
+            notesUrl: '',
+            durationInSeconds: 0,
+          ),
         );
       }).toList();
     } catch (e) {

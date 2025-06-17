@@ -1,5 +1,9 @@
 
 import 'package:dartz/dartz.dart';
+import 'package:user_app/features/course_list/data/models/load_course_params.dart';
+import 'package:user_app/features/home/data/models/banner_model.dart';
+import 'package:user_app/features/home/data/models/course_progress.dart';
+import 'package:user_app/features/home/data/models/get_progress_params.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
 import 'package:user_app/features/home/domain/entity/category_entity.dart';
@@ -13,6 +17,16 @@ abstract class CoursesRepository {
   Future<Either<String, bool>> saveCoursedetails(
     SaveCourseParams params
   );
+  Future<Either<String,CourseProgressModel>> getProgress(
+    GetCourseProgressParams params
+  );
+
+  Future<Either<String,List<CoursePreview>>> getMentorCourses(
+    List<String> params
+  );
+
+  Future<Either<String,List<BannerModel>>> getBannerInfo();
+   Future<Either<String,Map<String, dynamic>>> getCourseList(LoadCourseParams params);
 
 
   

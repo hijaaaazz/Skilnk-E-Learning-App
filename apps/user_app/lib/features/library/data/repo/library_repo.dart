@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:user_app/features/home/domain/entity/course_privew.dart';
-import 'package:user_app/features/home/domain/repos/repository.dart';
 import 'package:user_app/features/library/data/src/firebase_service.dart';
 import 'package:user_app/features/library/domain/repo/library_repo.dart';
 import 'package:user_app/features/payment/data/src/enrollment_firebase_service.dart';
@@ -76,5 +75,52 @@ Future<Either<String, List<CoursePreview>>> getEnrolledCourses(String userId) as
     return Left('Failed to fetch enrolled courses: ${e.toString()}');
   }
 }
+@override
+Future<Either<String, List<String>>> getEnrolledCoursesIds(String userId) async {
+  try {
+    log('[LibraryRepo] Fetching enrolled course IDs for user: $userId');
+
+    final enrollmentService = serviceLocator<EnrollmentFirebaseService>();
+    final courseIds = await enrollmentService.getEnrolledCourseIds(userId);
+
+    if (courseIds.isEmpty) {
+      log('[LibraryRepo] No enrolled course IDs found');
+    } else {
+      log('[LibraryRepo] Found ${courseIds.length} enrolled course IDs');
+    }
+
+    return Right(courseIds);
+  } catch (e) {
+    log('[LibraryRepo] Error fetching enrolled course IDs: $e');
+    return Left('Failed to fetch enrolled course IDs: ${e.toString()}');
+  }
+}
+
+
+
+
+  @override
+  Future<Either<String, List<String>>> getSavedCoursesIds(String userId)async{
+    try {
+    log('[LibraryRepo] Fetching saved courses for user: $userId');
+
+    // Get the saved course IDs (returns Either<String, List<String>>)
+    final result = await serviceLocator<LibraryFirebaseService>().getSavedCoursesIds(userId);
+
+    // Handle the Either result
+    return await result.fold(
+      (error) {
+        return Left(error); // Pass the error as-is
+      },
+      (courseIds)  {
+        // Now that we have the List<String> courseIds, fetch the actual course previews
+        return Right(courseIds);
+      },
+    );
+  } catch (e) {
+    log('[LibraryRepo] Error fetching saved courses: $e');
+    return Left('Failed to fetch saved courses: ${e.toString()}');
+  }
+  }
 
 }

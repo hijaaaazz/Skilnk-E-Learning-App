@@ -19,7 +19,7 @@ class AuthenticationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get access to existing AuthStatusCubit from parent provider
-    final authStatusCubit = context.read<AuthStatusCubit>();
+    context.read<AuthStatusCubit>();
     
     return BlocProvider(
       // Pass the AuthStatusCubit to AuthUiCubit

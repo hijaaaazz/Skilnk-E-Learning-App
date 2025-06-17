@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 
 // Option 2: Separate SliverAppBar component to use with CustomScrollView
@@ -11,9 +12,31 @@ class HeaderSectionSliver extends StatelessWidget {
     return BlocBuilder<AuthStatusCubit, AuthStatusState>(
       builder: (context, state) {
         return SliverAppBar(
-          expandedHeight: 150,
+          
+          expandedHeight: MediaQuery.of(context).size.height * 0.15,
           pinned: true,
           backgroundColor: Colors.white,
+          title: Text(
+                        state.user?.name != null ? "Hi ${state.user!.name}" : 'Hi, Friend',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+          actions: [
+            Container(
+                        width: 30,
+                        height: 30,
+                        margin: EdgeInsets.only(right: 20),
+                        decoration: BoxDecoration(
+                          // ignore: deprecated_member_use
+                          color: Colors.deepOrange,
+                          shape: BoxShape.circle,
+                        ),
+                        child:Icon(FontAwesomeIcons.facebookMessenger,size: 16,)
+                      ),
+          ],
+          
           flexibleSpace: FlexibleSpaceBar(
             background: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -22,37 +45,12 @@ class HeaderSectionSliver extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        state.user?.name != null ? "Hi ${state.user!.name}" : 'Hi, Friend',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          // ignore: deprecated_member_use
-                          color: Colors.orange.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.notifications_outlined,
-                          color: Colors.deepOrange,
-                        ),
-                      ),
-                    ],
-                  ),
+                  
                   const SizedBox(height: 10),
                   const Text(
                     'What Would you like to learn Today?',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Colors.black54,
                     ),
                   ),
@@ -68,6 +66,7 @@ class HeaderSectionSliver extends StatelessWidget {
             ),
             
           ),
+          
         
         );
       },
