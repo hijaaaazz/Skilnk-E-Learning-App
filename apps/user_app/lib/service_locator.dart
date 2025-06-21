@@ -33,6 +33,7 @@ import 'package:user_app/features/home/domain/repos/repository.dart';
 import 'package:user_app/features/home/domain/usecases/get_banner_info.dart';
 import 'package:user_app/features/home/domain/usecases/get_categories.dart';
 import 'package:user_app/features/home/domain/usecases/get_course_details.dart';
+import 'package:user_app/features/home/domain/usecases/get_course_progress.dart';
 import 'package:user_app/features/home/domain/usecases/get_courses.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentor_courses.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentors.dart';
@@ -218,6 +219,10 @@ Future<void> initializeDependencies() async {
   );
   serviceLocator.registerLazySingleton<GetRecentActivitiesUseCase>(
     () => GetRecentActivitiesUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetCourseProgressUseCase>(
+    () => GetCourseProgressUseCase()
   );
   
 

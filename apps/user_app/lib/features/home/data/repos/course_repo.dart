@@ -8,6 +8,7 @@ import 'package:user_app/features/home/data/models/get_progress_params.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
 import 'package:user_app/features/home/data/models/mentor_mode.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
+import 'package:user_app/features/home/data/models/update_progress_params.dart';
 import 'package:user_app/features/home/data/src/banner_firebase.dart';
 import 'package:user_app/features/home/data/src/course_progress_service.dart';
 import 'package:user_app/features/home/data/src/firebase_service.dart';
@@ -171,6 +172,12 @@ Future<Either<String, CourseProgressModel>> getProgress(GetCourseProgressParams 
     (l) => Left(l),
     (r) => Right(r),
   );
+  }
+  
+  @override
+  Future<Either<String, CourseProgressModel>> updateProgress(UpdateProgressParam params) {
+    // TODO: implement updateProgress
+    throw UnimplementedError();
   }
   
   

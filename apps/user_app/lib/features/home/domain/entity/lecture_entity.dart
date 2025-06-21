@@ -1,13 +1,9 @@
-
-
-
 class LectureEntity {
   final String title;
   final String description;
   final String videoUrl;
   final String notesUrl;
   final int durationInSeconds;
-  
   
   const LectureEntity({
     required this.title,

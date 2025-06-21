@@ -5,8 +5,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:user_app/features/home/data/models/course_progress.dart';
-import 'package:user_app/features/home/data/models/lecture_model.dart';
-import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
 
 abstract class CourseProgressService {
   Future<void> createCourseProgress({

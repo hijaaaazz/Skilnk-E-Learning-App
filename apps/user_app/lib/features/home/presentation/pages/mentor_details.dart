@@ -6,9 +6,9 @@ import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
 import 'package:user_app/features/explore/presentation/widgets/course_tile.dart';
 import 'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/mentor_bloc.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/mentor_event.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/mentor_state.dart';
+import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_event.dart';
+import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_state.dart';
 import 'package:user_app/features/home/presentation/widgets/mentor_page/skelton.dart';
 
 // Main Widget

@@ -1,5 +1,6 @@
 import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 
+
 class LectureProgressModel {
   final Duration watchedDuration;
   final bool isCompleted;

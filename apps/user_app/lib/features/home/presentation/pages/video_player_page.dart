@@ -1,411 +1,341 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
-import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
-import 'package:user_app/features/home/presentation/widgets/download_progress_dialog.dart';
-import 'package:user_app/features/home/presentation/widgets/video_controllers.dart';
-import 'package:video_player/video_player.dart';
-import 'dart:async';
-import 'dart:io';
+import 'package:user_app/features/home/presentation/bloc/bloc/video_player_bloc.dart';
+import 'package:user_app/features/home/presentation/widgets/video_player/pdf_widget.dart';
+import 'package:user_app/features/home/presentation/widgets/video_player/video_player.dart';
+
 
 class VideoPlayerPage extends StatefulWidget {
   final List<LectureProgressModel> lectures;
   final int currentIndex;
+  final Function(int index, Duration watchedDuration, bool isCompleted)? onProgressUpdate;
 
   const VideoPlayerPage({
     super.key,
     required this.lectures,
     required this.currentIndex,
+    this.onProgressUpdate,
   });
 
   @override
   State<VideoPlayerPage> createState() => _VideoPlayerPageState();
 }
 
-class _VideoPlayerPageState extends State<VideoPlayerPage>
-    with TickerProviderStateMixin {
-  VideoPlayerController? _videoController;
-  bool isLoading = true;
-  bool isFullScreen = false;
-  bool showControls = true;
-  bool isBuffering = false;
-  Timer? _hideControlsTimer;
-  late AnimationController _controlsAnimationController;
-  late Animation<double> _controlsAnimation;
-  late int currentIndex;
-
-  LectureProgressModel get currentLecture => widget.lectures[currentIndex];
-  bool get hasNextLecture => currentIndex < widget.lectures.length - 1;
-  bool get hasPreviousLecture => currentIndex > 0;
+class _VideoPlayerPageState extends State<VideoPlayerPage> {
+  late int _currentIndex;
+  bool _showNotes = false;
+  bool _isDescriptionExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.currentIndex;
-    _controlsAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _controlsAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controlsAnimationController,
-      curve: Curves.easeInOut,
-    ));
-    _initializeVideoPlayer();
-  }
-
-  @override
-  void dispose() {
-    _videoController?.dispose();
-    _hideControlsTimer?.cancel();
-    _controlsAnimationController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _initializeVideoPlayer() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    // Dispose previous controller if exists
-    await _videoController?.dispose();
-
-    if (currentLecture.lecture.videoUrl.isNotEmpty) {
-      _videoController = VideoPlayerController.networkUrl(Uri.parse(currentLecture.lecture.videoUrl));
-      
-      _videoController!.addListener(() {
-        if (mounted) {
-          setState(() {
-            isBuffering = _videoController!.value.isBuffering;
-          });
-        }
-      });
-
-      try {
-        await _videoController!.initialize();
-        setState(() {
-          isLoading = false;
-        });
-        _showControlsTemporarily();
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        _showErrorSnackBar('Failed to load video');
-      }
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      _showErrorSnackBar('Video URL not available');
-    }
-  }
-
-  void _showControlsTemporarily() {
-    setState(() {
-      showControls = true;
-    });
-    _controlsAnimationController.forward();
-    
-    _hideControlsTimer?.cancel();
-    _hideControlsTimer = Timer(const Duration(seconds: 3), () {
-      if (mounted && _videoController?.value.isPlaying == true) {
-        _hideControls();
-      }
-    });
-  }
-
-  void _hideControls() {
-    _controlsAnimationController.reverse();
-    Timer(const Duration(milliseconds: 300), () {
-      if (mounted) {
-        setState(() {
-          showControls = false;
-        });
-      }
-    });
-  }
-
-  void _toggleFullScreen() {
-    setState(() {
-      isFullScreen = !isFullScreen;
-    });
-
-    if (isFullScreen) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
-    } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-      ]);
-    }
-  }
-
-  void _showNotesSheet() {
-    _openPdfNotes(currentLecture.lecture.notesUrl);
-  }
-
-  Future<void> _openPdfNotes(String pdfUrl) async {
-    if (pdfUrl.isEmpty) {
-      _showErrorSnackBar('PDF URL not available');
-      return;
-    }
-
-    final Uri uri = Uri.parse(pdfUrl);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      _showErrorSnackBar('Could not open PDF');
-    }
-  }
-
-  Future<void> _showDownloadDialog() async {
-    // Request storage permission for Android
-    if (Platform.isAndroid) {
-      var status = await Permission.storage.request();
-      if (status != PermissionStatus.granted) {
-        _showErrorSnackBar('Storage permission denied');
-        return;
-      }
-    }
-
-    // Initialize download
-    final String pdfUrl = currentLecture.lecture.notesUrl;
-    if (pdfUrl.isEmpty) {
-      _showErrorSnackBar('PDF URL not available');
-      return;
-    }
-
-    try {
-      final String fileName = 'lecture_${currentIndex + 1}_${currentLecture.lecture.title}.pdf';
-      final String? taskId = await FlutterDownloader.enqueue(
-        url: pdfUrl,
-        savedDir: '/storage/emulated/0/Download', // Android default download directory
-        fileName: fileName,
-        showNotification: true,
-        openFileFromNotification: true,
-      );
-
-      if (taskId != null) {
-        showDialog(
-          context: context,
-          builder: (context) => DownloadProgressDialog(
-            lectureTitle: currentLecture.lecture.title,
-            onDownloadComplete: () {
-              setState(() {
-                // Update download status if needed
-              });
-              _showErrorSnackBar('Download completed: $fileName');
-            },
-          ),
-        );
-      } else {
-        _showErrorSnackBar('Failed to start download');
-      }
-    } catch (e) {
-      _showErrorSnackBar('Download error: $e');
-    }
-  }
-
-  void _navigateToNextLecture() {
-    if (hasNextLecture) {
-      setState(() {
-        currentIndex++;
-      });
-      _initializeVideoPlayer();
-    }
-  }
-
-  void _navigateToPreviousLecture() {
-    if (hasPreviousLecture) {
-      setState(() {
-        currentIndex--;
-      });
-      _initializeVideoPlayer();
-    }
-  }
-
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    
-    if (duration.inHours > 0) {
-      return "${duration.inHours}:$twoDigitMinutes:$twoDigitSeconds";
-    } else {
-      return "$twoDigitMinutes:$twoDigitSeconds";
-    }
+    _currentIndex = widget.currentIndex;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Scaffold(
-        backgroundColor: Colors.black,
-        body: const Center(
-          child: CircularProgressIndicator(
-            color: Color(0xFFFF6636),
+    return Theme(
+      data: Theme.of(context).copyWith(
+        primaryColor: Colors.deepOrange,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepOrange,
+          brightness: Brightness.light,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: BlocProvider(
+          create: (context) => VideoPlayerBloc()
+            ..add(InitializeVideoEvent(
+              videoUrl: widget.lectures[_currentIndex].lecture.videoUrl,
+              startPosition: widget.lectures[_currentIndex].watchedDuration,
+            )),
+          child: BlocListener<VideoPlayerBloc, VideoPlayerState>(
+            listener: (context, state) {
+              if (state is VideoPlayerReady) {
+                widget.onProgressUpdate?.call(
+                  _currentIndex,
+                  state.watchedDuration,
+                  state.isCompleted,
+                );
+              }
+            },
+            child: BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
+              builder: (context, state) {
+                // Handle fullscreen mode
+                if (state is VideoPlayerReady && state.isFullscreen) {
+                  return const VideoPlayerWidget();
+                }
+                
+                // Normal mode
+                return _showNotes ? _buildNotesView() : _buildMainView();
+              },
+            ),
           ),
         ),
-      );
-    }
-
-    if (isFullScreen) {
-      return _buildFullScreenPlayer();
-    }
-
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
-      body: Column(
-        children: [
-          _buildVideoPlayer(),
-          Expanded(
-            child: _buildLectureDetails(),
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildFullScreenPlayer() {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Center(
-            child: _videoController?.value.isInitialized == true
-                ? AspectRatio(
-                    aspectRatio: _videoController!.value.aspectRatio,
-                    child: VideoPlayer(_videoController!),
-                  )
-                : const CircularProgressIndicator(color: Color(0xFFFF6636)),
+  Widget _buildMainView() {
+    return Column(
+      children: [
+        // Video Player
+        const VideoPlayerWidget(),
+        
+        // Content below video
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Video Info Section with Expandable Description
+                _buildVideoInfoSection(),
+                
+                // Expandable Description
+                if (_isDescriptionExpanded) _buildExpandedDescription(),
+                
+                // Course Content List
+                _buildCourseContentList(),
+              ],
+            ),
           ),
-          if (isBuffering)
-            const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFFFF6636),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNotesView() {
+    return Column(
+      children: [
+        // Notes Header
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _showNotes = false;
+                      });
+                    },
+                    icon: const Icon(Icons.arrow_back_ios),
+                    color: Colors.deepOrange,
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.description,
+                    color: Colors.deepOrange,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Lecture Notes',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepOrange[700],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          if (showControls)
-            AnimatedBuilder(
-              animation: _controlsAnimation,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _controlsAnimation.value,
-                  child: VideoControls(
-                    controller: _videoController,
-                    isFullScreen: isFullScreen,
-                    onFullScreenToggle: _toggleFullScreen,
-                    onNext: hasNextLecture ? _navigateToNextLecture : null,
-                    onPrevious: hasPreviousLecture ? _navigateToPreviousLecture : null,
-                  ),
-                );
-              },
-            ),
-          GestureDetector(
-            onTap: _showControlsTemporarily,
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.transparent,
-            ),
           ),
-        ],
-      ),
+        ),
+        
+        // PDF Viewer
+        Expanded(
+          child: PDFViewerWidget(
+            pdfUrl: widget.lectures[_currentIndex].lecture.notesUrl,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildVideoPlayer() {
+  Widget _buildVideoInfoSection() {
     return Container(
-      width: double.infinity,
-      height: 250,
-      color: Colors.black,
-      child: Stack(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey[100]!),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (_videoController?.value.isInitialized == true)
-            Center(
-              child: AspectRatio(
-                aspectRatio: _videoController!.value.aspectRatio,
-                child: VideoPlayer(_videoController!),
-              ),
-            )
-          else
-            const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFFFF6636),
-              ),
-            ),
-          
-          if (isBuffering)
-            const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFFFF6636),
-              ),
-            ),
-
-          if (showControls)
-            AnimatedBuilder(
-              animation: _controlsAnimation,
-              builder: (context, child) {
-                return Opacity(
-                  opacity: _controlsAnimation.value,
-                  child: VideoControls(
-                    controller: _videoController,
-                    isFullScreen: isFullScreen,
-                    onFullScreenToggle: _toggleFullScreen,
-                    onNext: hasNextLecture ? _navigateToNextLecture : null,
-                    onPrevious: hasPreviousLecture ? _navigateToPreviousLecture : null,
+          // Title and Expand Button Row
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  widget.lectures[_currentIndex].lecture.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
-                );
-              },
-            ),
-
-          GestureDetector(
-            onTap: _showControlsTemporarily,
-            child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.transparent,
-            ),
-          ),
-
-          // Back button
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 8,
-            left: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: 20,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                onPressed: () => Navigator.pop(context),
               ),
+              
+              // Notes Button
+              if (widget.lectures[_currentIndex].lecture.notesUrl.isNotEmpty)
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _showNotes = true;
+                    });
+                  },
+                  icon: const Icon(Icons.description_outlined),
+                  color: Colors.deepOrange,
+                  tooltip: 'View Notes',
+                ),
+              
+              // Expand/Collapse Button
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _isDescriptionExpanded = !_isDescriptionExpanded;
+                  });
+                },
+                icon: Icon(
+                  _isDescriptionExpanded ? Icons.expand_less : Icons.expand_more,
+                ),
+                color: Colors.grey[600],
+                tooltip: _isDescriptionExpanded ? 'Collapse' : 'Show Description',
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 8),
+          
+          // Video Stats Row
+          Row(
+            children: [
+              Text(
+                'Lecture ${_currentIndex + 1} of ${widget.lectures.length}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Container(
+                width: 4,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                _formatDuration(Duration(seconds: widget.lectures[_currentIndex].lecture.durationInSeconds)),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const Spacer(),
+              
+              // Completion Status
+              BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
+                builder: (context, state) {
+                  if (state is VideoPlayerReady && state.isCompleted) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green[200]!),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green[600],
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'COMPLETED',
+                            style: TextStyle(
+                              color: Colors.green[700],
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpandedDescription() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        border: Border(
+          bottom: BorderSide(color: Colors.grey[100]!),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.info_outline,
+                color: Colors.deepOrange,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Description',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.deepOrange[700],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            widget.lectures[_currentIndex].lecture.description,
+            style: const TextStyle(
+              fontSize: 15,
+              color: Colors.black87,
+              height: 1.5,
             ),
           ),
         ],
@@ -413,238 +343,233 @@ class _VideoPlayerPageState extends State<VideoPlayerPage>
     );
   }
 
-  Widget _buildLectureDetails() {
-    return SingleChildScrollView(
+  Widget _buildCourseContentList() {
+    return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildLectureHeader(),
-          const SizedBox(height: 20),
-          _buildActionButtons(),
-          const SizedBox(height: 24),
-          _buildDescription(),
-          const SizedBox(height: 24),
-          _buildNavigationButtons(),
+          Row(
+            children: [
+              Text(
+                'Course Content',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange[700],
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.deepOrange[50],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${_currentIndex + 1} / ${widget.lectures.length}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.deepOrange[700],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Lectures List
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: widget.lectures.length,
+            itemBuilder: (context, index) {
+              return _buildLectureItem(index);
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildLectureHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Lecture ${currentIndex + 1}',
-          style: const TextStyle(
-            color: Color(0xFFFF6636),
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          currentLecture.lecture.title,
-          style: const TextStyle(
-            color: Color(0xFF202244),
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            height: 1.3,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Icon(
-              Icons.access_time,
-              size: 16,
-              color: Color(0xFF545454),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              _formatDuration(currentLecture.lecture.duration),
-              style: const TextStyle(
-                color: Color(0xFF545454),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+  Widget _buildLectureItem(int index) {
+    final lecture = widget.lectures[index];
+    final isCurrentLecture = index == _currentIndex;
+    final isLocked = lecture.isLocked;
+    final isCompleted = lecture.isCompleted;
+
+    return GestureDetector(
+      onTap: () {
+        if (!isLocked) {
+          _changeLecture(index);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Complete the previous lecture to unlock this one'),
+              backgroundColor: Colors.deepOrange,
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
-            const SizedBox(width: 16),
-            Text(
-              '${currentIndex + 1} of ${widget.lectures.length}',
-              style: const TextStyle(
-                color: Color(0xFF545454),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildActionButton(
-            icon: Icons.picture_as_pdf,
-            label: 'PDF Notes',
-            onTap: _showNotesSheet,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildActionButton(
-            icon: Icons.download_outlined,
-            label: 'Download',
-            onTap: _showDownloadDialog,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback? onTap,
-  }) {
-    final isDisabled = onTap == null;
-    
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+          );
+        }
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isDisabled ? const Color(0xFFF0F0F0) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: isCurrentLecture ? Colors.deepOrange[50] : Colors.white,
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isDisabled ? const Color(0xFFE0E0E0) : const Color(0xFFFF6636),
-            width: 1.5,
+            color: isCurrentLecture ? Colors.deepOrange[200]! : Colors.grey[200]!,
+            width: isCurrentLecture ? 1.5 : 0.5,
           ),
-          boxShadow: isDisabled ? null : [
-            BoxShadow(
-              color: const Color(0xFFFF6636).withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              color: isDisabled ? const Color(0xFF9E9E9E) : const Color(0xFFFF6636),
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: TextStyle(
-                color: isDisabled ? const Color(0xFF9E9E9E) : const Color(0xFFFF6636),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+            // Thumbnail placeholder
+            Container(
+              width: 80,
+              height: 45,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(
+                isLocked 
+                  ? Icons.lock_outline
+                  : isCompleted 
+                    ? Icons.check_circle
+                    : isCurrentLecture 
+                      ? Icons.play_arrow
+                      : Icons.play_circle_outline,
+                color: isLocked 
+                  ? Colors.grey[400]
+                  : isCompleted 
+                    ? Colors.green[600]
+                    : Colors.deepOrange,
+                size: 24,
               ),
             ),
+            
+            const SizedBox(width: 12),
+            
+            // Lecture Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${index + 1}. ${lecture.lecture.title}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: isCurrentLecture ? FontWeight.w600 : FontWeight.w500,
+                      color: isLocked ? Colors.grey[500] : Colors.black87,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  
+                  const SizedBox(height: 4),
+                  
+                  Row(
+                    children: [
+                      Text(
+                        _formatDuration(lecture.lecture.duration),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      
+                      if (lecture.progressPercentage > 0 && !isLocked) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 3,
+                          height: 3,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[400],
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${(lecture.progressPercentage * 100).toInt()}% watched',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isCompleted ? Colors.green[600] : Colors.deepOrange,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  
+                  // Progress bar for partially watched lectures
+                  if (lecture.progressPercentage > 0 && !isCompleted && !isLocked) ...[
+                    const SizedBox(height: 6),
+                    LinearProgressIndicator(
+                      value: lecture.progressPercentage,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.deepOrange),
+                      minHeight: 2,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            
+            // Status indicator
+            if (isCurrentLecture)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.deepOrange,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'NOW',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDescription() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'About this lecture',
-          style: TextStyle(
-            color: Color(0xFF202244),
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          currentLecture.lecture.description,
-          style: const TextStyle(
-            color: Color(0xFF545454),
-            fontSize: 16,
-            height: 1.6,
-          ),
-        ),
-      ],
-    );
+  void _changeLecture(int index) {
+    if (index != _currentIndex) {
+      context.read<VideoPlayerBloc>().add(DisposeVideoEvent());
+      
+      setState(() {
+        _currentIndex = index;
+        _isDescriptionExpanded = false; // Collapse description when changing lecture
+      });
+      
+      context.read<VideoPlayerBloc>().add(InitializeVideoEvent(
+        videoUrl: widget.lectures[_currentIndex].lecture.videoUrl,
+        startPosition: widget.lectures[_currentIndex].watchedDuration,
+      ));
+    }
   }
 
-  Widget _buildNavigationButtons() {
-    return Column(
-      children: [
-        if (hasPreviousLecture)
-          _buildNavigationButton(
-            icon: Icons.skip_previous,
-            label: 'Previous Lecture',
-            onTap: _navigateToPreviousLecture,
-            isPrimary: false,
-          ),
-        
-        if (hasPreviousLecture && hasNextLecture)
-          const SizedBox(height: 12),
-        
-        if (hasNextLecture)
-          _buildNavigationButton(
-            icon: Icons.skip_next,
-            label: 'Next Lecture',
-            onTap: _navigateToNextLecture,
-            isPrimary: true,
-          ),
-      ],
-    );
-  }
-
-  Widget _buildNavigationButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    required bool isPrimary,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: onTap,
-        icon: Icon(
-          icon,
-          color: isPrimary ? Colors.white : const Color(0xFFFF6636),
-          size: 20,
-        ),
-        label: Text(
-          label,
-          style: TextStyle(
-            color: isPrimary ? Colors.white : const Color(0xFFFF6636),
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isPrimary ? const Color(0xFFFF6636) : Colors.white,
-          foregroundColor: isPrimary ? Colors.white : const Color(0xFFFF6636),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: const Color(0xFFFF6636),
-              width: isPrimary ? 0 : 1.5,
-            ),
-          ),
-          elevation: isPrimary ? 4 : 0,
-          shadowColor: isPrimary ? const Color(0xFFFF6636).withOpacity(0.3) : null,
-        ),
-      ),
-    );
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    final seconds = duration.inSeconds.remainder(60);
+    if (hours > 0) {
+      return '$hours:${twoDigits(minutes)}:${twoDigits(seconds)}';
+    }
+    return '${twoDigits(minutes)}:${twoDigits(seconds)}';
   }
 }

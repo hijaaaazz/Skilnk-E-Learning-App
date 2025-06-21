@@ -5,7 +5,6 @@ import 'package:user_app/core/routes/app_route_constants.dart';
 import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:user_app/features/home/data/models/course_progress.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
-import 'package:user_app/features/home/domain/usecases/get_course_progress.dart';
 import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_bloc.dart';
 import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_event.dart';
 import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_state.dart';
@@ -27,7 +26,6 @@ class CourseProgressPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => CourseProgressBloc(
-        getCourseProgressUseCase: GetCourseProgressUseCase(),
       )..add(LoadCourseProgressEvent(
         courseId: courseId,
         userId: context.read<AuthStatusCubit>().state.user!.userId,
@@ -58,17 +56,19 @@ class CourseProgressView extends StatelessWidget {
 
       try {
   context.pushNamed(
-    AppRouteConstants.lecturedetailsPaage,
-    extra: {
-      'course_title' : courseTitle,
-      'lectures': lectures,      // List<LectureEntity>
-      'currentId': currentIndex,    // int
-    },
-  ).then((result) {
+  AppRouteConstants.lecturedetailsPaage,
+  extra: {
+    'lectures': lectures,
+    'currentIndex': 0,
+    'bloc': context.read<CourseProgressBloc>()
+  },
+).then((result) {
     if (result == true) {
+      // ignore: use_build_context_synchronously
       context.read<CourseProgressBloc>().add(
         RefreshCourseProgressEvent(
           courseId: courseId,
+          // ignore: use_build_context_synchronously
           userId: context.read<AuthStatusCubit>().state.user!.userId,
         ),
       );

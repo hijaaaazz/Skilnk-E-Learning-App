@@ -17,7 +17,9 @@ import 'package:user_app/features/explore/presentation/pages/explore.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
 import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
+import 'package:user_app/features/home/presentation/bloc/bloc/video_player_bloc.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
+import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_bloc.dart';
 import 'package:user_app/features/home/presentation/pages/course_detailed_page.dart';
 import 'package:user_app/features/home/presentation/pages/course_enrolled_page.dart';
 import 'package:user_app/features/home/presentation/pages/home.dart';
@@ -30,7 +32,7 @@ import 'package:user_app/features/course_list/presentation/pages/courselist.dart
 
 class AppRoutes {
   GoRouter router = GoRouter(
-    initialLocation: "/splash"
+    initialLocation: "/home"
     ,
     routes: [
       
@@ -96,24 +98,40 @@ class AppRoutes {
         },
       ),
 
+GoRoute(
+  path: "/lecture",
+  name: AppRouteConstants.lecturedetailsPaage,
+  pageBuilder: (context, state) {
+    final extras = state.extra as Map<String, dynamic>?;
 
-      GoRoute(
-        path: "/lecture",
-        name: AppRouteConstants.lecturedetailsPaage,
-        pageBuilder: (context, state) {
-          final extras = state.extra as Map<String, dynamic>?;
+    // ✅ Safely extract and cast
+    final lectures = extras?['lectures'] as List<LectureProgressModel>?;
+    final currentIndex = extras?['currentIndex'] as int? ?? 0;
+    final bloc = extras?['bloc'] as CourseProgressBloc;
 
-          final lectures = extras?['lectures']as List<LectureProgressModel>;
-          final lectureId = extras?['currentId']as int;
+    if (lectures == null || lectures.isEmpty) {
+      return MaterialPage(
+        child: Scaffold(
+          body: Center(child: Text("Lecture data missing")),
+        ),
+      );
+    }
 
-          return MaterialPage(
-            child: VideoPlayerPage(
-              lectures: lectures,
-              currentIndex: lectureId,
-            ),
-          );
-        },
+    return MaterialPage(
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => VideoPlayerBloc()),
+          BlocProvider.value(value: bloc)
+        ],
+        child: VideoPlayerPage(
+          lectures: lectures,
+          currentIndex: currentIndex,
+        ),
       ),
+    );
+  },
+),
+
 
 
       GoRoute(

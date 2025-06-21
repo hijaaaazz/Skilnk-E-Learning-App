@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentor_courses.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/mentor_event.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/mentor_state.dart';
+import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_event.dart';
+import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_state.dart';
 import 'package:user_app/service_locator.dart';
 
 class MentorDetailsBloc extends Bloc<MentorDetailsEvent, MentorDetailsState> {
