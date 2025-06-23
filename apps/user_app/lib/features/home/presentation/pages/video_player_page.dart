@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/video_player_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_event.dart';
+import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_state.dart';
+import 'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
 import 'package:user_app/features/home/presentation/widgets/video_player/pdf_widget.dart';
 import 'package:user_app/features/home/presentation/widgets/video_player/video_player.dart';
-
+import 'dart:developer';
 
 class VideoPlayerPage extends StatefulWidget {
   final List<LectureProgressModel> lectures;
   final int currentIndex;
-  final Function(int index, Duration watchedDuration, bool isCompleted)? onProgressUpdate;
+  final String courseId;
 
   const VideoPlayerPage({
     super.key,
     required this.lectures,
     required this.currentIndex,
-    this.onProgressUpdate,
+    required this.courseId,
   });
 
   @override
@@ -31,72 +35,102 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   void initState() {
     super.initState();
     _currentIndex = widget.currentIndex;
+    if (widget.lectures.isNotEmpty && _currentIndex < widget.lectures.length) {
+      final lecture = widget.lectures[_currentIndex];
+      final userId = context.read<AuthStatusCubit>().state.user?.userId;
+      if (lecture.lecture.videoUrl.isNotEmpty && userId != null && widget.courseId.isNotEmpty) {
+        try {
+          int.parse(_currentIndex.toString());
+          log('Initializing video for lecture $_currentIndex: ${lecture.lecture.videoUrl}');
+          context.read<VideoPlayerBloc>().add(InitializeVideoEvent(
+            videoUrl: lecture.lecture.videoUrl,
+            startPosition: lecture.watchedDuration,
+            lectureId: _currentIndex.toString(),
+            courseId: widget.courseId,
+            userId: userId,
+          ));
+        } catch (e) {
+          log('Error: Invalid lecture ID format for index $_currentIndex');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid lecture ID format'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        log('Error: Invalid video URL, user ID, or course ID for lecture $_currentIndex');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Invalid video URL, user not authenticated, or course ID missing'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        primaryColor: Colors.deepOrange,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepOrange,
-          brightness: Brightness.light,
-        ),
+  // Updated VideoPlayerPage without additional providers
+@override
+Widget build(BuildContext context) {
+  return Theme(
+    data: Theme.of(context).copyWith(
+      primaryColor: Colors.deepOrange,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: Colors.deepOrange,
+        brightness: Brightness.light,
       ),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: BlocProvider(
-          create: (context) => VideoPlayerBloc()
-            ..add(InitializeVideoEvent(
-              videoUrl: widget.lectures[_currentIndex].lecture.videoUrl,
-              startPosition: widget.lectures[_currentIndex].watchedDuration,
-            )),
-          child: BlocListener<VideoPlayerBloc, VideoPlayerState>(
+    ),
+    child: Scaffold(
+      backgroundColor: Colors.white,
+      body: MultiBlocListener(
+        listeners: [
+          // Listen to VideoPlayer completion
+          BlocListener<VideoPlayerBloc, VideoPlayerState>(
+            listenWhen: (previous, current) {
+              return current is VideoPlayerReady && 
+                     current.isCompleted && 
+                     (previous is! VideoPlayerReady || !previous.isCompleted);
+            },
             listener: (context, state) {
-              if (state is VideoPlayerReady) {
-                widget.onProgressUpdate?.call(
-                  _currentIndex,
-                  state.watchedDuration,
-                  state.isCompleted,
-                );
+              if (state is VideoPlayerReady && state.isCompleted) {
+                // Refresh course progress when video completes
+                final userId = context.read<AuthStatusCubit>().state.user?.userId;
+                if (userId != null) {
+                  context.read<CourseProgressBloc>().add(
+                    RefreshCourseProgressEvent(
+                      courseId: widget.courseId,
+                      userId: userId,
+                    ),
+                  );
+                }
               }
             },
-            child: BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
-              builder: (context, state) {
-                // Handle fullscreen mode
-                if (state is VideoPlayerReady && state.isFullscreen) {
-                  return const VideoPlayerWidget();
-                }
-                
-                // Normal mode
-                return _showNotes ? _buildNotesView() : _buildMainView();
-              },
-            ),
           ),
+        ],
+        child: BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
+          builder: (context, videoState) {
+            if (videoState is VideoPlayerReady && videoState.isFullscreen) {
+              return const VideoPlayerWidget();
+            }
+            return _showNotes ? _buildNotesView() : _buildMainView();
+          },
         ),
       ),
-    );
-  }
-
+    ),
+  );
+}
   Widget _buildMainView() {
     return Column(
       children: [
-        // Video Player
         const VideoPlayerWidget(),
-        
-        // Content below video
         Expanded(
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Video Info Section with Expandable Description
                 _buildVideoInfoSection(),
-                
-                // Expandable Description
                 if (_isDescriptionExpanded) _buildExpandedDescription(),
-                
-                // Course Content List
                 _buildCourseContentList(),
               ],
             ),
@@ -109,7 +143,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   Widget _buildNotesView() {
     return Column(
       children: [
-        // Notes Header
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -158,8 +191,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
             ),
           ),
         ),
-        
-        // PDF Viewer
         Expanded(
           child: PDFViewerWidget(
             pdfUrl: widget.lectures[_currentIndex].lecture.notesUrl,
@@ -181,7 +212,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title and Expand Button Row
           Row(
             children: [
               Expanded(
@@ -196,8 +226,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              
-              // Notes Button
               if (widget.lectures[_currentIndex].lecture.notesUrl.isNotEmpty)
                 IconButton(
                   onPressed: () {
@@ -209,8 +237,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   color: Colors.deepOrange,
                   tooltip: 'View Notes',
                 ),
-              
-              // Expand/Collapse Button
               IconButton(
                 onPressed: () {
                   setState(() {
@@ -225,10 +251,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
               ),
             ],
           ),
-          
           const SizedBox(height: 8),
-          
-          // Video Stats Row
           Row(
             children: [
               Text(
@@ -256,8 +279,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                 ),
               ),
               const Spacer(),
-              
-              // Completion Status
               BlocBuilder<VideoPlayerBloc, VideoPlayerState>(
                 builder: (context, state) {
                   if (state is VideoPlayerReady && state.isCompleted) {
@@ -343,59 +364,82 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
   }
 
-  Widget _buildCourseContentList() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                'Course Content',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepOrange[700],
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange[50],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${_currentIndex + 1} / ${widget.lectures.length}',
+ // Updated _buildCourseContentList method
+Widget _buildCourseContentList() {
+  return BlocBuilder<CourseProgressBloc, CourseProgressState>(
+    buildWhen: (previous, current) {
+      // Only rebuild when the actual lecture data changes
+      if (previous is CourseProgressLoaded && current is CourseProgressLoaded) {
+        // Compare lecture completion states
+        for (int i = 0; i < previous.courseProgress.lectures.length && 
+                     i < current.courseProgress.lectures.length; i++) {
+          if (previous.courseProgress.lectures[i].isCompleted != 
+              current.courseProgress.lectures[i].isCompleted ||
+              previous.courseProgress.lectures[i].isLocked != 
+              current.courseProgress.lectures[i].isLocked) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return true;
+    },
+    builder: (context, progressState) {
+      List<LectureProgressModel> lectures = widget.lectures;
+      if (progressState is CourseProgressLoaded) {
+        lectures = progressState.courseProgress.lectures;
+      }
+
+      return Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Course Content',
                   style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                     color: Colors.deepOrange[700],
                   ),
                 ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Lectures List
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: widget.lectures.length,
-            itemBuilder: (context, index) {
-              return _buildLectureItem(index);
-            },
-          ),
-        ],
-      ),
-    );
-  }
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${_currentIndex + 1} / ${lectures.length}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.deepOrange[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: lectures.length,
+              itemBuilder: (context, index) {
+                return _buildLectureItem(index, lectures[index], progressState);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
-  Widget _buildLectureItem(int index) {
-    final lecture = widget.lectures[index];
+  Widget _buildLectureItem(int index, LectureProgressModel lecture, CourseProgressState progressState) {
     final isCurrentLecture = index == _currentIndex;
     final isLocked = lecture.isLocked;
     final isCompleted = lecture.isCompleted;
@@ -431,7 +475,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
         ),
         child: Row(
           children: [
-            // Thumbnail placeholder
             Container(
               width: 80,
               height: 45,
@@ -440,25 +483,22 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
-                isLocked 
-                  ? Icons.lock_outline
-                  : isCompleted 
-                    ? Icons.check_circle
-                    : isCurrentLecture 
-                      ? Icons.play_arrow
-                      : Icons.play_circle_outline,
-                color: isLocked 
-                  ? Colors.grey[400]
-                  : isCompleted 
-                    ? Colors.green[600]
-                    : Colors.deepOrange,
+                isLocked
+                    ? Icons.lock_outline
+                    : isCompleted
+                        ? Icons.check_circle
+                        : isCurrentLecture
+                            ? Icons.play_arrow
+                            : Icons.play_circle_outline,
+                color: isLocked
+                    ? Colors.grey[400]
+                    : isCompleted
+                        ? Colors.green[600]
+                        : Colors.deepOrange,
                 size: 24,
               ),
             ),
-            
             const SizedBox(width: 12),
-            
-            // Lecture Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -473,9 +513,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  
                   const SizedBox(height: 4),
-                  
                   Row(
                     children: [
                       Text(
@@ -485,7 +523,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                           color: Colors.grey[600],
                         ),
                       ),
-                      
                       if (lecture.progressPercentage > 0 && !isLocked) ...[
                         const SizedBox(width: 8),
                         Container(
@@ -508,8 +545,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                       ],
                     ],
                   ),
-                  
-                  // Progress bar for partially watched lectures
                   if (lecture.progressPercentage > 0 && !isCompleted && !isLocked) ...[
                     const SizedBox(height: 6),
                     LinearProgressIndicator(
@@ -522,8 +557,6 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                 ],
               ),
             ),
-            
-            // Status indicator
             if (isCurrentLecture)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -549,16 +582,40 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   void _changeLecture(int index) {
     if (index != _currentIndex) {
       context.read<VideoPlayerBloc>().add(DisposeVideoEvent());
-      
       setState(() {
         _currentIndex = index;
-        _isDescriptionExpanded = false; // Collapse description when changing lecture
+        _isDescriptionExpanded = false;
       });
-      
-      context.read<VideoPlayerBloc>().add(InitializeVideoEvent(
-        videoUrl: widget.lectures[_currentIndex].lecture.videoUrl,
-        startPosition: widget.lectures[_currentIndex].watchedDuration,
-      ));
+      final lecture = widget.lectures[_currentIndex];
+      final userId = context.read<AuthStatusCubit>().state.user?.userId;
+      if (lecture.lecture.videoUrl.isNotEmpty && userId != null) {
+        try {
+          int.parse(_currentIndex.toString());
+          context.read<VideoPlayerBloc>().add(InitializeVideoEvent(
+            videoUrl: lecture.lecture.videoUrl,
+            startPosition: lecture.watchedDuration,
+            lectureId: _currentIndex.toString(),
+            courseId: widget.courseId,
+            userId: userId,
+          ));
+        } catch (e) {
+          log('Error: Invalid lecture ID format for index $_currentIndex');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid lecture ID format'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        log('Error: Invalid video URL or user ID for lecture $_currentIndex');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Invalid video URL or user not authenticated'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

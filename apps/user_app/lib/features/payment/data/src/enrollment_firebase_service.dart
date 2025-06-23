@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 
 abstract class EnrollmentFirebaseService {
   Future<void> addPurchase({
@@ -14,7 +15,15 @@ abstract class EnrollmentFirebaseService {
   
   // New method to get user's enrolled courses
   Future<List<String>> getEnrolledCourseIds(String userId);
+
+    // 👉 Updated return type
+  Future<Either<String, bool>> updateEnrollStatus({
+    required String courseId,
+    required String userId,
+    required bool isCompleted,
+  });
 }
+
 
 class EnrollmentFirebaseServiceImp extends EnrollmentFirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -89,4 +98,39 @@ class EnrollmentFirebaseServiceImp extends EnrollmentFirebaseService {
       rethrow;
     }
   }
+  
+  @override
+Future<Either<String, bool>> updateEnrollStatus({
+  required String courseId,
+  required String userId,
+  required bool isCompleted,
+}) async {
+  log('[updateEnrollStatus] Updating status for user: $userId and course: $courseId');
+
+  try {
+    final querySnapshot = await _firestore
+        .collection('enrollments')
+        .where('userId', isEqualTo: userId)
+        .where('courseId', isEqualTo: courseId)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      await querySnapshot.docs.first.reference.update({
+        'isCompleted': isCompleted,
+        'completedAt': FieldValue.serverTimestamp(), // optional
+      });
+
+      log('[updateEnrollStatus] Enrollment marked as completed');
+      return Right(true); // ✅ success
+    } else {
+      log('[updateEnrollStatus] Enrollment document not found');
+      return Left('Enrollment document not found'); // ❌ failure
+    }
+  } catch (e) {
+    log('[updateEnrollStatus] Error updating enrollment: $e');
+    return Left('Error updating enrollment: ${e.toString()}');
+  }
+}
+
 }

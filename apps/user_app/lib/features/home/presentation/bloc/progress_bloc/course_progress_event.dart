@@ -1,6 +1,7 @@
 // course_progress_event.dart
 
 import 'package:user_app/features/home/data/models/course_progress.dart';
+import 'package:user_app/features/home/data/models/update_progress_params.dart';
 
 abstract class CourseProgressEvent {
   const CourseProgressEvent();
@@ -29,7 +30,7 @@ class RefreshCourseProgressEvent extends CourseProgressEvent {
 }
 
 class UpdateCourseProgressEvent extends CourseProgressEvent{
-  final CourseProgressModel updatedProgress;
+  final UpdateProgressParam updatedProgress;
    UpdateCourseProgressEvent({required this.updatedProgress});
 }
 

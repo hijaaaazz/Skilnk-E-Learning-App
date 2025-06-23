@@ -14,10 +14,10 @@ import 'package:user_app/features/home/domain/usecases/get_banner_info.dart';
 import 'package:user_app/features/home/domain/usecases/get_categories.dart';
 import 'package:user_app/features/home/domain/usecases/get_courses.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentors.dart';
+import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_state.dart';
 import 'package:user_app/service_locator.dart';
 
 part 'course_bloc_event.dart';
-part 'course_bloc_state.dart';
 
 
 class CourseBlocBloc extends Bloc<CourseBlocEvent, CourseBlocState> {

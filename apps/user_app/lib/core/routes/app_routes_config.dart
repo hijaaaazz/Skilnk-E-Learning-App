@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,7 @@ import 'package:user_app/features/auth/domain/entity/user.dart';
 import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
 import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
+import 'package:user_app/features/chat/presentation/pages/chat.dart';
 import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
 import 'package:user_app/features/course_list/presentation/bloc/course_list_bloc.dart';
 import 'package:user_app/features/explore/data/models/search_params_model.dart';
@@ -17,7 +20,7 @@ import 'package:user_app/features/explore/presentation/pages/explore.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
 import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/video_player_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
 import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_bloc.dart';
 import 'package:user_app/features/home/presentation/pages/course_detailed_page.dart';
@@ -32,7 +35,7 @@ import 'package:user_app/features/course_list/presentation/pages/courselist.dart
 
 class AppRoutes {
   GoRouter router = GoRouter(
-    initialLocation: "/home"
+    initialLocation: "/splash"
     ,
     routes: [
       
@@ -47,7 +50,20 @@ class AppRoutes {
                   id: courseId,
                 ),
         ));
-      },),
+      },
+     
+      ),
+
+      GoRoute(path: '/chat',
+      name: AppRouteConstants.chatPaage,
+      pageBuilder: (context, state) {
+        final mentor = state.extra as MentorEntity;
+        return MaterialPage(child: ChatPage(
+          mentor: mentor,
+              ));
+      },
+     
+      ),
 
       GoRoute(path: '/mentor',
       name: AppRouteConstants.mentordetailsPaage,
@@ -85,9 +101,11 @@ class AppRoutes {
         name: AppRouteConstants.enrolledCoursedetailsPaage,
         pageBuilder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
+          
 
           final courseId = extra?['courseId'] ?? '';
           final courseTitle = extra?['courseTitle'] ?? '';
+          log(courseId);
 
           return MaterialPage(
             child: CourseProgressPage(
@@ -108,6 +126,8 @@ GoRoute(
     final lectures = extras?['lectures'] as List<LectureProgressModel>?;
     final currentIndex = extras?['currentIndex'] as int? ?? 0;
     final bloc = extras?['bloc'] as CourseProgressBloc;
+    final courseId = extras?['courseId'] as String;
+
 
     if (lectures == null || lectures.isEmpty) {
       return MaterialPage(
@@ -126,6 +146,7 @@ GoRoute(
         child: VideoPlayerPage(
           lectures: lectures,
           currentIndex: currentIndex,
+          courseId: courseId,
         ),
       ),
     );

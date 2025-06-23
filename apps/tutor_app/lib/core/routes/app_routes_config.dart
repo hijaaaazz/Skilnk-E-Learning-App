@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/core/routes/route_transition.dart';
@@ -7,6 +8,9 @@ import 'package:tutor_app/features/account/presentation/pages/account.dart';
 import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
 import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/waiting_page.dart';
+import 'package:tutor_app/features/chat/data/models/student_model.dart';
+import 'package:tutor_app/features/chat/presentation/pages/chat.dart';
+import 'package:tutor_app/features/chat/presentation/pages/chat_list.dart';
 import 'package:tutor_app/features/courses/data/models/course_details_args.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/lecture_entity.dart';
@@ -253,9 +257,24 @@ class AppRoutes {
           StatefulShellBranch(
             routes: [
               GoRoute(
+                path: "/chat_list",
+                name: AppRouteConstants.chatListScreen,
+                builder: (context, state) {
+                  return ChatListPage();
+                } ,
+                routes: [
+                  GoRoute(
                 path: "/chat",
-                name: AppRouteConstants.libraryRouteName,
-                builder: (context, state) => ChatPage(),
+                name: AppRouteConstants.chatscreen,
+                builder: (context, state) {
+                  final student = state.extra as StudentEntity;
+                  return ChatPage(student: student);
+                } ,
+                routes: [
+
+                ]
+              ),
+                ]
               ),
             ],
           ),
@@ -282,12 +301,5 @@ class AppRoutes {
     },
   );
 }
-class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 

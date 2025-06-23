@@ -18,6 +18,12 @@ import 'package:user_app/features/auth/domain/usecases/reset_pass.dart';
 import 'package:user_app/features/auth/domain/usecases/signin.dart';
 import 'package:user_app/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:user_app/features/auth/domain/usecases/signup.dart';
+import 'package:user_app/features/chat/data/repo/chat_repo_imp.dart';
+import 'package:user_app/features/chat/data/service/firebase_chat.dart';
+import 'package:user_app/features/chat/domain/repo/chat_repo.dart';
+import 'package:user_app/features/chat/domain/usecaase/check_chat_exist.dart';
+import 'package:user_app/features/chat/domain/usecaase/loadchat_usecase.dart';
+import 'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
 import 'package:user_app/features/course_list/domain/usecase/get_list.dart';
 import 'package:user_app/features/explore/data/repos/search_repo.dart';
 import 'package:user_app/features/explore/data/src/firebase_services.dart';
@@ -38,6 +44,7 @@ import 'package:user_app/features/home/domain/usecases/get_courses.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentor_courses.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentors.dart';
 import 'package:user_app/features/home/domain/usecases/save_course.dart';
+import 'package:user_app/features/home/domain/usecases/udpate_course_progress.dart';
 import 'package:user_app/features/library/data/repo/library_repo.dart';
 import 'package:user_app/features/library/data/src/firebase_service.dart';
 import 'package:user_app/features/library/domain/repo/library_repo.dart';
@@ -85,6 +92,10 @@ Future<void> initializeDependencies() async {
     () => FirebaseProfileServiceImp()
   );
 
+ serviceLocator.registerLazySingleton<ChatFirebaseService>(
+    () => ChatFirebaseServiceImp()
+  );
+
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthenticationRepoImplementation()
@@ -112,6 +123,9 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<ProfileRepository>(
     () => ProfileRepoImp()
+  );
+  serviceLocator.registerLazySingleton<ChatRepository>(
+    () => ChatRepoImp()
   );
 
 
@@ -224,6 +238,21 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<GetCourseProgressUseCase>(
     () => GetCourseProgressUseCase()
   );
+
+  serviceLocator.registerLazySingleton<UpdateProgressUseCase>(
+    () => UpdateProgressUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<LoadChatUseCase>(
+    () => LoadChatUseCase()
+  );
+  serviceLocator.registerLazySingleton<SendMessageUseCase>(
+    () => SendMessageUseCase()
+  );
+  serviceLocator.registerLazySingleton<CheckChatExistsUseCase>(
+    () => CheckChatExistsUseCase()
+  );
+
   
 
   

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:user_app/features/home/presentation/bloc/bloc/video_player_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
 import 'dart:developer';
 
 class VideoControls extends StatelessWidget {

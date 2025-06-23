@@ -22,4 +22,6 @@ class AppRouteConstants {
   static const String fullScreeenVideoPlayer = "video_player_full_screen";
   static const String pdfViewer = "pdf_full_screen";
   static const String lectureDetails = "lecture_screen";
+  static const String chatListScreen = "chat_list_screen";
+  static const String chatscreen = "chat_screen";
 }

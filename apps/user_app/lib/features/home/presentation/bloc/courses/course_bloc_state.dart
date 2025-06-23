@@ -1,6 +1,9 @@
-part of 'course_bloc_bloc.dart';
+import 'package:user_app/features/home/data/models/banner_model.dart';
+import 'package:user_app/features/home/domain/entity/category_entity.dart';
+import 'package:user_app/features/home/domain/entity/course-entity.dart';
+import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
-@immutable
 sealed class CourseBlocState {}
 
 final class CourseBlocInitial extends CourseBlocState {}

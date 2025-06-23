@@ -77,7 +77,8 @@ class CourseProgressBloc extends Bloc<CourseProgressEvent, CourseProgressState> 
   ) async {
     // Don't show loading for refresh, keep current state
     final result = await serviceLocator<UpdateProgressUseCase>().call(
-      params: UpdateProgressParam());
+      params:event.updatedProgress
+      );
     
     result.fold(
       (failure) {

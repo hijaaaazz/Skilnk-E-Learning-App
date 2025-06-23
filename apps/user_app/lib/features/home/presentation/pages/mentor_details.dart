@@ -164,9 +164,9 @@ class MentorDetailsPage extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   onTap: () {
-                    context.read<MentorDetailsBloc>().add(
-                      ChatWithMentor(state.mentor.id),
-                    );
+                    context.pushNamed(AppRouteConstants.chatPaage,
+                extra: mentor
+                );
                   },
                   child: Container(
                     height: 50,

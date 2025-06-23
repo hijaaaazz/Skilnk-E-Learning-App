@@ -6,6 +6,7 @@ import 'package:user_app/features/home/data/models/course_progress.dart';
 import 'package:user_app/features/home/data/models/courses_model.dart';
 import 'package:user_app/features/home/data/models/get_progress_params.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
+import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
 import 'package:user_app/features/home/data/models/mentor_mode.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
 import 'package:user_app/features/home/data/models/update_progress_params.dart';
@@ -15,6 +16,7 @@ import 'package:user_app/features/home/data/src/firebase_service.dart';
 import 'package:user_app/features/home/domain/entity/category_entity.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
 import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 import 'package:user_app/features/home/domain/repos/repository.dart';
 import 'package:user_app/service_locator.dart';
 
@@ -174,12 +176,20 @@ Future<Either<String, CourseProgressModel>> getProgress(GetCourseProgressParams 
   );
   }
   
-  @override
-  Future<Either<String, CourseProgressModel>> updateProgress(UpdateProgressParam params) {
-    // TODO: implement updateProgress
-    throw UnimplementedError();
-  }
-  
+
+@override
+Future<Either<String, CourseProgressModel>> updateProgress(UpdateProgressParam params) async {
+  final result = await serviceLocator<CourseProgressService>().updateLectureProgress(params: params);
+
+  return  result.fold(
+    (failure)  => Left(failure),
+    (success)  {
+     
+      return Right(success); // Already returns Either<String, CourseProgressModel>
+    },
+  );
+}
+
   
 
  

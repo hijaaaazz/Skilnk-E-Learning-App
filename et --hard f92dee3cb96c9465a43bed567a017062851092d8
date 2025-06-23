@@ -1,0 +1,43 @@
+[33mcommit f92dee3cb96c9465a43bed567a017062851092d8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sat Jun 21 14:33:44 2025 +0530
+
+    user side progress on work
+
+ .../routes/app_routes_config.dart     |   48 [32m+[m[31m-[m
+ .../home/data/models/dummy.dart       |    0
+ .../lecture_progress_model.dart       |    3 [32m+[m[31m-[m
+ .../update_progress_params.dart       |    3 [32m+[m
+ .../home/data/repos/course_repo.dart  |    7 [32m+[m
+ .../src/course_progress_service.dart  |    2 [31m-[m
+ .../domain/entity/lecture_entity.dart |    6 [32m+[m[31m-[m
+ .../home/domain/repos/repository.dart |    3 [32m+[m
+ .../udpate_course_progress.dart       |   25 [32m+[m
+ .../bloc/bloc/video_player_bloc.dart  |  292 [32m+++[m
+ .../bloc/bloc/video_player_event.dart |   46 [32m+[m
+ .../bloc/bloc/video_player_state.dart |   97 [32m+[m
+ .../mentor_bloc.dart                  |    4 [32m+[m[31m-[m
+ .../mentor_event.dart                 |    0
+ .../mentor_state.dart                 |    0
+ .../course_progress_bloc.dart         |   36 [32m+[m[31m-[m
+ .../course_progress_event.dart        |    7 [32m+[m
+ .../pages/course_enrolled_page.dart   |   18 [32m+[m[31m-[m
+ .../pages/mentor_details.dart         |    6 [32m+[m[31m-[m
+ .../pages/video_player_page.dart      | 1041 [32m+++++[m[31m------[m
+ .../mentor_page/bio_section.dart      |   32 [32m+[m
+ .../mentor_page/courses_section.dart  |   72 [32m+[m
+ .../mentor_page/mentor_actions.dart   |   49 [32m+[m
+ .../mentor_page/mentor_content.dart   |  113 [32m++[m
+ .../mentor_page/mentor_stats.dart     |   53 [32m+[m
+ .../mentor_page/profile_section.dart  |  179 [32m++[m
+ .../widgets/video_controllers.dart    |  268 [31m---[m
+ .../video_player/pdf_widget.dart      |  308 [32m+++[m
+ .../video_controllers.dart            |  340 [32m++++[m
+ .../video_player/video_player.dart    |  237 [32m+++[m
+ .../user_app/lib/service_locator.dart |    5 [32m+[m
+ .../GeneratedPluginRegistrant.swift   |    2 [32m+[m
+ apps/user_app/pubspec.lock            |   82 [32m+[m[31m-[m
+ apps/user_app/pubspec.yaml            |    5 [32m+[m
+ .../generated_plugin_registrant.cc    |    3 [32m+[m
+ .../flutter/generated_plugins.cmake   |    1 [32m+[m
+ 36 files changed, 2524 insertions(+), 869 deletions(-)

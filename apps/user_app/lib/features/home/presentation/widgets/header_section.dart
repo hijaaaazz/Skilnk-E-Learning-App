@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:user_app/core/routes/app_route_constants.dart';
 import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 
 // Option 2: Separate SliverAppBar component to use with CustomScrollView
@@ -24,17 +26,22 @@ class HeaderSectionSliver extends StatelessWidget {
                         ),
                       ),
           actions: [
-            Container(
-                        width: 30,
-                        height: 30,
-                        margin: EdgeInsets.only(right: 20),
-                        decoration: BoxDecoration(
-                          // ignore: deprecated_member_use
-                          color: Colors.deepOrange,
-                          shape: BoxShape.circle,
+            InkWell(
+              onTap: (){
+                
+              },
+              child: Container(
+                          width: 30,
+                          height: 30,
+                          margin: EdgeInsets.only(right: 20),
+                          decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
+                            color: Colors.deepOrange,
+                            shape: BoxShape.circle,
+                          ),
+                          child:Icon(FontAwesomeIcons.facebookMessenger,size: 16,)
                         ),
-                        child:Icon(FontAwesomeIcons.facebookMessenger,size: 16,)
-                      ),
+            ),
           ],
           
           flexibleSpace: FlexibleSpaceBar(

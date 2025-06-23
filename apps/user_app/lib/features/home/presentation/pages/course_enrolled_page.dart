@@ -48,39 +48,49 @@ class CourseProgressView extends StatelessWidget {
     required this.courseTitle,
   });
 
-  void _onLectureTap(BuildContext context, List<LectureProgressModel> lectures,int currentIndex) {
-    if (lectures[currentIndex].isLocked) {
-      _showLockedLectureMessage(context);
-      return;
-    }
+  void _onLectureTap(BuildContext context, List<LectureProgressModel> lectures, int currentIndex) {
+  if (lectures[currentIndex].isLocked) {
+    _showLockedLectureMessage(context);
+    return;
+  }
 
-      try {
-  context.pushNamed(
-  AppRouteConstants.lecturedetailsPaage,
-  extra: {
-    'lectures': lectures,
-    'currentIndex': 0,
-    'bloc': context.read<CourseProgressBloc>()
-  },
-).then((result) {
-    if (result == true) {
-      // ignore: use_build_context_synchronously
-      context.read<CourseProgressBloc>().add(
-        RefreshCourseProgressEvent(
-          courseId: courseId,
-          // ignore: use_build_context_synchronously
-          userId: context.read<AuthStatusCubit>().state.user!.userId,
-        ),
-      );
+  try {
+    final bloc = context.read<CourseProgressBloc>();
+
+    if (courseId != null) {
+      log("[_onLectureTap] Navigating with courseId: $courseId");
+
+      context.pushNamed(
+        AppRouteConstants.lecturedetailsPaage,
+        extra: {
+          'lectures': lectures,
+          'currentIndex': currentIndex,
+          'bloc': bloc,
+          'courseId': courseId, // ✅ fixed key
+        },
+      ).then((result) {
+        if (result == true) {
+          // Refresh course progress after returning
+          final userId = context.read<AuthStatusCubit>().state.user?.userId;
+          if (userId != null) {
+            context.read<CourseProgressBloc>().add(
+              RefreshCourseProgressEvent(
+                courseId: courseId,
+                userId: userId,
+              ),
+            );
+          }
+        }
+      });
+    } else {
+      _showErrorMessage(context, 'Course ID is missing');
     }
-  });
-} catch (e) {
-  log('Error navigating to video player: $e');
-  _showErrorMessage(context, 'Failed to open lecture');
+  } catch (e) {
+    log('[_onLectureTap] Error: $e');
+    _showErrorMessage(context, 'Failed to open lecture');
+  }
 }
 
-
-  }
 
   void _showLockedLectureMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(

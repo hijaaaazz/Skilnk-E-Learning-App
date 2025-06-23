@@ -5,6 +5,9 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:user_app/features/home/data/models/course_progress.dart';
+import 'package:user_app/features/home/data/models/update_progress_params.dart';
+import 'package:user_app/features/payment/data/src/enrollment_firebase_service.dart';
+import 'package:user_app/service_locator.dart';
 
 abstract class CourseProgressService {
   Future<void> createCourseProgress({
@@ -16,12 +19,8 @@ abstract class CourseProgressService {
     required String courseId,
   });
 
-  Future<void> updateLectureProgress({
-    required String userId,
-    required String courseId,
-    required String lectureId,
-    required Duration watchedDuration,
-    bool? isCompleted,
+  Future<Either<String,CourseProgressModel>> updateLectureProgress({
+    required UpdateProgressParam params
   });
 
   Future<List<CourseProgressModel>> getUserCourseProgresses(String userId);
@@ -98,81 +97,84 @@ class CourseProgressServiceImpl extends CourseProgressService {
   }
 
   @override
-  Future<Either<String, void>> updateLectureProgress({
-    required String userId,
-    required String courseId,
-    required String lectureId,
-    required Duration watchedDuration,
-    bool? isCompleted,
-  }) async {
-    try {
-      log('[CourseProgressService] Updating lecture progress: $lectureId');
+Future<Either<String, CourseProgressModel>> updateLectureProgress({
+  required UpdateProgressParam params,
+}) async {
+  try {
+    log('[CourseProgressService] Updating lecture progress: ${params.lectureIndex}');
 
-      final progressResult = await getCourseProgress(
-        userId: userId,
-        courseId: courseId,
-      );
+    final progressResult = await serviceLocator<CourseProgressService>().getCourseProgress(
+      userId: params.userId,
+      courseId: params.courseId,
+    );
 
-      return await progressResult.fold(
-        (failure) {
-          // If getting progress failed, return failure left
-          return Left(failure);
-        },
-        (progress) async {
-          // Find and update the specific lecture
-          final updatedLectures = progress.lectures.map((lecture) {
-            if (lecture.index.toString() == lectureId) {
-              return lecture.copyWith(
-                watchedDuration: watchedDuration,
-                isCompleted: isCompleted ?? lecture.isCompleted,
-              );
-            }
-            return lecture;
-          }).toList();
-
-          // Unlock next lecture if current is completed
-          final currentLectureIndex = updatedLectures.indexWhere((l) => l.index.toString() == lectureId);
-          if (currentLectureIndex != -1 &&
-              (isCompleted ?? false) &&
-              currentLectureIndex + 1 < updatedLectures.length) {
-            updatedLectures[currentLectureIndex + 1] = updatedLectures[currentLectureIndex + 1].copyWith(
-              isLocked: false,
+    return await progressResult.fold(
+      (failure) async => Left(failure),
+      (progress) async {
+        // Update lecture data
+        final updatedLectures = progress.lectures.map((lecture) {
+          if (lecture.index == params.lectureIndex) {
+            return lecture.copyWith(
+              watchedDuration: Duration(seconds: params.watchedDurationSeconds),
+              isCompleted: params.isCompleted,
             );
           }
+          return lecture;
+        }).toList();
 
-          // Calculate overall progress
-          final completedCount = updatedLectures.where((l) => l.isCompleted).length;
-          final overallProgress = updatedLectures.isEmpty ? 0.0 : completedCount / updatedLectures.length;
+        final currentLectureIndex = updatedLectures.indexWhere((l) => l.index == params.lectureIndex);
+        if (currentLectureIndex != -1 &&
+            (params.isCompleted) &&
+            currentLectureIndex + 1 < updatedLectures.length) {
+          updatedLectures[currentLectureIndex + 1] =
+              updatedLectures[currentLectureIndex + 1].copyWith(isLocked: false);
+        }
 
-          final updatedProgress = progress.copyWith(
-            lectures: updatedLectures,
-            completedLectures: completedCount,
-            overallProgress: overallProgress,
-            lastAccessedAt: DateTime.now(),
-          );
+        final completedCount = updatedLectures.where((l) => l.isCompleted).length;
+        final overallProgress = updatedLectures.isEmpty ? 0.0 : completedCount / updatedLectures.length;
 
-          // Update in Firestore
-          final querySnapshot = await _firestore
-              .collection(_collectionName)
-              .where('userId', isEqualTo: userId)
-              .where('courseId', isEqualTo: courseId)
-              .limit(1)
-              .get();
+        if(overallProgress == 1.0){
+          final result = serviceLocator<EnrollmentFirebaseService>().updateEnrollStatus(userId: params.userId,courseId: params.courseId,isCompleted: true);
+          log(result.toString());
+        }
 
-          if (querySnapshot.docs.isNotEmpty) {
-            await querySnapshot.docs.first.reference.update(updatedProgress.toJson());
-            log('[CourseProgressService] Lecture progress updated successfully');
-            return Right(null);
-          } else {
-            return Left('Course progress document not found in Firestore');
-          }
-        },
-      );
-    } catch (e) {
-      log('[CourseProgressService] Error updating lecture progress: $e');
-      return Left('Error updating lecture progress: ${e.toString()}');
-    }
+        final updatedProgress = progress.copyWith(
+          lectures: updatedLectures,
+          completedLectures: completedCount,
+          overallProgress: overallProgress,
+          lastAccessedAt: DateTime.now(),
+        );
+
+        // Firestore update
+        final querySnapshot = await _firestore
+            .collection(_collectionName)
+            .where('userId', isEqualTo: params.userId)
+            .where('courseId', isEqualTo: params.courseId)
+            .limit(1)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          await querySnapshot.docs.first.reference.update(updatedProgress.toJson());
+
+          // 🔁 Get the updated doc from Firestore again
+          final updatedSnapshot = await querySnapshot.docs.first.reference.get();
+          final updatedData = updatedSnapshot.data() as Map<String, dynamic>;
+
+          final updatedModel = CourseProgressModel.fromJson(updatedData, updatedSnapshot.id);
+          log('[CourseProgressService] Lecture progress updated and fetched again.');
+
+          return Right(updatedModel);
+        } else {
+          return Left('Course progress document not found in Firestore');
+        }
+      },
+    );
+  } catch (e) {
+    log('[CourseProgressService] Error updating lecture progress: $e');
+    return Left('Error updating lecture progress: ${e.toString()}');
   }
+}
+
 
   @override
   Future<List<CourseProgressModel>> getUserCourseProgresses(String userId) async {
