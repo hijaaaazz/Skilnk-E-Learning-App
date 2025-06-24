@@ -8,6 +8,7 @@ import 'package:user_app/features/home/data/models/get_progress_params.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
 import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
 import 'package:user_app/features/home/data/models/mentor_mode.dart';
+import 'package:user_app/features/home/data/models/review_model.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
 import 'package:user_app/features/home/data/models/update_progress_params.dart';
 import 'package:user_app/features/home/data/src/banner_firebase.dart';
@@ -189,6 +190,27 @@ Future<Either<String, CourseProgressModel>> updateProgress(UpdateProgressParam p
     },
   );
 }
+
+ @override
+Future<Either<String, List<ReviewModel>>> getReviews(String courseId) async {
+  final result = await serviceLocator<CoursesFirebaseService>().getReviews(courseId);
+
+  return result.fold(
+    (failure) => Left(failure),
+    (success) => Right(success),
+  );
+}
+
+  @override
+  Future<Either<String, ReviewModel>> addReviews(ReviewModel params)async{
+    final result = await serviceLocator<CoursesFirebaseService>().addReview(params);
+
+  return result.fold(
+    (failure) => Left(failure),
+    (success) => Right(success),
+  );
+  }
+
 
   
 

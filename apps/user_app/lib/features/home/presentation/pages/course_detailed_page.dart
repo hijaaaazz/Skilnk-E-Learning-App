@@ -1,4 +1,3 @@
-
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +28,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   int _selectedTabIndex = 0;
   final ScrollController _scrollController = ScrollController();
   bool _isAppBarExpanded = true;
+  bool _hasLoadedReviews = false; // Flag to prevent multiple review loads
 
   @override
   void initState() {
@@ -49,11 +49,22 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       context.read<CourseCubit>().fetchCourseDetails(
             GetCourseDetailsParams(userId: userId, courseId: widget.id),
           );
+      _hasLoadedReviews = false; // Reset flag when reinitializing
     } catch (e) {
       log('Error initializing page: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load course: $e'), backgroundColor: Colors.red),
       );
+    }
+  }
+
+  void _loadReviewsAfterCourseLoaded(CourseEntity course) {
+    if (!_hasLoadedReviews) {
+      _hasLoadedReviews = true;
+      // Load reviews immediately after course details are loaded
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.read<CourseCubit>().loadReviews(context, course);
+      });
     }
   }
 
@@ -80,7 +91,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         );
   }
 
-  void _navigateToCoursePage(String id,String title) {
+  void _navigateToCoursePage(String id, String title) {
     context.pushNamed(
       AppRouteConstants.enrolledCoursedetailsPaage,
       extra: {
@@ -90,7 +101,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +109,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           if (state is CourseDetailsLoadingState) {
             return const LoadingSkeleton();
           } else if (state is CourseDetailsLoadedState) {
+            // Load reviews immediately after course details are loaded
+            _loadReviewsAfterCourseLoaded(state.coursedetails);
+            
             return Stack(
               children: [
                 CourseContent(
@@ -124,7 +137,43 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
                       ),
                     ),
                   ),
-
+                ),
+              ],
+            );
+          } else if (state is ReviewsLoadingState || 
+                     state is ReviewsLoadedState || 
+                     state is ReviewsErrorState ||
+                     state is CourseFavoriteLoading ||
+                     state is CourseFavoriteSuccess ||
+                     state is CourseFavoriteFailure ||
+                     state is CoursePurchaseProcessing ||
+                     state is CoursePurchaseSuccess) {
+            // Handle states that still have course details
+            return Stack(
+              children: [
+                CourseContent(
+                  course: state.course!,
+                  scrollController: _scrollController,
+                  selectedTabIndex: _selectedTabIndex,
+                  isAppBarExpanded: _isAppBarExpanded,
+                  onTabSelected: (index) => setState(() => _selectedTabIndex = index),
+                  onBookmarkTap: () => _handleBookmarkTap(state.course!),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: ActionButton(
+                    course: state.course!,
+                    onTap: () => EnrollmentHandler.handleAction(
+                      context,
+                      state.course!,
+                      () => _navigateToCoursePage(
+                        state.course!.id,
+                        state.course!.title,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );

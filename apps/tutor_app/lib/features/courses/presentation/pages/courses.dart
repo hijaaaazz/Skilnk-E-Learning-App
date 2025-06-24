@@ -322,7 +322,6 @@ class CourseSkeletonLoading extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          // Title placeholder
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Container(
@@ -335,7 +334,6 @@ class CourseSkeletonLoading extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          // Description placeholder
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Container(

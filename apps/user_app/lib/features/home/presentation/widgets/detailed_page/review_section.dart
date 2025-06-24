@@ -1,47 +1,114 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
+import 'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
 import 'package:user_app/features/home/presentation/widgets/course_review_card.dart';
+import 'package:user_app/features/home/presentation/widgets/detailed_page/addr_review_bottom_sheet.dart';
 import 'package:user_app/features/home/presentation/widgets/section_tile.dart';
 
 class ReviewsSection extends StatelessWidget {
-  final int totalReviews;
+  const ReviewsSection({super.key});
 
-  const ReviewsSection({super.key, required this.totalReviews});
+  String _timeAgo(DateTime date) {
+    final duration = DateTime.now().difference(date);
+    if (duration.inDays >= 1) return '${duration.inDays} day(s) ago';
+    if (duration.inHours >= 1) return '${duration.inHours} hour(s) ago';
+    return '${duration.inMinutes} min(s) ago';
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SectionTitle(title: 'Reviews'),
-            TextButton(
-              onPressed: () {},
-              child: const Text('SEE ALL', style: TextStyle(color: Color(0xFFFF6636), fontSize: 12, fontWeight: FontWeight.w800)),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        const CourseReviewCard(
-          name: 'Student Name',
-          rating: 4.5,
-          review: 'This course has been very useful. Mentor was well spoken and I totally loved it.',
-          likes: 34,
-          timeAgo: '2 Weeks Ago',
-          imageUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36',
-        ),
-        if (totalReviews > 1) ...[
-          const SizedBox(height: 16),
-          const CourseReviewCard(
-            name: 'Another Student',
-            rating: 4.0,
-            review: 'Great content and well-structured lessons. I learned a lot from this course.',
-            likes: 21,
-            timeAgo: '3 Weeks Ago',
-            imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
-          ),
-        ],
-      ],
+    return BlocBuilder<CourseCubit, CourseState>(
+      buildWhen: (previous, current) => current is ReviewsLoadedState || current is ReviewsLoadingState,
+      builder: (context, state) {
+        final course = state.course;
+
+        if (state is ReviewsLoadingState) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is ReviewsLoadedState) {
+          final reviews = state.reviews;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Header Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SectionTitle(title: 'Reviews'),
+
+                  if (course?.isEnrolled == true)
+                    TextButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
+                          builder: (_) {
+                            return RepositoryProvider.value(
+                              value: context.read<CourseCubit>(),
+                              child: AddReviewBottomSheet(
+                                courseId: course!.id,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      child: const Text(
+                        'ADD REVIEW',
+                        style: TextStyle(
+                          color: Color(0xFFFF6636),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              ...reviews!.take(2).map(
+                (review) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: CourseReviewCard(
+                    name: review.reviewerName,
+                    rating: review.rating,
+                    review: review.review,
+                    likes: 0,
+                    timeAgo: _timeAgo(review.reviewedAt),
+                    imageUrl: review.reviewerImage,
+                  ),
+                ),
+              ),
+
+              if (reviews!.length > 2)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // TODO: Navigate to full reviews page
+                    },
+                    child: const Text(
+                      'Show more',
+                      style: TextStyle(
+                        color: Color(0xFFFF6636),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        }
+
+        return const SizedBox.shrink(); // No reviews or error
+      },
     );
   }
 }

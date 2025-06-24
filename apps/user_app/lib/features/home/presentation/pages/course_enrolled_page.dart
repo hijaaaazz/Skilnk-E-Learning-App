@@ -66,7 +66,7 @@ class CourseProgressView extends StatelessWidget {
           'lectures': lectures,
           'currentIndex': currentIndex,
           'bloc': bloc,
-          'courseId': courseId, // ✅ fixed key
+          'courseId': courseId, 
         },
       ).then((result) {
         if (result == true) {

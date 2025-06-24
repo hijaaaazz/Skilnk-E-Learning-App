@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:user_app/features/course_list/data/models/load_course_params.dart';
 import 'package:user_app/features/home/data/models/mentor_mode.dart';
+import 'package:user_app/features/home/data/models/review_model.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
 import 'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'dart:developer';
@@ -22,7 +23,8 @@ abstract class CoursesFirebaseService {
   Future<Either<String, Map<String, dynamic>>> getCourseList({
   required LoadCourseParams params
 });
-
+  Future<Either<String, List<ReviewModel>>> getReviews(String id);
+  Future<Either<String,ReviewModel>> addReview(ReviewModel id);
 }
 
 class CoursesFirebaseServicesImp extends CoursesFirebaseService {
@@ -268,6 +270,40 @@ Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> ids) a
     return Left("Failed to fetch courses: ${e.toString()}");
   }
 }
+  @override
+  Future<Either<String, List<ReviewModel>>> getReviews(String id) async {
+  try {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('courseId', isEqualTo: id)
+        .orderBy('reviewedAt', descending: true)
+        .get();
 
+    final reviews = snapshot.docs.map((doc) {
+      return ReviewModel.fromJson(doc.data(), id);
+    }).toList();
+
+    return Right(reviews);
+  } catch (e) {
+    return Left('Failed to load reviews: ${e.toString()}');
+  }
+}
+
+  @override
+Future<Either<String, ReviewModel>> addReview(ReviewModel review) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('reviews')
+        .add(review.toJson());
+
+    return Right(review); // Return the same review that was set
+  } catch (e) {
+    return Left('Failed to add review: ${e.toString()}');
+  }
+}
 
 }
+
+
+
+

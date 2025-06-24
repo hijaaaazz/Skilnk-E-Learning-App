@@ -36,6 +36,7 @@ import 'package:user_app/features/home/data/src/course_progress_service.dart';
 import 'package:user_app/features/home/data/src/firebase_service.dart';
 import 'package:user_app/features/home/domain/repos/mentors_repo.dart';
 import 'package:user_app/features/home/domain/repos/repository.dart';
+import 'package:user_app/features/home/domain/usecases/add_new_review.dart';
 import 'package:user_app/features/home/domain/usecases/get_banner_info.dart';
 import 'package:user_app/features/home/domain/usecases/get_categories.dart';
 import 'package:user_app/features/home/domain/usecases/get_course_details.dart';
@@ -43,6 +44,7 @@ import 'package:user_app/features/home/domain/usecases/get_course_progress.dart'
 import 'package:user_app/features/home/domain/usecases/get_courses.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentor_courses.dart';
 import 'package:user_app/features/home/domain/usecases/get_mentors.dart';
+import 'package:user_app/features/home/domain/usecases/get_reviews.dart';
 import 'package:user_app/features/home/domain/usecases/save_course.dart';
 import 'package:user_app/features/home/domain/usecases/udpate_course_progress.dart';
 import 'package:user_app/features/library/data/repo/library_repo.dart';
@@ -251,6 +253,13 @@ Future<void> initializeDependencies() async {
   );
   serviceLocator.registerLazySingleton<CheckChatExistsUseCase>(
     () => CheckChatExistsUseCase()
+  );
+  serviceLocator.registerLazySingleton<GetReviewsUseCase>(
+    () => GetReviewsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<AddReviewUseCase>(
+    () => AddReviewUseCase()
   );
 
   

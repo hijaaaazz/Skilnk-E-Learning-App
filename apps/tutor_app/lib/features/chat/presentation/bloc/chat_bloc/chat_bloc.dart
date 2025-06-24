@@ -8,8 +8,8 @@ import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dar
 
 import 'dart:developer';
 
-import 'package:tutor_app/features/chat/presentation/chat/bloc/chat_event.dart';
-import 'package:tutor_app/features/chat/presentation/chat/bloc/chat_state.dart';
+import 'package:tutor_app/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
+import 'package:tutor_app/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
 import 'package:tutor_app/service_locator.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatScreenState> {
@@ -28,7 +28,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatScreenState> {
   Future<void> _onInitializeChat(InitializeChatEvent event, Emitter<ChatScreenState> emit) async {
     emit(ChatLoading());
     final result = await serviceLocator<CheckChatExistsUseCase>().call(
-      params: CheckChatParams(userId: event.userId, courseId: event.tutorId),
+      params: CheckChatParams(userId: event.userId, tutorId: event.tutorId),
     );
     await result.fold(
       (error) async {

@@ -7,6 +7,7 @@ import 'dart:developer';
 import 'package:tutor_app/features/chat/domain/repo/chat_repo.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/check_chat_exist.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dart';
+import 'package:tutor_app/features/chat/presentation/bloc/chat_list/chat_list_state.dart';
 import 'package:tutor_app/service_locator.dart';
 
 class ChatRepoImp implements ChatRepository {
@@ -46,7 +47,7 @@ class ChatRepoImp implements ChatRepository {
     try {
       final chatId = await _firebaseService.checkChatExists(
         userId: params.userId,
-        courseId: params.courseId,
+        studentId: params.tutorId,
       );
       log('Chat exists or created with chatId: $chatId');
       return Right(chatId);
@@ -55,4 +56,26 @@ class ChatRepoImp implements ChatRepository {
       return Left('Failed to check chat existence: $e');
     }
   }
+
+ @override
+Future<Either<String, List<StudentChat>>> loadChatList(String chatId) async {
+  try {
+    final result = await _firebaseService.loadChatList(userId: chatId);
+
+    return result.fold(
+      (failure) {
+        log('Error loading chat list: $failure');
+        return Left(failure);
+      },
+      (chatList) {
+        log('Loaded chat list for chatId: $chatId with ${chatList.length} chats');
+        return Right(chatList);
+      },
+    );
+  } catch (e) {
+    log('Unexpected error in loadChatList: $e');
+    return Left('Unexpected error occurred: ${e.toString()}');
+  }
+}
+
 }

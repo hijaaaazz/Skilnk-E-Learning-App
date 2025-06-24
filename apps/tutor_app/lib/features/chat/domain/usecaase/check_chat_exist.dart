@@ -9,17 +9,17 @@ import 'dart:developer';
 class CheckChatExistsUseCase implements Usecase<Either<String, String>, CheckChatParams> {
   @override
   Future<Either<String, String>> call({required CheckChatParams params}) async {
-    log('Checking if chat exists for userId: ${params.userId}, courseId: ${params.courseId}');
+    log('Checking if chat exists for userId: ${params.userId}, courseId: ${params.tutorId}');
     return serviceLocator<ChatRepository>().checkChatExists(params);
   }
 }
 
 class CheckChatParams {
   final String userId;
-  final String courseId;
+  final String tutorId;
 
   CheckChatParams({
     required this.userId,
-    required this.courseId,
+    required this.tutorId,
   });
 }

@@ -16,7 +16,7 @@ class InstructorSection extends StatelessWidget {
         const SectionTitle(title: 'Instructor'),
         const SizedBox(height: 16),
         InstructorCard(mentor: mentor),
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
       ],
     );
   }

@@ -52,11 +52,18 @@ class CourseContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TabSelector(tabs: const ['About', 'Curriculum'], selectedIndex: selectedTabIndex, onTabSelected: onTabSelected),
+                TabSelector(
+                  tabs: const ['About', 'Curriculum'],
+                  selectedIndex: selectedTabIndex,
+                  onTabSelected: onTabSelected,
+                ),
                 TabContent(course: course, selectedTabIndex: selectedTabIndex),
                 InstructorSection(mentor: course.mentor),
-                if (course.totalReviews > 0) ReviewsSection(totalReviews: course.totalReviews),
-                const SizedBox(height: 100),
+                ReviewsSection(), // Always include ReviewsSection
+                const SizedBox(
+                  height: 100,
+                  width: double.infinity,
+                ),
               ],
             ),
           ),

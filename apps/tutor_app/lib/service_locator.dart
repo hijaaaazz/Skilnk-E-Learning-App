@@ -11,6 +11,14 @@ import 'package:tutor_app/features/auth/domain/usecases/reset_pass.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signin.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signin_with_google.dart';
 import 'package:tutor_app/features/auth/domain/usecases/signup.dart';
+import 'package:tutor_app/features/chat/data/repo/chat_repo_imp.dart';
+import 'package:tutor_app/features/chat/data/service/firebase_chat.dart';
+import 'package:tutor_app/features/chat/domain/repo/chat_repo.dart';
+import 'package:tutor_app/features/chat/domain/usecaase/check_chat_exist.dart';
+import 'package:tutor_app/features/chat/domain/usecaase/load_chat_list.dart';
+import 'package:tutor_app/features/chat/domain/usecaase/loadchat_usecase.dart';
+import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dart';
+import 'package:tutor_app/features/chat/presentation/bloc/chat_list/chat_list_event.dart';
 import 'package:tutor_app/features/courses/data/repo/courses_repo.dart';
 import 'package:tutor_app/features/courses/data/src/cloudinary_services.dart';
 import 'package:tutor_app/features/courses/data/src/firebase_services.dart';
@@ -48,6 +56,11 @@ Future<void> initializeDependencies() async {
     () => FirebaseDashboardServiceImp()
   );
 
+
+  serviceLocator.registerLazySingleton<ChatFirebaseService>(
+    () => ChatFirebaseServiceImp()
+  );
+
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthenticationRepoImplementation()
@@ -59,6 +72,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<DashBoardRepo>(
     () => DashBoardRepoImp()
+  );
+
+  serviceLocator.registerLazySingleton<ChatRepository>(
+    () => ChatRepoImp()
   );
 
   // ✅ Use Cases
@@ -130,6 +147,19 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<GetDashboardItemUsecase>(
     () => GetDashboardItemUsecase()
+  );
+  serviceLocator.registerLazySingleton<LoadChatListUseCase>(
+    () => LoadChatListUseCase()
+  );
+  serviceLocator.registerLazySingleton<LoadChatUseCase>(
+    () => LoadChatUseCase()
+  );
+  serviceLocator.registerLazySingleton<SendMessageUseCase>(
+    () => SendMessageUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<CheckChatExistsUseCase>(
+    () => CheckChatExistsUseCase()
   );
 
 

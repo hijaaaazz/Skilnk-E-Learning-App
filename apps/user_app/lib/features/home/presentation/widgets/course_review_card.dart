@@ -9,14 +9,14 @@ class CourseReviewCard extends StatelessWidget {
   final String imageUrl;
 
   const CourseReviewCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.rating,
     required this.review,
     required this.likes,
     required this.timeAgo,
     required this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -94,21 +94,21 @@ class CourseReviewCard extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(
-                Icons.thumb_up_alt_outlined,
-                size: 16,
-                color: Color(0xFF202244),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                likes.toString(),
-                style: TextStyle(
-                  color: const Color(0xFF202244),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(width: 16),
+              // const Icon(
+              //   Icons.thumb_up_alt_outlined,
+              //   size: 16,
+              //   color: Color(0xFF202244),
+              // ),
+              // const SizedBox(width: 4),
+              // Text(
+              //   likes.toString(),
+              //   style: TextStyle(
+              //     color: const Color(0xFF202244),
+              //     fontSize: 12,
+              //     fontWeight: FontWeight.w800,
+              //   ),
+              // ),
+              // const SizedBox(width: 16),
               const Icon(
                 Icons.access_time,
                 size: 16,

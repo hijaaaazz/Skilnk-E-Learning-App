@@ -5,9 +5,9 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as chat_types;
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 import 'package:tutor_app/features/chat/data/models/student_model.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dart';
-import 'package:tutor_app/features/chat/presentation/chat/bloc/chat_bloc.dart';
-import 'package:tutor_app/features/chat/presentation/chat/bloc/chat_event.dart';
-import 'package:tutor_app/features/chat/presentation/chat/bloc/chat_state.dart';
+import 'package:tutor_app/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:tutor_app/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
+import 'package:tutor_app/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
 import 'package:tutor_app/features/chat/presentation/widgets/mentor_avatar.dart';
 import 'package:tutor_app/features/chat/presentation/widgets/typing_indicator.dart';
 

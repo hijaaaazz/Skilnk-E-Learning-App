@@ -39,8 +39,17 @@ class AppRoutes {
     navigatorKey: _rootNavigatorKey,
     initialLocation: "/splash",
     routes: [
-      // Authentication and Splash Routes
+  GoRoute(
+                path: "/chat",
+                name: AppRouteConstants.chatscreen,
+                builder: (context, state) {
+                  final student = state.extra as StudentEntity;
+                  return ChatPage(student: student);
+                } ,
+                routes: [
 
+                ]
+              ),
       GoRoute(
         name : AppRouteConstants.fullScreeenVideoPlayer,
         path: "/video",
@@ -263,17 +272,7 @@ class AppRoutes {
                   return ChatListPage();
                 } ,
                 routes: [
-                  GoRoute(
-                path: "/chat",
-                name: AppRouteConstants.chatscreen,
-                builder: (context, state) {
-                  final student = state.extra as StudentEntity;
-                  return ChatPage(student: student);
-                } ,
-                routes: [
-
-                ]
-              ),
+                  
                 ]
               ),
             ],

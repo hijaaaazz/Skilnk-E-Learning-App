@@ -5,6 +5,7 @@ import 'package:user_app/features/home/data/models/banner_model.dart';
 import 'package:user_app/features/home/data/models/course_progress.dart';
 import 'package:user_app/features/home/data/models/get_progress_params.dart';
 import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
+import 'package:user_app/features/home/data/models/review_model.dart';
 import 'package:user_app/features/home/data/models/save_course_params.dart';
 import 'package:user_app/features/home/data/models/update_progress_params.dart';
 import 'package:user_app/features/home/domain/entity/category_entity.dart';
@@ -30,6 +31,10 @@ abstract class CoursesRepository {
    Future<Either<String,Map<String, dynamic>>> getCourseList(LoadCourseParams params);
 
    Future<Either<String, CourseProgressModel>> updateProgress(UpdateProgressParam params);
+
+   Future<Either<String, List<ReviewModel>>> getReviews(String params);
+
+   Future<Either<String, ReviewModel>> addReviews(ReviewModel params);
 
 
   
