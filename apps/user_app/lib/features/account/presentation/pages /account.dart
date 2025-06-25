@@ -6,6 +6,7 @@ import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cub
 import 'package:user_app/features/account/presentation/widgets/option_tile.dart';
 import 'package:user_app/presentation/account/widgets/app_bar.dart';
 import 'package:user_app/presentation/account/widgets/unathenticated.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -31,7 +32,7 @@ class AccountPage extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 10),
-          
+
           // Profile Section
           _buildSection(
             context,
@@ -46,9 +47,9 @@ class AccountPage extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Settings Section
           _buildSection(
             context,
@@ -56,35 +57,17 @@ class AccountPage extends StatelessWidget {
             children: [
               buildOptionTile(
                 context,
-                "Notifications",
-                Icons.notifications_outlined,
-                onTap: () {
-                  // Handle notifications settings
-                },
-              ),
-              buildDivider(),
-              buildOptionTile(
-                context,
-                "Privacy & Security",
+                "Change Password",
                 Icons.security_outlined,
                 onTap: () {
-                  // Handle privacy settings
-                },
-              ),
-              buildDivider(),
-              buildOptionTile(
-                context,
-                "App Preferences",
-                Icons.tune_outlined,
-                onTap: () {
-                  // Handle app preferences
+                  _showChangePasswordConfirmation(context);
                 },
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Community & Support Section
           _buildSection(
             context,
@@ -95,7 +78,7 @@ class AccountPage extends StatelessWidget {
                 "Help & Support",
                 Icons.help_outline,
                 onTap: () {
-                  // Handle help & support
+                  context.pushNamed(AppRouteConstants.helpandsupportpage);
                 },
               ),
               buildDivider(),
@@ -104,32 +87,28 @@ class AccountPage extends StatelessWidget {
                 "Legal & Policies",
                 Icons.gavel_outlined,
                 onTap: () {
-                  // Handle legal & policies
+                  context.pushNamed(AppRouteConstants.termsconditions);
                 },
               ),
               buildDivider(),
-              buildOptionTile(
-                context,
-                "About App",
-                Icons.info_outline,
-                onTap: () {
-                  // Handle about app
-                },
-              ),
-              buildDivider(),
+             
               buildOptionTile(
                 context,
                 "Share this App",
                 Icons.share_outlined,
                 onTap: () {
-                  // Handle share app
+                  
+                 Share.share(
+      'Hey! Check out Skilnk – an eLearning app to boost your skills: https://skilnk.com',
+      subject: 'Learn with Skilnk!',
+    );
                 },
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Logout Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -137,7 +116,7 @@ class AccountPage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  context.read<AuthStatusCubit>().logOut();
+                  _showLogoutConfirmation(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepOrange.shade50,
@@ -152,7 +131,7 @@ class AccountPage extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.logout, size: 20,color: Colors.deepOrange,),
+                    Icon(Icons.logout, size: 20, color: Colors.deepOrange),
                     const SizedBox(width: 8),
                     Text(
                       "Logout",
@@ -166,7 +145,7 @@ class AccountPage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 30),
         ],
       ),
@@ -211,6 +190,221 @@ class AccountPage extends StatelessWidget {
           child: Column(children: children),
         ),
       ],
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => CustomConfirmationDialog(
+        title: 'Sign Out',
+        description: 'Are you sure you want to sign out of your account?',
+        icon: Icons.logout_rounded,
+        iconColor: Colors.red.shade400,
+        iconBackgroundColor: Colors.red.shade50,
+        confirmText: 'Sign Out',
+        confirmColor: Colors.red.shade500,
+        onConfirm: () {
+          context.read<AuthStatusCubit>().logOut();
+        },
+        onCancel: () {
+          Navigator.of(dialogContext).pop();
+        },
+        isLoading: context.watch<AuthStatusCubit>().state.status == AuthStatus.loading,
+      ),
+    ).then((_) {
+      if (context.read<AuthStatusCubit>().state.status == AuthStatus.unauthenticated) {
+        context.goNamed(AppRouteConstants.accountRouteName);
+      }
+    });
+  }
+
+  void _showChangePasswordConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => CustomConfirmationDialog(
+        title: 'Change Password',
+        description: '''Are you sure you want to change your password?
+A mail will be sent to your email ID, and you will be logged out.
+Are you sure you want to proceed?''',
+        icon: Icons.security_outlined,
+        iconColor: Colors.blue.shade400,
+        iconBackgroundColor: Colors.blue.shade50,
+        confirmText: 'Continue',
+        confirmColor: Colors.blue.shade500,
+        onConfirm: () {
+          Navigator.of(dialogContext).pop();
+          context.read<AuthStatusCubit>().resetPassword(context.read<AuthStatusCubit>().state.user!.email);
+        },
+        onCancel: () {
+          Navigator.of(dialogContext).pop();
+        },
+      ),
+    );
+  }
+}
+
+class CustomConfirmationDialog extends StatelessWidget {
+  final String title;
+  final String description;
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBackgroundColor;
+  final String confirmText;
+  final Color confirmColor;
+  final VoidCallback onConfirm;
+  final VoidCallback? onCancel;
+  final bool isLoading;
+
+  const CustomConfirmationDialog({
+    super.key,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.iconColor,
+    required this.iconBackgroundColor,
+    required this.confirmText,
+    required this.confirmColor,
+    required this.onConfirm,
+    this.onCancel,
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Icon
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: iconBackgroundColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: iconColor,
+                size: 28,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Title
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Colors.grey.shade800,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Description
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade600,
+                height: 1.4,
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Action Buttons
+            Row(
+              children: [
+                // Cancel Button
+                Expanded(
+                  child: TextButton(
+                    onPressed: onCancel ?? () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.5,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
+                // Confirm Button
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: isLoading ? null : onConfirm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: confirmColor,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      disabledBackgroundColor: confirmColor.withOpacity(0.6),
+                    ),
+                    child: isLoading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : Text(
+                            confirmText,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

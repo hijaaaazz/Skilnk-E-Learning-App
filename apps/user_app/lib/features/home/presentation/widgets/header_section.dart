@@ -28,7 +28,7 @@ class HeaderSectionSliver extends StatelessWidget {
           actions: [
             InkWell(
               onTap: (){
-                
+                context.pushNamed(AppRouteConstants.chatListPaage);
               },
               child: Container(
                           width: 30,

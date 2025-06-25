@@ -1,4 +1,11 @@
 import 'package:get_it/get_it.dart';
+import 'package:tutor_app/features/account/data/models/update_dp_params.dart';
+import 'package:tutor_app/features/account/data/repo/profile_repo.dart';
+import 'package:tutor_app/features/account/data/service/profile_cloudinary_service.dart';
+import 'package:tutor_app/features/account/data/service/profile_firebase_service.dart';
+import 'package:tutor_app/features/account/domain/repo/profile_repo.dart';
+import 'package:tutor_app/features/account/domain/usecase/update_user_profile_pic.dart';
+import 'package:tutor_app/features/account/domain/usecase/update_username.dart';
 import 'package:tutor_app/features/auth/data/repository/auth_repo_imp.dart';
 import 'package:tutor_app/features/auth/data/src/auth_firebase_service.dart';
 import 'package:tutor_app/features/auth/domain/repository/auth.dart';
@@ -29,6 +36,7 @@ import 'package:tutor_app/features/courses/domain/usecases/delee_course.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_course_details.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_course_options.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_courses.dart';
+import 'package:tutor_app/features/courses/domain/usecases/get_reviews.dart';
 import 'package:tutor_app/features/courses/domain/usecases/toggle_activation.dart';
 import 'package:tutor_app/features/dashboard/data/repo/dash_board_repo.dart';
 import 'package:tutor_app/features/dashboard/data/src/firebase_dashboard_service.dart';
@@ -61,6 +69,14 @@ Future<void> initializeDependencies() async {
     () => ChatFirebaseServiceImp()
   );
 
+  serviceLocator.registerLazySingleton<FirebaseProfileService>(
+    () => FirebaseProfileServiceImp()
+  );
+
+  serviceLocator.registerLazySingleton<ProfileCloudinaryService>(
+    () => ProfileCloudinaryServiceImp()
+  );
+
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthenticationRepoImplementation()
@@ -76,6 +92,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<ChatRepository>(
     () => ChatRepoImp()
+  );
+
+  serviceLocator.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepoImp()
   );
 
   // ✅ Use Cases
@@ -160,6 +180,18 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<CheckChatExistsUseCase>(
     () => CheckChatExistsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<UpdateDpUserUseCase>(
+    () => UpdateDpUserUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<UpdateNameUserUseCase>(
+    () => UpdateNameUserUseCase()
+  );
+
+   serviceLocator.registerLazySingleton<GetReviewsUseCase>(
+    () => GetReviewsUseCase()
   );
 
 

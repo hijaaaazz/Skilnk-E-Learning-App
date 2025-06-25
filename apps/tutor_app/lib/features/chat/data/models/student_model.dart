@@ -19,7 +19,7 @@ factory StudentEntity.fromJson(Map<String, dynamic> json, String id) {
   return StudentEntity(
     id: id,
     name: json['name'] as String? ?? '',
-    imageUrl: json['imageUrl'] as String? ?? '',
+    imageUrl: json['image'] as String? ?? '',
     specialization: json['specialization'] as String? ?? '',
     rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
     sessions: List<String>.from(json['sessions'] ?? []),

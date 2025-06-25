@@ -1,33 +1,34 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
+import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
-class ChatModel extends Equatable {
+class TutorChat extends Equatable {
   final String chatId;
-  final String userId;
-  final String tutorId; // Or recipientId, depending on your use case
-  final List<chat_ui.Message> messages;
+  final MentorEntity user;
+  final String? lastMessage; // Or recipientId, depending on your use case
+  final DateTime? lastmessagedAt;
 
-  const ChatModel({
+  const TutorChat({
     required this.chatId,
-    required this.userId,
-    required this.tutorId,
-    required this.messages,
+    required this.user,
+    required this.lastMessage,
+    required this.lastmessagedAt,
   });
 
   @override
-  List<Object?> get props => [chatId, userId, tutorId, messages];
+  List<Object?> get props => [chatId, user, lastMessage, lastmessagedAt];
 
-  ChatModel copyWith({
+  TutorChat copyWith({
     String? chatId,
-    String? userId,
-    String? courseId,
-    List<chat_ui.Message>? messages,
+    MentorEntity? user,
+    String? lastMessage,
+    DateTime? lastMessagedAt,
   }) {
-    return ChatModel(
+    return TutorChat(
       chatId: chatId ?? this.chatId,
-      userId: userId ?? this.userId,
-      tutorId: courseId ?? this.tutorId,
-      messages: messages ?? this.messages,
+      user: user ?? this.user,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastmessagedAt: lastmessagedAt ?? this.lastmessagedAt,
     );
   }
 }

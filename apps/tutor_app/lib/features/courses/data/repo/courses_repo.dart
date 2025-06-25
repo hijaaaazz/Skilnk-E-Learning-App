@@ -8,6 +8,7 @@ import 'package:tutor_app/features/courses/data/models/course_upload_progress.da
 import 'package:tutor_app/features/courses/data/models/get_course_req.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_model.dart';
+import 'package:tutor_app/features/courses/data/models/review_model.dart';
 import 'package:tutor_app/features/courses/data/models/toggle_params.dart';
 import 'package:tutor_app/features/courses/data/src/cloudinary_services.dart';
 import 'package:tutor_app/features/courses/data/src/firebase_services.dart';
@@ -322,6 +323,19 @@ Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(Course
   @override
   Future<Either<String, bool>> toggleActivationCourse({required courseToggleParams isactive}) async{
    final result = await serviceLocator<CourseFirebaseService>().activateToggleCourse(isactive);
+    return result.fold(
+      (l) {
+        return left(l);
+      },
+      (r) {
+        return right(r);
+      },
+    );
+  }
+
+  @override
+  Future<Either<String, List<ReviewModel>>> getReviews({required List<String> reviewIds})async{
+   final result = await serviceLocator<CourseFirebaseService>().getReviews(reviewIds);
     return result.fold(
       (l) {
         return left(l);

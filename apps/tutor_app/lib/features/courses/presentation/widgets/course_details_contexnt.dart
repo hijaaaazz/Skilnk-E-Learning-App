@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/build_stat_item.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/rating_bar.dart';
+import 'package:tutor_app/features/courses/presentation/widgets/reviews_breakdown_section.dart';
 
 class CourseDetailContent extends StatelessWidget {
   final CourseEntity course;
@@ -72,7 +73,7 @@ class CourseDetailContent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 buildStatItem(Icons.people, '${course.enrolledCount}', 'Students'),
-                buildStatItem(Icons.access_time, '${course.duration} min', 'Duration'),
+                buildStatItem(Icons.access_time, '${formatDurationVerbose(course.duration)} min', 'Duration'),
                 buildStatItem(Icons.signal_cellular_alt, course.level, 'Level'),
                 buildStatItem(Icons.star, course.averageRating.toStringAsFixed(1), 'Rating'),
               ],
@@ -99,7 +100,7 @@ class CourseDetailContent extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${course.lessons.length} lectures • ${course.duration} minutes total',
+              '${course.lessons.length} lectures • ${formatDurationVerbose(course.duration) }  total',
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 16),
@@ -109,78 +110,25 @@ class CourseDetailContent extends StatelessWidget {
               return buildLectureItem(context, lecture, index + 1);
             }),
             const SizedBox(height: 24),
-            const Text(
-              'Ratings & Reviews',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      course.averageRating.toStringAsFixed(1),
-                      style: const TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepOrange,
-                      ),
-                    ),
-                    RatingBar(rating: course.averageRating),
-                    Text(
-                      '${course.totalReviews} reviews',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 24),
-                Expanded(
-                  child: Column(
-                    children: [
-                      buildRatingBar(5, course.ratingBreakdown['5'] ?? 0, course.totalReviews),
-                      buildRatingBar(4, course.ratingBreakdown['4'] ?? 0, course.totalReviews),
-                      buildRatingBar(3, course.ratingBreakdown['3'] ?? 0, course.totalReviews),
-                      buildRatingBar(2, course.ratingBreakdown['2'] ?? 0, course.totalReviews),
-                      buildRatingBar(1, course.ratingBreakdown['1'] ?? 0, course.totalReviews),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (course.reviews.isNotEmpty) ...[
-              ...course.reviews.take(3).map((review) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Text(
-                    review,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[800],
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                );
-              }),
-              if (course.reviews.length > 3)
-                TextButton(
-                  onPressed: () {},
-                  child: const Text('See all reviews'),
-                ),
-            ] else ...[
-              Text(
-                'No reviews yet',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
+            ReviewBreakDown()
+            
           ],
         ),
       ),
     );
   }
+  String formatDurationVerbose(int totalSeconds) {
+  final duration = Duration(seconds: totalSeconds);
+  final hours = duration.inHours;
+  final minutes = duration.inMinutes.remainder(60);
+  final seconds = duration.inSeconds.remainder(60);
+
+  final parts = <String>[];
+  if (hours > 0) parts.add('${hours}h');
+  if (minutes > 0) parts.add('${minutes}m');
+  if (seconds > 0 || parts.isEmpty) parts.add('${seconds}s');
+
+  return parts.join(' ');
+}
+
 }

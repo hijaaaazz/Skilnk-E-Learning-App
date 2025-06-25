@@ -1,6 +1,3 @@
-
- // ignore_for_file: file_names
- 
  import 'package:flutter/material.dart';
 
 Widget buildOptionTile(
@@ -22,12 +19,12 @@ Widget buildOptionTile(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   // ignore: deprecated_member_use
-                  color: const Color.fromARGB(255, 194, 45, 0).withOpacity(0.1),
+                  color: Colors.deepOrange.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,
-                  color: const Color.fromARGB(255, 194, 45, 0),
+                  color: Colors.deepOrange,
                   size: 24,
                 ),
               ),

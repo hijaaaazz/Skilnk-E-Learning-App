@@ -1,21 +1,25 @@
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
-import 'package:tutor_app/features/dashboard/data/models/activity_item.dart';
-import 'package:tutor_app/features/dashboard/data/src/firebase_dashboard_service.dart';
-import 'package:tutor_app/features/dashboard/domain/entity/dash_board_data_entity.dart';
-import 'package:tutor_app/features/dashboard/domain/repo/dashboard_repo.dart';
-import 'package:tutor_app/service_locator.dart';
+import 'package:tutor_app/features/dashboard/data/models/toime_period_dart';
+import '../models/activity_item.dart';
+import '../src/firebase_dashboard_service.dart';
+import '../../domain/entity/dash_board_data_entity.dart';
+import '../../domain/repo/dashboard_repo.dart';
+import '../../../../service_locator.dart';
 
 class DashBoardRepoImp extends DashBoardRepo {
   final FirebaseDashboardService _firebaseDashboardService = serviceLocator<FirebaseDashboardService>();
 
   @override
-  Future<Either<String, DashBoardDataEntity>> getDashBoarddatas(String params) async {
+  Future<Either<String, DashBoardDataEntity>> getDashBoarddatas(String mentorId, {TimePeriod? timePeriod}) async {
     try {
-      final result = await _firebaseDashboardService.getDashBoardData(params);
+      final result = await _firebaseDashboardService.getDashBoardData(
+        mentorId, 
+        timePeriod: timePeriod ?? TimePeriod.thisMonth,
+      );
 
       return result.fold(
-        (error) => Left(error), 
+        (error) => Left(error),
         (dashboardDataEntity) async {
           final updatedActivities = <ActivityItem>[];
 
@@ -24,8 +28,8 @@ class DashBoardRepoImp extends DashBoardRepo {
             final courseName = courseResult.fold(
               (error) {
                 log('Error fetching course name: $error');
-                return activity.course; 
-                },
+                return activity.course;
+              },
               (name) => name,
             );
 
@@ -33,12 +37,11 @@ class DashBoardRepoImp extends DashBoardRepo {
             final studentName = studentResult.fold(
               (error) {
                 log('Error fetching student name: $error');
-                return activity.userName; // Fallback to userId if error
+                return activity.userName;
               },
               (name) => name,
             );
 
-            // Create new ActivityItem with resolved names
             final updatedActivity = ActivityItem(
               userName: studentName,
               action: activity.action,
@@ -49,7 +52,6 @@ class DashBoardRepoImp extends DashBoardRepo {
             updatedActivities.add(updatedActivity);
           }
 
-          // Return updated dashboard data entity
           return Right(DashBoardDataEntity(
             activities: updatedActivities,
             data: dashboardDataEntity.data,

@@ -19,6 +19,7 @@ import 'package:user_app/features/home/domain/entity/course-entity.dart';
 import 'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 import 'package:user_app/features/home/domain/repos/repository.dart';
+import 'package:user_app/features/home/domain/usecases/get_reviews.dart';
 import 'package:user_app/service_locator.dart';
 
 class CoursesRepositoryImp extends CoursesRepository {
@@ -192,8 +193,8 @@ Future<Either<String, CourseProgressModel>> updateProgress(UpdateProgressParam p
 }
 
  @override
-Future<Either<String, List<ReviewModel>>> getReviews(String courseId) async {
-  final result = await serviceLocator<CoursesFirebaseService>().getReviews(courseId);
+Future<Either<String, List<ReviewModel>>> getReviews(GetReviewsParams params) async {
+  final result = await serviceLocator<CoursesFirebaseService>().getReviews(params);
 
   return result.fold(
     (failure) => Left(failure),

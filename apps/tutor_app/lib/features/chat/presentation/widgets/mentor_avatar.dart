@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tutor_app/features/chat/data/models/student_model.dart';
@@ -14,9 +16,10 @@ class StudentHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(80); // height of AppBar
-
+  
   @override
   Widget build(BuildContext context) {
+    log(student.imageUrl);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.white,
@@ -71,7 +74,7 @@ class StudentHeader extends StatelessWidget implements PreferredSizeWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      isTyping ? 'Typing...' : 'Online',
+                      isTyping ? 'Typing...' : "",
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],

@@ -4,6 +4,7 @@ import 'package:tutor_app/features/courses/data/models/course_creation_req.dart'
 import 'package:tutor_app/features/courses/data/models/course_options_model.dart';
 import 'package:tutor_app/features/courses/data/models/course_upload_progress.dart';
 import 'package:tutor_app/features/courses/data/models/get_course_req.dart';
+import 'package:tutor_app/features/courses/data/models/review_model.dart';
 import 'package:tutor_app/features/courses/data/models/toggle_params.dart';
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
@@ -21,5 +22,6 @@ Stream<Either<String, Either<UploadProgress, CourseEntity>>> updateCourse({requi
   Future<Either<String, bool>> toggleActivationCourse({required courseToggleParams isactive});
 
   Future<Either<String,bool>> deleteCourse({required String courseId});
+  Future<Either<String,List<ReviewModel>>> getReviews({required List<String> reviewIds});
 
 }

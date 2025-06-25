@@ -62,11 +62,13 @@ class UserModel {
 
   //  To JSON
  Map<String, dynamic> toJson() {
-  return {
+  final lowerCasename = name.toLowerCase();
+    return {
     'tutor_id': tutorId,
     'full_name': name,
     'email': email,
     'username': username,
+    'name_lower': lowerCasename,
     'phone': phone,
     'profile_image': image,
     'bio': bio,

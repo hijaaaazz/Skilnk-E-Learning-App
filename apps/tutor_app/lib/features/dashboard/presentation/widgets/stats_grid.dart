@@ -1,62 +1,76 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
-import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';
-import 'package:tutor_app/features/dashboard/data/models/dashboard_data.dart';
+import 'package:tutor_app/features/dashboard/data/models/toime_period_dart';
+import 'package:tutor_app/features/dashboard/presentation/widgets/earning_card.dart';
 import 'package:tutor_app/features/dashboard/presentation/widgets/stats-card.dart';
+import '../../data/models/dashboard_data.dart';
 
-class StatsGrid extends StatelessWidget {
+
+class ModernStatsGrid extends StatelessWidget {
   final DashboardData data;
+  final Function(TimePeriod)? onPeriodChanged;
 
-  const StatsGrid({Key? key, required this.data}) : super(key: key);
+  const ModernStatsGrid({
+    Key? key,
+    required this.data,
+    this.onPeriodChanged,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
-    
-    return SizedBox(
-      width: double.infinity,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-              children: [
-                StatCard(
-                  value: data.students,
+        children: [
+          // Top row - Students and Courses
+          Row(
+            children: [
+              Expanded(
+                child: ModernStatCard(
+                  value: data.metrics.totalStudents.toString(),
                   label: 'Students',
-                  backgroundColor: Color(0xFFFFEFEF),
-                  icon: Icon(Icons.people),
-                  iconColor: Colors.redAccent, // Soft red tone
+                  icon: Icons.people_outline,
+                  color: Color(0xFF6366F1),
+                  growth: data.growthData.hasComparisonData 
+                      ? data.growthData.studentsGrowth
+                      : null,
                 ),
-                SizedBox(height: 12),
-                BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    return StatCard(
-                      value: state.user?.courseIds?.length.toString() ?? "yrfduyr",
-                      label: 'Courses',
-                      backgroundColor: Color(0xFFE1F7E3),
-                      icon: Icon(Icons.my_library_books_rounded),
-                      iconColor: Colors.green, // Matches the green background
-                    );
-                  },
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ModernStatCard(
+                  value: data.metrics.totalCourses.toString(),
+                  label: 'Courses',
+                  icon: Icons.library_books_outlined,
+                  color: Color(0xFF10B981),
+                  growth: data.growthData.hasComparisonData 
+                      ? data.growthData.coursesGrowth
+                      : null,
                 ),
-                SizedBox(height: 12),
-                StatCard(
-                  value: data.totalEarning,
-                  label: 'Total Earning',
-                  backgroundColor: Color(0xFFF5F7FA),
-                  icon: Icon(Icons.attach_money),
-                  iconColor: Colors.blueGrey, // Subtle neutral color
-                ),
-                SizedBox(height: 12),
-                StatCard(
-                  value: data.courseSold,
-                  label: 'Course Sold',
-                  backgroundColor: Color(0xFFEBEBFF),
-                  icon: Icon(Icons.shopping_cart),
-                  iconColor: Colors.deepPurple, // Matches blue-purple background
-                ),
-
-              ],
-            )
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
           
+          // Bottom row - Sales
+          ModernStatCard(
+            value: data.metrics.totalCoursesSold.toString(),
+            label: 'Sales',
+            icon: Icons.trending_up,
+            color: Color(0xFFF59E0B),
+            growth: data.growthData.hasComparisonData 
+                ? data.growthData.salesGrowth
+                : null,
+            isFullWidth: true,
+          ),
+          SizedBox(height: 20),
+          
+          // Earnings card - bigger and different
+          ModernEarningsCard(
+            data: data,
+            onPeriodChanged: onPeriodChanged,
+          ),
+        ],
+      ),
     );
   }
 }

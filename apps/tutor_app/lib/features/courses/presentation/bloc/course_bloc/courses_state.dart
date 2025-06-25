@@ -40,3 +40,20 @@ final class CourseDetailError extends CoursesState {
   
   CourseDetailError({required this.message});
 }
+
+final class ReviewsLoadingState extends CourseDetailLoaded{
+  ReviewsLoadingState({required super.course});
+
+}
+
+// ignore: must_be_immutable
+final class ReviewsLoadedState extends CourseDetailLoaded{
+  List<ReviewModel> reviews;
+  ReviewsLoadedState({required super.course,required this.reviews});
+
+}
+
+final class ReviewsErrorState extends CourseDetailLoaded{
+  ReviewsErrorState({required super.course});
+
+}

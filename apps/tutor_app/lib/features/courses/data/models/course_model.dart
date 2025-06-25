@@ -149,6 +149,7 @@ class CourseModel {
   }
 
   Map<String, dynamic> toCreateJson() {
+    final lowerCaseCourse = title.toLowerCase();
   return {
     'title': title,
     'category': categoryId,
@@ -156,6 +157,7 @@ class CourseModel {
     'price': price,
     'offer_percentage': offerPercentage,
     'tutor': tutorId,
+    'title_lower': lowerCaseCourse,
     'duration': duration,
     'isActive': isActive,
     "category_name": categoryName,

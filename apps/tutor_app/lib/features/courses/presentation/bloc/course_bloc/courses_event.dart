@@ -61,3 +61,11 @@ class UpdateCourseEvent extends CoursesEvent{
 
   const UpdateCourseEvent({required this.course});
 }
+
+
+class LoadReiviews extends CoursesEvent{
+  final List<String> reviewIds;
+  final CourseEntity course;
+
+  const LoadReiviews({required this.reviewIds,required this.course});
+}

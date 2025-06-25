@@ -84,41 +84,42 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthLoading());
     final result =
         await serviceLocator<LogOutUseCase>().call(params: NoParams());
-    
+        log(result.toString());
     result.fold(
-      (failure) => emit(AuthFailure(message: failure)),
+      (failure) => emit(AuthFailure(message: failure,)),
       (_) {
         emit(const AuthInitial());
       },
     );
   }
 
-  Future<void> _onGetCurrentUser(
-      GetCurrentUserEvent event, Emitter<AuthState> emit) async {
-    emit(const AuthInitial());
+ // Fixed _onGetCurrentUser method in AuthBloc
+Future<void> _onGetCurrentUser(
+    GetCurrentUserEvent event, Emitter<AuthState> emit) async {
+  // DON'T emit AuthInitial here - it causes null user issues
+  // emit(const AuthInitial()); // Remove this line
 
-    final result =
-        await serviceLocator<GetCurrentUserUseCase>().call(params: NoParams());
+  final result =
+      await serviceLocator<GetCurrentUserUseCase>().call(params: NoParams());
 
-    result.fold(
-      (failure) => emit(AuthFailure(message: failure)),
-      (userModel) {
-        final isEmailVerified = userModel.emailVerified;
-        final isAdminVerified = userModel.isVerified ?? false;
+  result.fold(
+    (failure) => emit(AuthFailure(message: failure)),
+    (userModel) {
+      final isEmailVerified = userModel.emailVerified;
+      final isAdminVerified = userModel.isVerified ?? false;
 
-        log("Email verified: $isEmailVerified, Admin verified: $isAdminVerified");
+      log("Email verified: $isEmailVerified, Admin verified: $isAdminVerified");
 
-        if (isEmailVerified && isAdminVerified) {
-          emit(AuthAdminVerified(user: userModel.toEntity()));
-        } else if (isEmailVerified) {
-          emit(AuthEmailVerified(user: userModel.toEntity()));
-        } else {
-          emit(AuthAuthenticated(user: userModel.toEntity()));
-        }
-      },
-    );
-  }
-
+      if (isEmailVerified && isAdminVerified) {
+        emit(AuthAdminVerified(user: userModel.toEntity()));
+      } else if (isEmailVerified) {
+        emit(AuthEmailVerified(user: userModel.toEntity()));
+      } else {
+        emit(AuthAuthenticated(user: userModel.toEntity()));
+      }
+    },
+  );
+}
   Future<void> _onSendVerificationEmail(
       SendVerificationEmailEvent event, Emitter<AuthState> emit) async {
     final result = await serviceLocator<SendEmailVerificationUseCase>()

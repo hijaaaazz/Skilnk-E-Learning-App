@@ -1,12 +1,16 @@
+
+// lib/features/chat/presentation/pages/chat_page.dart
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chat_types;
 import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import 'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
-import 'package:user_app/features/chat/presentation/chat/bloc/chat_bloc.dart';
-import 'package:user_app/features/chat/presentation/chat/bloc/chat_event.dart';
-import 'package:user_app/features/chat/presentation/chat/bloc/chat_state.dart';
+import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
+import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
 import 'package:user_app/features/chat/presentation/widgets/mentor_avatar.dart';
 import 'package:user_app/features/chat/presentation/widgets/typing_indicator.dart';
 import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
@@ -25,6 +29,8 @@ class ChatPage extends StatelessWidget {
         body: Center(child: Text('User not authenticated')),
       );
     }
+    log("ujfbuyherfuyrhfuyerufhu7rehfurehufihuercfhundbcfuhfuiarehnucjhuidhfuchrufhu838947348735678344444468237890890000000000000000000000000");
+    log(mentor.id.toString());
 
     return BlocProvider(
       create: (_) => ChatBloc(
@@ -88,7 +94,9 @@ class ChatView extends StatelessWidget {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     onPressed: () => chatBloc.add(InitializeChatEvent(
-                      userId: context.read<AuthStatusCubit>().state.user?.userId ?? '',
+                      userId:
+                          context.read<AuthStatusCubit>().state.user?.userId ??
+                              '',
                       tutorId: mentor.id,
                     )),
                     child: const Text('Try Again'),
@@ -100,15 +108,16 @@ class ChatView extends StatelessWidget {
 
           List<chat_types.Message> messages = [];
           bool isTyping = false;
+          String chatId = '';
 
           if (state is ChatLoaded) {
             messages = state.chatUIMessages;
             isTyping = state.isTyping;
+            chatId = state.chatId;
           }
 
           return Column(
             children: [
-              
               Expanded(
                 child: Stack(
                   children: [
@@ -152,7 +161,7 @@ class ChatView extends StatelessWidget {
                         if (partialText.text.isNotEmpty) {
                           chatBloc.add(SendMessageEvent(
                             params: SendMessageParams(
-                              chatId: state is ChatLoaded ? state.chatId : '',
+                              chatId: chatId,
                               userId: chatBloc.user.id,
                               courseId: mentor.id,
                               text: partialText.text,
@@ -163,7 +172,8 @@ class ChatView extends StatelessWidget {
                       user: chatBloc.user,
                       showUserAvatars: false,
                       showUserNames: false,
-                      emojiEnlargementBehavior: chat_ui.EmojiEnlargementBehavior.multi,
+                      emojiEnlargementBehavior:
+                          chat_ui.EmojiEnlargementBehavior.multi,
                       hideBackgroundOnEmojiMessages: true,
                       textMessageOptions: const chat_ui.TextMessageOptions(
                         isTextSelectable: true,

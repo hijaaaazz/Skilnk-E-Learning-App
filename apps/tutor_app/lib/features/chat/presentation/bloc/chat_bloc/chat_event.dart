@@ -1,4 +1,7 @@
+
+// lib/features/chat/presentation/bloc/chat_bloc/chat_event.dart
 import 'package:equatable/equatable.dart';
+import 'package:tutor_app/features/chat/data/models/messgae_class.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dart';
 
 abstract class ChatEvent extends Equatable {
@@ -32,4 +35,22 @@ class SendMessageEvent extends ChatEvent {
 
   @override
   List<Object?> get props => [params];
+}
+
+class MessagesUpdatedEvent extends ChatEvent {
+  final List<AppMessage> messages;
+
+  MessagesUpdatedEvent(this.messages);
+
+  @override
+  List<Object?> get props => [messages];
+}
+
+class ChatErrorEvent extends ChatEvent {
+  final String error;
+
+  ChatErrorEvent(this.error);
+
+  @override
+  List<Object?> get props => [error];
 }

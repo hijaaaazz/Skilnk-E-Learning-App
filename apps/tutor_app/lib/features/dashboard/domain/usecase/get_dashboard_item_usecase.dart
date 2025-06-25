@@ -1,14 +1,18 @@
 import 'package:dartz/dartz.dart';
-import 'package:tutor_app/core/usecase/usecase.dart';
-import 'package:tutor_app/features/dashboard/domain/entity/dash_board_data_entity.dart';
-import 'package:tutor_app/features/dashboard/domain/repo/dashboard_repo.dart';
-import 'package:tutor_app/service_locator.dart';
+import 'package:tutor_app/features/dashboard/presentation/bloc/dash_board_bloc.dart';
+import '../entity/dash_board_data_entity.dart';
+import '../repo/dashboard_repo.dart';
+import '../../../../service_locator.dart';
 
-class GetDashboardItemUsecase implements Usecase<Either<String, DashBoardDataEntity>, String> {
-  @override
-  Future<Either<String, DashBoardDataEntity>> call({required String params}) {
+class GetDashboardItemUsecase {
+  final DashBoardRepo _repository = serviceLocator<DashBoardRepo>();
 
-    
-    return serviceLocator<DashBoardRepo>().getDashBoarddatas(params);
+  Future<Either<String, DashBoardDataEntity>> call({
+    required GetDashboardParams params,
+  }) async {
+    return await _repository.getDashBoarddatas(
+      params.userId,
+      timePeriod: params.timePeriod,
+    );
   }
 }

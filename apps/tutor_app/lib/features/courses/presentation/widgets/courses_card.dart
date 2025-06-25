@@ -13,218 +13,229 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final discountedPrice = course.price - 
-    //     (course.price * course.offerPercentage / 100).round();
-    
     return GestureDetector(
       onTap: onTap,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        child: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildThumbnail(),
+            _buildContent(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThumbnail() {
+  final hasThumbnail = course.thumbnailUrl.isNotEmpty;
+
+  return Stack(
+    children: [
+      ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+        child: AspectRatio(
+          aspectRatio: 16 / 12,
+          child: hasThumbnail
+              ? Image.network(
+                  course.thumbnailUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Image.asset(
+                      'assets/images/placeholder_image.png', // your fallback image
+                      fit: BoxFit.cover,
+                    );
+                  },
+                )
+              : Image.asset(
+                  'assets/images/placeholder_image.png',
+                  fit: BoxFit.cover,
+                ),
+        ),
+      ),
+      
+      if (course.offerPercentage > 0)
+        Positioned(
+          top: 12,
+          right: 12,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF5722),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFF5722).withOpacity(0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              '${course.offerPercentage}% OFF',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 10,
+              ),
+            ),
+          ),
+        ),
+      
+      // if (!course.isActive)
+      //   Positioned.fill(
+      //     child: ClipRRect(
+      //       borderRadius: const BorderRadius.only(
+      //         topLeft: Radius.circular(16),
+      //         topRight: Radius.circular(16),
+      //       ),
+      //       child: Container(
+      //         color: Colors.black.withOpacity(0.7),
+      //         child: Center(
+      //           child: Container(
+      //             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      //             decoration: BoxDecoration(
+      //               color: Colors.white,
+      //               borderRadius: const BorderRadius.all(Radius.circular(8)),
+      //             ),
+      //             child: const Text(
+      //               'INACTIVE',
+      //               style: TextStyle(
+      //                 color: Colors.black87,
+      //                 fontWeight: FontWeight.w600,
+      //                 fontSize: 12,
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+    ],
+  );
+}
+
+
+  Widget _buildContent() {
+    return Expanded(
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Course thumbnail
-              Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Image.network(
-                      course.thumbnailUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[300],
-                          child: const Center(
-                            child: Icon(Icons.image_not_supported, size: 32),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                 if (course.offerPercentage > 0)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.deepOrange,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${course.offerPercentage}% OFF',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-                 if (!course.isActive)
-                    Positioned.fill(
-                      child: Container(
-                        // ignore: deprecated_member_use
-                        color: Colors.black.withOpacity(0.6),
-                        child: const Center(
-                          child: Text(
-                            'INACTIVE',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // Course title
-                    Text(
-                      course.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    
-                    // Course level
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.signal_cellular_alt,
-                          size: 14,
-                          color: Colors.grey[600],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          course.level,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    
-                    // Course rating
-                   Row(
-            children: [
-              ...List.generate(5, (index) {
-                double currentStar = index + 1;
-                return Icon(
-          currentStar <= course.rating
-              ? Icons.star
-              : (course.rating >= currentStar - 0.5 ? Icons.star_half : Icons.star_border),
-          size: 14,
-          color: Colors.amber[700],
-                );
-              }),
-              const SizedBox(width: 4),
               Text(
-                course.rating.toStringAsFixed(1), // e.g. "4.2"
-                style: TextStyle(
-          fontSize: 12,
-          color: Colors.amber[700],
-          fontWeight: FontWeight.bold,
+                course.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: Colors.black87,
+                  height: 1.3,
                 ),
               ),
-            ],
-          ),
-          
-                    const SizedBox(height: 8),
-                    
-                    // Course price
-                    
-                      
-                  ],
-                ),
-              ),
+              const SizedBox(height: 8),
+              _buildLevelChip(),
+              
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _buildLevelChip() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFF5722).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        course.level,
+        style: const TextStyle(
+          fontSize: 11,
+          color: Color(0xFFFF5722),
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  
 }
-
-
 
 class CourseCardSkeleton extends StatelessWidget {
   const CourseCardSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Thumbnail skeleton
           _SkeletonContainer(
-            height: 100,
+            height: 120,
             width: double.infinity,
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
             ),
           ),
-          
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title skeleton
                 _SkeletonContainer(
                   height: 16,
                   width: double.infinity,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 const SizedBox(height: 8),
-                
-                // Subtitle skeleton (shorter)
                 _SkeletonContainer(
                   height: 12,
-                  width: 120,
-                  borderRadius: BorderRadius.circular(4),
+                  width: 80,
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                const SizedBox(height: 8),
-                
-                // Rating skeleton
+                const SizedBox(height: 12),
                 Row(
                   children: List.generate(
                     5,
                     (index) => Padding(
-                      padding: EdgeInsets.only(right: index < 4 ? 2 : 0),
+                      padding: EdgeInsets.only(right: index < 4 ? 4 : 0),
                       child: _SkeletonContainer(
-                        height: 14,
-                        width: 14,
-                        borderRadius: BorderRadius.circular(2),
+                        height: 12,
+                        width: 12,
+                        borderRadius: BorderRadius.circular(6),
                       ),
                     ),
                   ),
@@ -263,7 +274,7 @@ class _SkeletonContainerState extends State<_SkeletonContainer>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
     )..repeat(reverse: true);
     
     _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -291,9 +302,9 @@ class _SkeletonContainerState extends State<_SkeletonContainer>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.grey[300]!,
                 Colors.grey[200]!,
-                Colors.grey[300]!,
+                Colors.grey[100]!,
+                Colors.grey[200]!,
               ],
               stops: [
                 0.0,

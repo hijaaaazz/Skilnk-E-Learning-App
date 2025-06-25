@@ -135,7 +135,7 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
     final result = await serviceLocator<LogOutUseCase>().call(params: NoParams());
     result.fold(
       (l) => emit(AuthStatusState(status: AuthStatus.failure, message: l)),
-      (r) => emit(AuthStatusState.initial()),
+      (r) => emit(AuthStatusState(status: AuthStatus.unauthenticated)),
     );
   }
 

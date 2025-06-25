@@ -6,7 +6,7 @@ import 'package:tutor_app/features/courses/presentation/widgets/course_details_c
 import 'package:tutor_app/features/courses/presentation/widgets/details_skelton.dart';
 
 
-class CourseDetailPage extends StatelessWidget {
+class CourseDetailPage extends StatefulWidget {
   final String courseId;
 
   const CourseDetailPage({
@@ -15,51 +15,83 @@ class CourseDetailPage extends StatelessWidget {
   });
 
   @override
+  State<CourseDetailPage> createState() => _CourseDetailPageState();
+}
+
+class _CourseDetailPageState extends State<CourseDetailPage> {
+  bool _hasLoadedReviews = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<CoursesBloc>().add(LoadCourseDetail(widget.courseId));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<CoursesBloc>().add(LoadCourseDetail(courseId));
-
     return Scaffold(
-      body: BlocBuilder<CoursesBloc, CoursesState>(
-        builder: (context, state) {
-          if (state is CourseDetailLoading) {
-            return const CourseDetailSkeleton();
+      body: BlocListener<CoursesBloc, CoursesState>(
+        listener: (context, state) {
+          if (state is CourseDetailLoaded && !_hasLoadedReviews) {
+            final reviewIds = state.course.reviews;
+            if (reviewIds.isNotEmpty) {
+              _hasLoadedReviews = true;
+              context
+                  .read<CoursesBloc>()
+                  .add(LoadReiviews(course: state.course, reviewIds: reviewIds));
+            }
           }
-
-          if (state is CourseDetailError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.deepOrange),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<CoursesBloc>().add(LoadCourseDetail(courseId));
-                    },
-                    child: const Text('Try Again'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (state is CourseDetailLoaded) {
-            return CustomScrollView(
-              slivers: [
-                CourseDetailAppBar(course: state.course),
-                CourseDetailContent(course: state.course),
-              ],
-            );
-          }
-
-          return const Center(child: Text('Course not found'));
         },
+        child: BlocBuilder<CoursesBloc, CoursesState>(
+          builder: (context, state) {
+            if (state is CourseDetailLoading) {
+              return const CourseDetailSkeleton();
+            }
+
+            if (state is CourseDetailError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline,
+                        size: 48, color: Colors.deepOrange),
+                    const SizedBox(height: 16),
+                    Text(
+                      state.message,
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        _hasLoadedReviews = false; // Reset flag on retry
+                        context
+                            .read<CoursesBloc>()
+                            .add(LoadCourseDetail(widget.courseId));
+                      },
+                      child: const Text('Try Again'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (state is CourseDetailLoaded ||
+                state is ReviewsLoadedState ||
+                state is ReviewsErrorState ||
+                state is ReviewsLoadingState) {
+              final course = (state as dynamic).course;
+              return CustomScrollView(
+                slivers: [
+                  CourseDetailAppBar(course: course),
+                  CourseDetailContent(course: course),
+                ],
+              );
+            }
+
+            return const Center(child: Text('Course not found'));
+          },
+        ),
       ),
     );
   }

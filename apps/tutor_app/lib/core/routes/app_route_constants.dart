@@ -7,7 +7,8 @@ class AppRouteConstants {
   static const String courseDetailesRouteName = "course_detailed";
   static const String libraryRouteName = "library";
   static const String authRouteName = "auth";
-  static const String profileRouteName = "profile";
+  static const String acountRoutename = "account";
+ static const String profileRoutename = "profile";
   static const String emailVerificationRouteName = "emailverify";
   static const String waitingRouteName = "waiting";
 

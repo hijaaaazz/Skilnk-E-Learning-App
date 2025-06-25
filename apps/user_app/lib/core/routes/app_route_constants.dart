@@ -15,5 +15,9 @@ class AppRouteConstants {
   static const String mentordetailsPaage = "mentorDetailsPage";
   static const String courselistPaage = "courseListPage";
   static const String chatPaage = "chatPage";
+  static const String chatListPaage = "chatListPage";
+  static const String helpandsupportpage = "help_page";
+  static const String termsconditions = "termsandcondtions";
 }
+
 

@@ -8,6 +8,7 @@ import 'package:tutor_app/features/courses/data/models/course_options_model.dart
 import 'package:tutor_app/features/courses/data/models/get_course_req.dart';
 import 'package:tutor_app/features/courses/data/models/lang_model.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_model.dart';
+import 'package:tutor_app/features/courses/data/models/review_model.dart';
 import 'package:tutor_app/features/courses/data/models/toggle_params.dart';
 import 'package:tutor_app/features/courses/domain/entities/couse_preview.dart';
 
@@ -20,6 +21,7 @@ abstract class CourseFirebaseService {
   Future<Either<String, bool>> deleteCourse(String courseId);
   Future<Either<String, CourseModel>> updateCourse(CourseModel req);
   Future<Either<String, bool>> activateToggleCourse(courseToggleParams req);
+  Future<Either<String, List<ReviewModel>>> getReviews(List<String> ids);
   
   // New methods for category management
   Future<Either<String, bool>> updateCategoryWithCourse({
@@ -250,9 +252,10 @@ double calculateAverageRating(Map<String, dynamic> ratings) {
   return totalScore / totalCount;
 }
 
-  @override
+@override
 Future<Either<String, CourseModel>> getCourseDetails({required String courseId}) async {
   try {
+    // Fetch course document
     final docRef = _firestore.collection('courses').doc(courseId);
     final docSnapshot = await docRef.get();
 
@@ -261,14 +264,48 @@ Future<Either<String, CourseModel>> getCourseDetails({required String courseId})
     }
 
     final data = docSnapshot.data()!;
-    final courseModel = CourseModel.fromJson(data, docSnapshot.id);
+
+    // Fetch reviews from the reviews collection
+    final reviewsQuery = await _firestore
+        .collection('reviews')
+        .where('courseId', isEqualTo: courseId)
+        .get();
+
+    // Extract review IDs
+    final reviewIds = reviewsQuery.docs.map((doc) => doc.id).toList();
+
+    // Calculate average rating
+    double averageRating = 0.0;
+    if (reviewsQuery.docs.isNotEmpty) {
+      final totalRating = reviewsQuery.docs.fold<double>(
+        0.0,
+        (sum, doc) => sum + (doc.data()['rating']?.toDouble() ?? 0.0),
+      );
+      averageRating = totalRating / reviewsQuery.docs.length;
+    }
+
+    // Fetch enrollment count from the enrollments collection
+    final enrollmentsQuery = await _firestore
+        .collection('enrollments')
+        .where('courseId', isEqualTo: courseId)
+        .get();
+
+    // Count enrollments
+    final enrolledCount = enrollmentsQuery.docs.length;
+
+    // Create CourseModel with review IDs, enrollment count, and average rating
+    final courseModel = CourseModel.fromJson(data, docSnapshot.id).copyWith(
+      reviews: reviewIds,
+      enrolledCount: enrolledCount,
+      averageRating: averageRating,
+    );
+
     return Right(courseModel);
   } catch (e) {
     log("Error fetching course details: $e");
     return Left("Failed to fetch course details: ${e.toString()}");
   }
 }
-
 
 @override
   Future<Either<String, bool>> deleteCourse(String courseId) async {
@@ -280,7 +317,6 @@ Future<Either<String, CourseModel>> getCourseDetails({required String courseId})
       return Left("Course not found");
     }
     
-    // Check if the course has enrolled students
     final data = docSnapshot.data();
     if (data == null) {
       return Left("Course data not found");
@@ -288,7 +324,6 @@ Future<Either<String, CourseModel>> getCourseDetails({required String courseId})
     
     final enrolledCount = data['enrolled_count'] ?? 0;
     
-    // Prevent deletion if there are enrolled students
     if (enrolledCount > 0) {
       return Left("Cannot delete a course with enrolled students");
     }
@@ -504,6 +539,29 @@ Future<Either<String, bool>> saveCourseForUser({
     return Right(true);
   } catch (e) {
     return Left("Failed to save course: ${e.toString()}");
+  }
+}
+
+@override
+Future<Either<String, List<ReviewModel>>> getReviews(List<String> ids) async {
+  try {
+    if (ids.isEmpty) {
+      return Right([]);
+    }
+
+    final reviewsQuery = await _firestore
+        .collection('reviews')
+        .where(FieldPath.documentId, whereIn: ids)
+        .get();
+
+    final reviews = reviewsQuery.docs
+        .map((doc) => ReviewModel.fromJson(doc.data(), doc.id))
+        .toList();
+
+    return Right(reviews);
+  } catch (e) {
+    log("Error fetching reviews: $e");
+    return Left("Failed to fetch reviews: ${e.toString()}");
   }
 }
 

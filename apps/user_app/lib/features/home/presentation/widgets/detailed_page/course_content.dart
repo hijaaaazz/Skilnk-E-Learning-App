@@ -61,7 +61,7 @@ class CourseContent extends StatelessWidget {
                 InstructorSection(mentor: course.mentor),
                 ReviewsSection(), // Always include ReviewsSection
                 const SizedBox(
-                  height: 100,
+                  height: 150,
                   width: double.infinity,
                 ),
               ],

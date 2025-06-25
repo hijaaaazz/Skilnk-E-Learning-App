@@ -8,6 +8,7 @@ import 'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'dart:developer';
 
 import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import 'package:user_app/features/home/domain/usecases/get_reviews.dart';
 
 abstract class CoursesFirebaseService {
   Future<Either<String, List<Map<String, dynamic>>>> getCategories();
@@ -23,8 +24,8 @@ abstract class CoursesFirebaseService {
   Future<Either<String, Map<String, dynamic>>> getCourseList({
   required LoadCourseParams params
 });
-  Future<Either<String, List<ReviewModel>>> getReviews(String id);
-  Future<Either<String,ReviewModel>> addReview(ReviewModel id);
+  Future<Either<String, List<ReviewModel>>> getReviews(GetReviewsParams params);
+  Future<Either<String,ReviewModel>> addReview(ReviewModel review);
 }
 
 class CoursesFirebaseServicesImp extends CoursesFirebaseService {
@@ -270,21 +271,43 @@ Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> ids) a
     return Left("Failed to fetch courses: ${e.toString()}");
   }
 }
-  @override
-  Future<Either<String, List<ReviewModel>>> getReviews(String id) async {
+// Implementation in the repository (assuming Firebase service)
+
+@override
+Future<Either<String, List<ReviewModel>>> getReviews(GetReviewsParams params) async {
   try {
-    final snapshot = await FirebaseFirestore.instance
+    Query query = FirebaseFirestore.instance
         .collection('reviews')
-        .where('courseId', isEqualTo: id)
+        .where('courseId', isEqualTo: params.courseId)
         .orderBy('reviewedAt', descending: true)
-        .get();
+        .limit(params.limit);
+
+    // Apply pagination by skipping previous pages
+    if (params.page > 1) {
+      final skipCount = (params.page - 1) * params.limit;
+      final lastDocSnapshot = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('courseId', isEqualTo: params.courseId)
+          .orderBy('reviewedAt', descending: true)
+          .limit(skipCount)
+          .get();
+
+      if (lastDocSnapshot.docs.isNotEmpty) {
+        query = query.startAfterDocument(lastDocSnapshot.docs.last);
+      }
+    }
+
+    final snapshot = await query.get();
 
     final reviews = snapshot.docs.map((doc) {
-      return ReviewModel.fromJson(doc.data(), id);
+      return ReviewModel.fromJson(doc.data() as Map<String, dynamic>, params.courseId);
     }).toList();
+
+    log('Loaded ${reviews.length} reviews for page ${params.page}');
 
     return Right(reviews);
   } catch (e) {
+    log('Error loading reviews: $e');
     return Left('Failed to load reviews: ${e.toString()}');
   }
 }

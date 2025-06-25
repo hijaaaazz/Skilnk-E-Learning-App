@@ -1,7 +1,9 @@
+
+// lib/features/chat/data/repo/chat_repo_imp.dart
 import 'package:dartz/dartz.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:user_app/features/chat/data/models/chat_model.dart';
 import 'package:user_app/features/chat/data/models/messgae_class.dart';
-import 'package:user_app/features/chat/data/repo/chat_repo_imp.dart';
 import 'package:user_app/features/chat/data/service/firebase_chat.dart';
 import 'package:user_app/features/chat/domain/repo/chat_repo.dart';
 import 'package:user_app/features/chat/domain/usecaase/check_chat_exist.dart';
@@ -10,17 +12,19 @@ import 'package:user_app/service_locator.dart';
 import 'dart:developer';
 
 class ChatRepoImp implements ChatRepository {
-  final ChatFirebaseService _firebaseService = serviceLocator<ChatFirebaseService>();
+  final ChatFirebaseService _firebaseService =
+      serviceLocator<ChatFirebaseService>();
 
   @override
-  Future<Either<String, List<AppMessage>>> loadMessages(String chatId) async {
+  Stream<Either<String, List<AppMessage>>> loadMessages(String chatId) async* {
     try {
-      final messages = await _firebaseService.loadMessages(chatId);
-      log('Loaded ${messages.length} messages for chatId: $chatId');
-      return Right(messages);
+      await for (final messages in _firebaseService.loadMessages(chatId)) {
+        log('Loaded ${messages.length} messages for chatId: $chatId');
+        yield Right(messages);
+      }
     } catch (e) {
       log('Error loading messages: $e');
-      return Left('Failed to load messages: ${e.toString()}');
+      yield Left('Failed to load messages: ${e.toString()}');
     }
   }
 
@@ -28,7 +32,6 @@ class ChatRepoImp implements ChatRepository {
   Future<Either<String, Unit>> sendMessage(SendMessageParams params) async {
     try {
       await _firebaseService.sendMessage(
-        chatId: params.chatId,
         userId: params.userId,
         courseId: params.courseId,
         text: params.text,
@@ -46,7 +49,7 @@ class ChatRepoImp implements ChatRepository {
     try {
       final chatId = await _firebaseService.checkChatExists(
         userId: params.userId,
-        courseId: params.courseId,
+        tutorId: params.courseId,
       );
       log('Chat exists or created with chatId: $chatId');
       return Right(chatId);
@@ -55,4 +58,17 @@ class ChatRepoImp implements ChatRepository {
       return Left('Failed to check chat existence: $e');
     }
   }
+
+ @override
+Stream<Either<String, List<TutorChat>>> loadChatList(String chatId) async* {
+  try {
+    yield* _firebaseService.loadChatList(userId: chatId);
+  } catch (e, stack) {
+    log('[loadChatList Repo] Error: $e', stackTrace: stack);
+    yield Left('Failed to load chat list: $e');
+  }
+}
+
+
+
 }

@@ -1,55 +1,64 @@
-import 'dart:developer';
 
+// lib/features/chat/data/service/firebase_chat.dart
+import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tutor_app/features/chat/data/models/messgae_class.dart';
 import 'package:tutor_app/features/chat/data/models/student_model.dart';
-import 'package:tutor_app/features/chat/presentation/bloc/chat_list/chat_list_state.dart';
-
+import 'package:tutor_app/features/chat/data/models/stuent_chat_model.dart';
 
 abstract class ChatFirebaseService {
-  Future<List<AppMessage>> loadMessages(String chatId);
+  Stream<List<AppMessage>> loadMessages(String chatId); // Already updated in previous response
   Future<void> sendMessage({
     required String chatId,
     required String userId,
-    required String courseId,
+    required String tutorId,
     required String text,
   });
   Future<String> checkChatExists({
     required String userId,
     required String studentId,
   });
-
-  Future<Either<String,List<StudentChat>>> loadChatList({
+  Stream<Either<String, List<StudentChat>>> loadChatList({
     required String userId,
   });
 }
-
-
 
 class ChatFirebaseServiceImp implements ChatFirebaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
-  Future<List<AppMessage>> loadMessages(String chatId) async {
-    final snapshot = await _firestore
+  Stream<List<AppMessage>> loadMessages(String chatId) {
+    return _firestore
         .collection('chats')
         .doc(chatId)
         .collection('messages')
         .orderBy('createdAt', descending: true)
-        .get();
-
-    return snapshot.docs.map((doc) => AppMessage.fromFirestore(doc.data(), doc.id)).toList();
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => AppMessage.fromFirestore(doc.data(), doc.id))
+            .toList());
   }
 
-  @override
-  Future<void> sendMessage({
-    required String chatId,
-    required String userId,
-    required String courseId,
-    required String text,
-  }) async {
-    final messageRef = _firestore.collection('chats').doc(chatId).collection('messages').doc();
+ @override
+Future<void> sendMessage({
+  required String chatId,
+  required String userId,
+  required String tutorId,
+  required String text,
+}) async {
+  try {
+    log('[sendMessage] Called with chatId: $chatId, userId: $userId, tutorId: $tutorId, text: $text');
+
+    final messagePath = "chats/${userId}_$tutorId/messages";
+    log(messagePath);
+    final messageRef = _firestore
+        .collection('chats')
+        .doc("${tutorId}_$userId")
+        .collection('messages')
+        .doc();
+
+    log('[sendMessage] Writing message to: $messagePath/${messageRef.id}');
 
     await messageRef.set({
       'userId': userId,
@@ -57,20 +66,35 @@ class ChatFirebaseServiceImp implements ChatFirebaseService {
       'createdAt': FieldValue.serverTimestamp(),
     });
 
-    await _firestore.collection('chats').doc(chatId).set({
-      'userId': userId,
-      'tutorId': courseId,
+    final chatDocPath = "chats/$chatId";
+
+    log('[sendMessage] Updating chat doc: $chatDocPath');
+
+    await _firestore.collection('chats').doc("${tutorId}_$userId").set({
+      'userId': tutorId,
+      'tutorId': userId,
       'lastMessage': text,
       'lastMessageAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+
+    log('[sendMessage] Message sent successfully.');
+  } catch (e, stack) {
+    log('[sendMessage] Error: $e');
+    log('[sendMessage] StackTrace: $stack');
+    rethrow;
   }
+}
+
 
   @override
   Future<String> checkChatExists({
     required String userId,
     required String studentId,
   }) async {
+    log("student$studentId");
+    log("tutor$userId");
     final chatId = '${studentId}_$userId';
+    log("chat id           $chatId");
     final chatDoc = await _firestore.collection('chats').doc(chatId).get();
 
     if (!chatDoc.exists) {
@@ -84,47 +108,56 @@ class ChatFirebaseServiceImp implements ChatFirebaseService {
 
     return chatId;
   }
-  
+
   @override
-Future<Either<String, List<StudentChat>>> loadChatList({required String userId}) async {
-  try {
-    // Fetch chats where tutorId == userId (tutor perspective)
-    final querySnapshot = await _firestore
+  Stream<Either<String, List<StudentChat>>> loadChatList({
+    required String userId,
+  }) {
+    return _firestore
         .collection('chats')
         .where('tutorId', isEqualTo: userId)
         .orderBy('lastMessageAt', descending: true)
-        .get();
+        .snapshots()
+        .asyncMap((snapshot) async {
+      try {
+        final List<StudentChat> studentChats = [];
 
-    final List<StudentChat> studentChats = [];
+        for (final doc in snapshot.docs) {
+          final data = doc.data();
+          final chatId = doc.id;
+          final studentId = data['userId'] as String?;
 
-    for (final doc in querySnapshot.docs) {
-      final data = doc.data();
-      final chatId = doc.id;
-      final studentId = data['userId'] as String?;
+          if (studentId == null) {
+            log('[loadChatList] Skipped: studentId is null for chatId $chatId');
+            continue;
+          }
 
-      if (studentId == null) continue;
+          final studentDoc =
+              await _firestore.collection('users').doc(studentId).get();
+          if (!studentDoc.exists) {
+            log('[loadChatList] Skipped: student document does not exist for $studentId');
+            continue;
+          }
 
-      final studentDoc = await _firestore.collection('users').doc(studentId).get();
-      if (!studentDoc.exists) continue;
+          final studentData = studentDoc.data()!;
+          final studentEntity = StudentEntity.fromJson(studentData, studentDoc.id);
 
-      final studentData = studentDoc.data()!;
-      final studentEntity = StudentEntity.fromJson(studentData, studentDoc.id);
+          final studentChat = StudentChat(
+            chatId: chatId,
+            user: studentEntity,
+            lastMessage: data['lastMessage'] as String?,
+            lastMessageAt: (data['lastMessageAt'] as Timestamp?)?.toDate(),
+          );
 
-      final studentChat = StudentChat(
-        chatId: chatId,
-        user: studentEntity,
-        lastMessage: data['lastMessage'] as String?,
-        lastMessageAt: (data['lastMessageAt'] as Timestamp?)?.toDate(),
-      );
+          studentChats.add(studentChat);
+        }
 
-      studentChats.add(studentChat);
-    }
-
-    return Right(studentChats);
-  } catch (e) {
-    log('[loadChatList] Error: $e');
-    return Left('Failed to load chat list');
+        log('[loadChatList] Total loaded chats: ${studentChats.length}');
+        return Right(studentChats);
+      } catch (e) {
+        log('[loadChatList] Error: $e');
+        return Left('Failed to load chat list');
+      }
+    });
   }
-}
-
 }

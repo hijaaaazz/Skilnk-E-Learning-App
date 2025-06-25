@@ -6,12 +6,15 @@ import 'package:go_router/go_router.dart';
 import 'package:user_app/core/routes/app_route_constants.dart';
 import 'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
 import 'package:user_app/features/account/presentation/pages%20/account.dart';
+import 'package:user_app/features/account/presentation/pages%20/help_page.dart';
 import 'package:user_app/features/account/presentation/pages%20/profile.dart';
+import 'package:user_app/features/account/presentation/pages%20/terms.dart';
 import 'package:user_app/features/auth/domain/entity/user.dart';
 import 'package:user_app/features/auth/presentation/pages%20/auth.dart';
 import 'package:user_app/features/auth/presentation/pages%20/info_submition.dart';
 import 'package:user_app/features/auth/presentation/pages%20/verify_page.dart';
 import 'package:user_app/features/chat/presentation/pages/chat.dart';
+import 'package:user_app/features/chat/presentation/pages/chat_list.dart';
 import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
 import 'package:user_app/features/course_list/presentation/bloc/course_list_bloc.dart';
 import 'package:user_app/features/explore/data/models/search_params_model.dart';
@@ -50,6 +53,34 @@ class AppRoutes {
                   id: courseId,
                 ),
         ));
+      },
+     
+      ),
+
+      GoRoute(path: '/help',
+      name: AppRouteConstants.helpandsupportpage,
+      pageBuilder: (context, state) {
+        return MaterialPage(child: HelpSupportPage(
+              ));
+      },
+     
+      ),
+
+      GoRoute(path: '/legal',
+      name: AppRouteConstants.termsconditions,
+      pageBuilder: (context, state) {
+        return MaterialPage(child: LegalDocumentsPage(
+              ));
+      },
+     
+      ),
+
+      GoRoute(path: '/chat_list',
+      name: AppRouteConstants.chatListPaage,
+      pageBuilder: (context, state) {
+        // ignore: unused_local_variable
+        //final mentor = state.extra as MentorEntity;
+        return MaterialPage(child: ChatListPage());
       },
      
       ),

@@ -145,11 +145,11 @@ class MentorDetailsPage extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.3),
                 margin: const EdgeInsets.symmetric(horizontal: 20),
               ),
-              _buildStatItem(
-                context,
-                '15800',
-                'Students',
-              ),
+              // _buildStatItem(
+              //   context,
+              //   '15800',
+              //   'Students',
+              // ),
             ],
           ),
           const SizedBox(height: 20),

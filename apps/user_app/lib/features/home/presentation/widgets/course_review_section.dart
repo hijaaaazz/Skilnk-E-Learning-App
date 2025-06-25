@@ -108,25 +108,25 @@ class CourseReviewCard extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(
-                Icons.thumb_up_outlined,
-                color: Color(0xFF202244),
-                size: 16,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '$likes',
-                style: const TextStyle(
-                  color: Color(0xFF202244),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+          // const SizedBox(height: 12),
+          // Row(
+          //   children: [
+          //     const Icon(
+          //       Icons.thumb_up_outlined,
+          //       color: Color(0xFF202244),
+          //       size: 16,
+          //     ),
+          //     const SizedBox(width: 4),
+          //     Text(
+          //       '$likes',
+          //       style: const TextStyle(
+          //         color: Color(0xFF202244),
+          //         fontSize: 12,
+          //         fontWeight: FontWeight.w600,
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

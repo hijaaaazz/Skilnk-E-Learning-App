@@ -5,12 +5,14 @@ import 'package:bloc/bloc.dart';
 // ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
 import 'package:tutor_app/features/courses/data/models/get_course_req.dart';
+import 'package:tutor_app/features/courses/data/models/review_model.dart';
 import 'package:tutor_app/features/courses/data/models/toggle_params.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/domain/entities/couse_preview.dart';
 import 'package:tutor_app/features/courses/domain/usecases/delee_course.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_course_details.dart';
 import 'package:tutor_app/features/courses/domain/usecases/get_courses.dart';
+import 'package:tutor_app/features/courses/domain/usecases/get_reviews.dart';
 import 'package:tutor_app/features/courses/domain/usecases/toggle_activation.dart';
 import 'package:tutor_app/service_locator.dart';
 part 'courses_event.dart';
@@ -35,6 +37,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     on<DeleteCourse>(_onDeleteCourse);
     on<AddCourseEvent>(_onAddCourse);
     on<UpdateCourseEvent>(_onUpdateCourse);
+    on<LoadReiviews>(_onLoadReviews);
   }
 
   Future<void> _onLoadCourses(LoadCourses event, Emitter<CoursesState> emit) async {
@@ -213,6 +216,32 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
     courses: _courses,
   ));
 }
+
+Future<void> _onLoadReviews(LoadReiviews event, Emitter<CoursesState> emit) async {
+  emit(ReviewsLoadingState(course: event.course));
+
+  try {
+    final useCase = serviceLocator<GetReviewsUseCase>();
+
+    final result = await useCase.call(params: event.reviewIds); // Directly from event
+
+    result.fold(
+      (errorMessage) {
+        log('❌ Failed to load reviews: $errorMessage');
+        emit(ReviewsErrorState(course: event.course));
+      },
+      (reviewList) {
+        log("succes");
+
+        emit(ReviewsLoadedState(course: event.course,reviews: reviewList));
+      },
+    );
+  } catch (e, stackTrace) {
+    log('Exception in _onLoadReviews: $e\n$stackTrace');
+    emit(ReviewsErrorState(course: event.course));
+  }
+}
+
 
 
 }

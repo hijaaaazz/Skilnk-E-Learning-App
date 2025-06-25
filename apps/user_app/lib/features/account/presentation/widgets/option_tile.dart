@@ -54,6 +54,5 @@ Widget buildOptionTile(
     return const Divider(
       height: 1,
       thickness: 0.5,
-      indent: 56, // Aligns with the end of icon + spacing
     );
   }

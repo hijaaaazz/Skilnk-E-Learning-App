@@ -6,9 +6,10 @@ import 'package:user_app/features/chat/domain/repo/chat_repo.dart';
 import 'package:user_app/service_locator.dart';
 import 'dart:developer';
 
-class LoadChatUseCase implements Usecase<Either<String, List<AppMessage>>, String> {
+class LoadChatUseCase
+    implements StreamUsecase<Either<String, List<AppMessage>>, String> {
   @override
-  Future<Either<String, List<AppMessage>>> call({required String params}) async {
+  Stream<Either<String, List<AppMessage>>> call({required String params}) {
     log('Loading messages for chatId: $params');
     return serviceLocator<ChatRepository>().loadMessages(params);
   }

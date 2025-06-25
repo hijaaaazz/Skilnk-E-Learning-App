@@ -1,0 +1,59 @@
+enum TimePeriod {
+  today('today', 'Today'),
+  thisWeek('this_week', 'This Week'),
+  thisMonth('this_month', 'This Month'),
+  allTime('all_time', 'All Time');
+
+  const TimePeriod(this.value, this.displayName);
+  
+  final String value;
+  final String displayName;
+}
+
+class DateRange {
+  final DateTime startDate;
+  final DateTime endDate;
+  final TimePeriod period;
+
+  DateRange({
+    required this.startDate,
+    required this.endDate,
+    required this.period,
+  });
+
+  static DateRange fromTimePeriod(TimePeriod period) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    switch (period) {
+      case TimePeriod.today:
+        return DateRange(
+          startDate: today,
+          endDate: today.add(Duration(days: 1)),
+          period: period,
+        );
+      case TimePeriod.thisWeek:
+        final startOfWeek = today.subtract(Duration(days: today.weekday - 1));
+        return DateRange(
+          startDate: startOfWeek,
+          endDate: today.add(Duration(days: 1)),
+          period: period,
+        );
+      case TimePeriod.thisMonth:
+        final startOfMonth = DateTime(now.year, now.month, 1);
+        return DateRange(
+          startDate: startOfMonth,
+          endDate: today.add(Duration(days: 1)),
+          period: period,
+        );
+      case TimePeriod.allTime:
+        // Set a reasonable start date for "all time" - e.g., 2 years ago
+        final allTimeStart = DateTime(now.year - 2, 1, 1);
+        return DateRange(
+          startDate: allTimeStart,
+          endDate: today.add(Duration(days: 1)),
+          period: period,
+        );
+    }
+  }
+}

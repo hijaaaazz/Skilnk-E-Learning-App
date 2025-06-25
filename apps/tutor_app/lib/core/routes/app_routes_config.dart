@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/core/routes/route_transition.dart';
+import 'package:tutor_app/features/account/presentation/bloc/cubit/profile_cubit.dart';
 import 'package:tutor_app/features/account/presentation/pages/account.dart';
+import 'package:tutor_app/features/account/presentation/pages/profile.dart';
 import 'package:tutor_app/features/auth/presentation/pages/auth.dart';
 import 'package:tutor_app/features/auth/presentation/pages/verify_page.dart';
 import 'package:tutor_app/features/auth/presentation/pages/waiting_page.dart';
@@ -39,6 +40,20 @@ class AppRoutes {
     navigatorKey: _rootNavigatorKey,
     initialLocation: "/splash",
     routes: [
+
+       GoRoute(
+                path: "/profile",
+                name: AppRouteConstants.profileRoutename,
+                builder: (context, state) {
+                  return BlocProvider(
+                    create: (context) => ProfileCubit(),
+                    child: ProfilePage(),
+                  );
+                } ,
+                routes: [
+
+                ]
+              ),
   GoRoute(
                 path: "/chat",
                 name: AppRouteConstants.chatscreen,
@@ -280,8 +295,8 @@ class AppRoutes {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: "/profile",
-                name: AppRouteConstants.profileRouteName,
+                path: "/account",
+                name: AppRouteConstants.acountRoutename,
                 builder: (context, state) => AccountPage(),
               ),
             ],

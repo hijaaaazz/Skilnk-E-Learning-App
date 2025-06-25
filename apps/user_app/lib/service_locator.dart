@@ -22,6 +22,7 @@ import 'package:user_app/features/chat/data/repo/chat_repo_imp.dart';
 import 'package:user_app/features/chat/data/service/firebase_chat.dart';
 import 'package:user_app/features/chat/domain/repo/chat_repo.dart';
 import 'package:user_app/features/chat/domain/usecaase/check_chat_exist.dart';
+import 'package:user_app/features/chat/domain/usecaase/load_chat_list.dart';
 import 'package:user_app/features/chat/domain/usecaase/loadchat_usecase.dart';
 import 'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
 import 'package:user_app/features/course_list/domain/usecase/get_list.dart';
@@ -95,8 +96,20 @@ Future<void> initializeDependencies() async {
   );
 
  serviceLocator.registerLazySingleton<ChatFirebaseService>(
-    () => ChatFirebaseServiceImp()
+    () => ChatFirebaseServiceImpl()
   );
+
+
+
+
+
+
+
+
+
+
+
+
 
   // ✅ Repositories
   serviceLocator.registerLazySingleton<AuthRepository>(
@@ -129,6 +142,14 @@ Future<void> initializeDependencies() async {
   serviceLocator.registerLazySingleton<ChatRepository>(
     () => ChatRepoImp()
   );
+
+
+
+
+
+
+
+
 
 
   // ✅ Use Cases
@@ -262,8 +283,9 @@ Future<void> initializeDependencies() async {
     () => AddReviewUseCase()
   );
 
-  
-
+  serviceLocator.registerLazySingleton<LoadChatListUseCase>(
+    () => LoadChatListUseCase()
+  );
   
 }
 
