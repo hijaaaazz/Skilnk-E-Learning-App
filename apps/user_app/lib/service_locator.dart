@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:user_app/features/account/data/models/update_dp_params.dart';
 import 'package:user_app/features/account/data/repo/profile_repo.dart';
 import 'package:user_app/features/account/data/service/profile_cloudinary_service.dart';
 import 'package:user_app/features/account/data/service/profile_firebase_service.dart';
