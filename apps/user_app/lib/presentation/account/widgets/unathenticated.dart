@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:user_app/core/routes/app_route_constants.dart';
+import 'package:user_app/features/account/presentation/pages%20/terms.dart';
 import 'package:user_app/features/account/presentation/widgets/login_suggession.dart';
 import 'package:user_app/features/account/presentation/widgets/option_tile.dart';
 
@@ -51,33 +55,40 @@ Widget buildUnauthenticatedUI(BuildContext context) {
             child: Column(
               children: [
                 
+                
                 buildDivider(),
                 buildOptionTile(
                   context,
                   "Help & Support",
                   Icons.help_outline,
-                  onTap: () {},
+                  onTap: () {
+      context.pushNamed(AppRouteConstants.helpandsupportpage);
+      
+  
+                  },
                 ),
                 buildDivider(),
                 buildOptionTile(
                   context,
-                  "About App",
+                  "Legal Policies",
                   Icons.info_outline,
-                  onTap: () {},
+                  onTap: () {
+                    context.pushNamed(AppRouteConstants.termsconditions);
+                  },
                 ),
+                
                 buildDivider(),
                 buildOptionTile(
                   context,
-                  "Privacy Policy",
-                  Icons.policy_outlined,
-                  onTap: () {},
-                ),
-                buildDivider(),
-                buildOptionTile(
-                  context,
-                  "Terms of Service",
+                  "Share this App",
                   Icons.description_outlined,
-                  onTap: () {},
+                  onTap: () {
+                     // ignore: deprecated_member_use
+                     Share.share(
+      'Check out the Skilnk App – a simple way to learn and grow! 🚀\nDownload now: https://example.com/download',
+      subject: 'Skilnk – Learn with ease',
+    );
+                  },
                 ),
               ],
             ),

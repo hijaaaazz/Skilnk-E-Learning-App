@@ -26,26 +26,33 @@ class ExploreFirebaseServicesImp extends ExploreFirebaseService {
 
       switch (params.type) {
         case SearchType.mentor:
-          log('[MENTOR] Building query');
-          final snapshot = await _firestore
-              .collection('mentors')
-              .orderBy('name_lower')
-              .startAt([params.query])
-              .endAt(['${params.query}\uf8ff'])
-              .get();
-          log('[MENTOR] Docs found: ${snapshot.docs.length}');
-          
-          final mentors = snapshot.docs
-              .map((doc) => MentorModel.fromJson(doc.data()).toEntity())
-              .toList();
-          log('[MENTOR] Parsed mentors: ${mentors.map((m) => m.name).toList()}');
+  log('[MENTOR] Building query');
 
-          results = MentorResult(mentors);
-          break;
+  final snapshot = await _firestore
+      .collection('mentors')
+      .where('is_verified', isEqualTo: true) // ✅ Only verified mentors
+      .orderBy('name_lower')
+      .startAt([params.query])
+      .endAt(['${params.query}\uf8ff'])
+      .get();
+
+  log('[MENTOR] Docs found: ${snapshot.docs.length}');
+  
+  final mentors = snapshot.docs
+      .map((doc) => MentorModel.fromJson(doc.data()).toEntity())
+      .toList();
+
+  log('[MENTOR] Parsed mentors: ${mentors.map((m) => m.name).toList()}');
+
+  results = MentorResult(mentors);
+  break;
 
         case SearchType.course:
           log('[COURSE] Building query');
-          Query<Map<String, dynamic>> query = _firestore.collection('courses');
+          Query<Map<String, dynamic>> query = _firestore.collection('courses')
+    .where('listed', isEqualTo: true)
+    .where('isBanned', isEqualTo: false);
+
 
           // Apply query only if search query is present
           final hasQuery = params.query.trim().isNotEmpty;

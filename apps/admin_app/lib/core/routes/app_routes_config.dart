@@ -67,18 +67,7 @@ class AppRoutes {
             ],
           ),
 
-          /// Chat Page
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: "/orders",
-                name: AppRouteConstants.orders,
-                builder: (context, state) => const OrdersPage(),
-              ),
-            ],
-          ),
-
-          /// Profile Page
+          
           
           StatefulShellBranch(
             routes: [
@@ -99,15 +88,7 @@ class AppRoutes {
               ),
             ],
           ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: "/profile",
-                name: AppRouteConstants.settings,
-                builder: (context, state) => const ProfilePage(),
-              ),
-            ],
-          ),
+          
         ],
       ),
     ],

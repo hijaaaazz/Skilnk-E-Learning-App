@@ -69,7 +69,7 @@ class CourseModel {
     return CourseModel(
       
       id: docId,
-      isCompleted: json['isCompleted']?? false,
+      isCompleted: isCompleted,
       title: json['title'] ?? '',
       categoryId: json['category'] is Map ? json['category']['_id'] ?? '' : json['category'] ?? '',
       description: json['description'] ?? '',

@@ -26,7 +26,6 @@ abstract class CoursesFirebaseService {
 });
   Future<Either<String, List<ReviewModel>>> getReviews(GetReviewsParams params);
   Future<Either<String,ReviewModel>> addReview(ReviewModel review);
-  Future<Either<String,bool>> isCompleted(String userId, String courseId);
 }
 
 class CoursesFirebaseServicesImp extends CoursesFirebaseService {
@@ -48,7 +47,13 @@ class CoursesFirebaseServicesImp extends CoursesFirebaseService {
   @override
   Future<Either<String, List<Map<String, dynamic>>>> getCourses() async {
     try {
-      final querySnapshot = await _firestore.collection('courses').limit(3).get();
+      final querySnapshot = await _firestore
+    .collection('courses')
+    .where('listed', isEqualTo: true)
+    .where('isBanned', isEqualTo: false)
+    .limit(3)
+    .get();
+
       final courses = querySnapshot.docs
           .map((doc) => {
                 'id': doc.id,
@@ -236,17 +241,21 @@ Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> ids) a
     return Left("Error fetching mentor courses: $e");
   }
 }
+
   @override
- Future<Either<String, Map<String, dynamic>>> getCourseList({
+Future<Either<String, Map<String, dynamic>>> getCourseList({
   required LoadCourseParams params,
 }) async {
   try {
     if (params.courseIds.isEmpty) {
       return Right({'courses': [], 'lastDoc': null});
     }
+
     Query query = _firestore
         .collection('courses')
         .where(FieldPath.documentId, whereIn: params.courseIds)
+        .where('listed', isEqualTo: true)
+        .where('isBanned', isEqualTo: false)
         .orderBy('createdAt', descending: true);
 
     final snapshot = await query.get();
@@ -265,15 +274,16 @@ Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> ids) a
     }).toList();
 
     log("Fetched ${courses.length} courses for batch: ${params.courseIds}");
-    
+
     return Right({
       'courses': courses,
-      'lastDoc': null, // Not needed for batch pagination
+      'lastDoc': null,
     });
   } catch (e) {
     return Left("Failed to fetch courses: ${e.toString()}");
   }
 }
+
 // Implementation in the repository (assuming Firebase service)
 
 @override
@@ -328,11 +338,7 @@ Future<Either<String, ReviewModel>> addReview(ReviewModel review) async {
   }
 }
 
-  @override
-  Future<Either<String, bool>> isCompleted(String userId, String courseId) {
-    // TODO: implement isCompleted
-    throw UnimplementedError();
-  }
+  
 
 }
 

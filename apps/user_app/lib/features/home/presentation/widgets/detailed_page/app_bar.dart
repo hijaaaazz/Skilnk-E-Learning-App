@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_app/features/home/domain/entity/course-entity.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
+import 'package:user_app/features/home/presentation/widgets/video_player/completetion_status.dart';
 
 class CourseAppBar extends StatelessWidget {
   final CourseEntity course;
@@ -61,15 +62,20 @@ class CourseAppBar extends StatelessWidget {
                 course.title,
                 style: const TextStyle(color: Color(0xFF202244), fontSize: 20, fontWeight: FontWeight.w600),
               ),
-        background: Container(
-          decoration: BoxDecoration(
-            color: Colors.black,
-            image: DecorationImage(
-              image: NetworkImage(course.courseThumbnail),
-              fit: BoxFit.cover,
-              opacity: 0.7,
+        background: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black,
+                image: DecorationImage(
+                  image: NetworkImage(course.courseThumbnail),
+                  fit: BoxFit.cover,
+                  opacity: 0.7,
+                ),
+              ),
             ),
-          ),
+            IsCompletedBadge(isCompleted: course.isCompleted)
+          ],
         ),
       ),
     );

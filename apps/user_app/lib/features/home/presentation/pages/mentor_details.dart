@@ -30,7 +30,8 @@ class MentorDetailsPage extends StatelessWidget {
         ..add(LoadMentorDetails(mentor))
         ..add(LoadMentorCourses(mentor.sessions, mentor)),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA),
+        appBar: SkilnkAppBar(title: ""),
+        backgroundColor: const Color(0xFFFAFAFA),
         body: BlocConsumer<MentorDetailsBloc, MentorDetailsState>(
           listener: (context, state) {
             if (state is ChatInitiated) {
@@ -51,7 +52,7 @@ class MentorDetailsPage extends StatelessWidget {
               return const Center(
                 child: CircularProgressIndicator(
                   color: Color(0xFFFF6B35),
-                  strokeWidth: 3,
+                  strokeWidth: 2,
                 ),
               );
             }
@@ -68,13 +69,10 @@ class MentorDetailsPage extends StatelessWidget {
   Widget _buildContent(BuildContext context, MentorDetailsLoaded state) {
     return CustomScrollView(
       slivers: [
-        SkilnkAppBar(title: ""),
-       
-        // Content
         SliverToBoxAdapter(
           child: Column(
             children: [
-              _buildModernProfileSection(context, state),
+              _buildResponsiveProfileSection(context, state),
               if (state.mentor.bio.isNotEmpty)
                 BioSection(bio: state.mentor.bio),
               if (state is MentorsCoursesLoadedState)
@@ -82,10 +80,11 @@ class MentorDetailsPage extends StatelessWidget {
                   courses: state.courses,
                   sessionIds: mentor.sessions,
                   mentorName: mentor.name,
+                  totalCourse: mentor.sessions.length,
                 ),
               if (state is MentorsCoursesLoadingState)
                 buildCoursesSkeletonSection(context),
-              const SizedBox(height: 100),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.12),
             ],
           ),
         ),
@@ -93,139 +92,134 @@ class MentorDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildModernProfileSection(BuildContext context, MentorDetailsLoaded state) {
+  Widget _buildResponsiveProfileSection(BuildContext context, MentorDetailsLoaded state) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final isMediumScreen = screenWidth >= 360 && screenWidth < 400;
+
+    // Responsive values
+    final horizontalMargin = isSmallScreen ? 20.0 : (isMediumScreen ? 24.0 : 28.0);
+    final cardPadding = isSmallScreen ? 24.0 : (isMediumScreen ? 28.0 : 32.0);
+    final avatarSize = isSmallScreen ? 80.0 : (isMediumScreen ? 90.0 : 100.0);
+    final nameSize = isSmallScreen ? 22.0 : (isMediumScreen ? 24.0 : 26.0);
+
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.fromLTRB(horizontalMargin, 20, horizontalMargin, 24),
+          padding: EdgeInsets.all(cardPadding),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Profile Image and Info Row
+              Row(
+                children: [
+                  _buildAvatar(state, avatarSize),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          state.mentor.name,
+                          style: TextStyle(
+                            fontSize: nameSize,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF1A1A1A),
+                            letterSpacing: -0.3,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        // Specialization
+                        _buildSpecialization(state, isSmallScreen),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              // Action Button (moved up)
+              MentorActions(mentor: state.mentor),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAvatar(MentorDetailsLoaded state, double size) {
     return Container(
-      transform: Matrix4.translationValues(0, -60, 0),
-      child: Column(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFF6B35).withOpacity(0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Stack(
         children: [
-          // Profile Card
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            padding: const EdgeInsets.all(32),
+            width: size,
+            height: size,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFFFF6B35),
+                  const Color(0xFFFF6B35).withOpacity(0.8),
+                ],
+              ),
+              shape: BoxShape.circle,
             ),
-            child: Column(
-              children: [
-                // Profile Image
-                Stack(
-                  children: [
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
-                        ),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFFF6B35).withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: state.mentor.imageUrl.isNotEmpty
-                          ? ClipOval(
-                              child: Image.network(
-                                state.mentor.imageUrl,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Center(
-                              child: Text(
-                                state.mentor.name.isNotEmpty
-                                    ? state.mentor.name[0].toUpperCase()
-                                    : 'M',
-                                style: const TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
+            child: state.mentor.imageUrl.isNotEmpty
+                ? ClipOval(
+                    child: Image.network(
+                      state.mentor.imageUrl,
+                      fit: BoxFit.cover,
                     ),
-                    Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF00D4AA), Color(0xFF00E5BB)],
-                          ),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                        ),
+                  )
+                : Center(
+                    child: Text(
+                      state.mentor.name.isNotEmpty
+                          ? state.mentor.name[0].toUpperCase()
+                          : 'M',
+                      style: TextStyle(
+                        fontSize: size * 0.4,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                // Name
-                Text(
-                  state.mentor.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF1A1A1A),
-                    letterSpacing: -0.5,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                // Specialization
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF6B35).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    state.mentor.specialization.join(' • '),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFFFF6B35),
-                      fontWeight: FontWeight.w600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                // Stats
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildModernStatItem(
-                        state.mentor.sessions.length.toString(),
-                        'Courses',
-                        Icons.school_rounded,
-                      ),
-                     
-                      
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-                // Action Button
-                MentorActions(mentor: state.mentor),
-              ],
+          ),
+          Positioned(
+            bottom: 2,
+            right: 2,
+            child: Container(
+              width: size * 0.25,
+              height: size * 0.25,
+              decoration: BoxDecoration(
+                color: const Color(0xFF00D4AA),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
             ),
           ),
         ],
@@ -233,42 +227,36 @@ class MentorDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildModernStatItem(String value, String label, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
+  Widget _buildSpecialization(MentorDetailsLoaded state, bool isSmallScreen) {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: state.mentor.specialization.take(3).map((item) {
+        return Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: isSmallScreen ? 10 : 12,
+            vertical: isSmallScreen ? 4 : 6,
+          ),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
+            color: const Color(0xFFFF6B35).withOpacity(0.08),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFFF6B35).withOpacity(0.2),
+              width: 0.5,
             ),
-            borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            icon,
-            color: Colors.white,
-            size: 20,
+          child: Text(
+            item,
+            style: TextStyle(
+              fontSize: isSmallScreen ? 11 : 12,
+              color: const Color(0xFFFF6B35),
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1A1A1A),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
+
+
 }

@@ -6,6 +6,8 @@ import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cub
 import 'package:user_app/features/account/presentation/widgets/option_tile.dart';
 import 'package:user_app/presentation/account/widgets/app_bar.dart';
 import 'package:user_app/presentation/account/widgets/unathenticated.dart';
+import 'package:share_plus/share_plus.dart';
+
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -92,14 +94,18 @@ class AccountPage extends StatelessWidget {
               buildDivider(),
              
               buildOptionTile(
-                context,
-                "Share this App",
-                Icons.share_outlined,
-                onTap: () {
-                  
-                
-                },
-              ),
+  context,
+  "Share this App",
+  Icons.share_outlined,
+  onTap: () {
+    // ignore: deprecated_member_use
+    Share.share(
+      'Check out the Skilnk App – a simple way to learn and grow! 🚀\nDownload now: https://example.com/download',
+      subject: 'Skilnk – Learn with ease',
+    );
+  },
+),
+
             ],
           ),
 
@@ -203,9 +209,10 @@ class AccountPage extends StatelessWidget {
         confirmColor: Colors.red.shade500,
         onConfirm: () {
           context.read<AuthStatusCubit>().logOut();
+          context.pop();
         },
         onCancel: () {
-          Navigator.of(dialogContext).pop();
+          context.pop();
         },
         isLoading: context.watch<AuthStatusCubit>().state.status == AuthStatus.loading,
       ),

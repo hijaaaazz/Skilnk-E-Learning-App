@@ -6,6 +6,7 @@ import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cub
 import 'package:user_app/features/chat/presentation/bloc/chat_list/chat_list_bloc.dart';
 import 'package:user_app/features/chat/presentation/bloc/chat_list/chat_list_event.dart';
 import 'package:user_app/features/chat/presentation/bloc/chat_list/chat_list_state.dart';
+import 'package:user_app/features/chat/presentation/pages/unauth_page.dart';
 
 class ChatListPage extends StatefulWidget {
   const ChatListPage({super.key});
@@ -28,9 +29,7 @@ class _ChatListPageState extends State<ChatListPage> {
   Widget build(BuildContext context) {
     final tutorId = context.read<AuthStatusCubit>().state.user?.userId ?? '';
     if (tutorId.isEmpty) {
-      return const Scaffold(
-        body: Center(child: Text('Tutor not authenticated')),
-      );
+      return UnAthScreen();
     }
 
     return BlocProvider(

@@ -62,29 +62,90 @@ void didChangeDependencies() {
   }
 
   Widget _buildSignUpPrompt() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Sign Up to Access Your Library",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () {
-              // Navigate to sign-up
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+  return Scaffold(
+    backgroundColor: const Color(0xFFF8FAFC),
+    body: Center(
+      child: Container(
+        margin: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
             ),
-            child: const Text('Sign Up', style: TextStyle(fontSize: 16, color: Colors.white)),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.deepOrange.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: const Icon(
+                Icons.library_books_rounded,
+                size: 40,
+                color: Colors.deepOrange,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Your Library Awaits',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w600,
+                color: Color.fromARGB(255, 73, 46, 38),
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Sign up to unlock your personal library\nand explore all available resources',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: const Color.fromARGB(255, 88, 77, 74),
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  context.pushNamed(AppRouteConstants.authRouteName);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:  Colors.deepOrange,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Sign Up Now',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildLibraryContent(BuildContext context, AuthStatusState authState) {
     return RefreshIndicator(
