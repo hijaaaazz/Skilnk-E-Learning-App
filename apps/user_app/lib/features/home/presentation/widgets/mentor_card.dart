@@ -99,15 +99,7 @@ class MentorAvatar extends StatelessWidget {
                   color: Colors.amber,
                   size: 14,
                 ),
-                const SizedBox(width: 2),
-                Text(
-                  mentor.rating.toStringAsFixed(1),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
+               
               ],
             ),
           ],

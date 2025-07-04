@@ -57,16 +57,22 @@ Future<Either<String, List<CoursePreview>>> getSavedCourses(List<String> courseI
         .where(FieldPath.documentId, whereIn: courseIds).limit(3)
         .get();
 
-    final savedCourses = querySnapshot.docs.map((doc) {
-      return CoursePreview(
-        id: doc.id,
-        courseTitle: doc['title'],
-        thumbnail: doc['course_thumbnail'],
-        averageRating: (doc['average_rating'] ?? 0).toDouble(),
-        price: (doc['price'] ?? 0).toString(),
-        categoryname: doc['category_name'],
-      );
-    }).toList();
+   final savedCourses = querySnapshot.docs.map((doc) {
+  final data = doc.data();
+
+  log(data['isCompleted']?.toString() ?? 'false');
+
+  return CoursePreview(
+    isComplted: data['isCompleted'] ?? false,
+    id: doc.id,
+    courseTitle: data['title'] ?? '',
+    thumbnail: data['course_thumbnail'] ?? '',
+    averageRating: (data['average_rating'] ?? 0).toDouble(),
+    price: (data['price'] ?? 0).toString(),
+    categoryname: data['category_name'] ?? '',
+  );
+}).toList();
+
 
     log("Fetched ${savedCourses.length} saved courses.");
 

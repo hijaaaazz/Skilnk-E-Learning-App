@@ -6,7 +6,6 @@ import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cub
 import 'package:user_app/features/account/presentation/widgets/option_tile.dart';
 import 'package:user_app/presentation/account/widgets/app_bar.dart';
 import 'package:user_app/presentation/account/widgets/unathenticated.dart';
-import 'package:share_plus/share_plus.dart';
 
 class AccountPage extends StatelessWidget {
   const AccountPage({super.key});
@@ -98,10 +97,7 @@ class AccountPage extends StatelessWidget {
                 Icons.share_outlined,
                 onTap: () {
                   
-                 Share.share(
-      'Hey! Check out Skilnk – an eLearning app to boost your skills: https://skilnk.com',
-      subject: 'Learn with Skilnk!',
-    );
+                
                 },
               ),
             ],

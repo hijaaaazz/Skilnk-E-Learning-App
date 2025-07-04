@@ -20,6 +20,7 @@ import 'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 import 'package:user_app/features/home/domain/repos/repository.dart';
 import 'package:user_app/features/home/domain/usecases/get_reviews.dart';
+import 'package:user_app/features/payment/data/src/enrollment_firebase_service.dart';
 import 'package:user_app/service_locator.dart';
 
 class CoursesRepositoryImp extends CoursesRepository {
@@ -44,6 +45,7 @@ class CoursesRepositoryImp extends CoursesRepository {
       (l) => Left(l),
       (r) => Right(
         r.map((data) => CoursePreview(
+            isComplted: data['isCompleted'] ?? false,
               id: data['id'],
               courseTitle: data['title'],
               thumbnail: data['course_thumbnail'],
@@ -79,6 +81,7 @@ class CoursesRepositoryImp extends CoursesRepository {
               // Check if course is saved and enrolled (if userId is provided)
               bool isSaved = false;
               bool isEnrolled = false;
+              bool isCompleted = false;
               if (params.userId.isNotEmpty) {
                 // Check saved status
                 final savedResult = await serviceLocator<CoursesFirebaseService>()
@@ -91,6 +94,11 @@ class CoursesRepositoryImp extends CoursesRepository {
                     .checkIsEnrolled(params.courseId, params.userId);
                 isEnrolled =
                     enrolledResult.fold((error) => false, (enrolled) => enrolled);
+                    final completedResult = await serviceLocator<
+                        EnrollmentFirebaseService>()
+                    .isCompleted(params.courseId, params.userId);
+                isCompleted =
+                    completedResult.fold((error) => false, (enrolled) => enrolled);
               }
 
               // Create course model with correct saved and enrolled status
@@ -99,6 +107,7 @@ class CoursesRepositoryImp extends CoursesRepository {
                 courseData['id'],
                 isSaved,
                 isEnrolled,
+                isCompleted
               );
 
               final courseModelWithMentor =

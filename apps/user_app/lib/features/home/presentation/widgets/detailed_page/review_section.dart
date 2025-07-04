@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
 import 'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
-import 'package:user_app/features/home/presentation/widgets/course_review_card.dart';
 import 'package:user_app/features/home/presentation/widgets/course_review_section.dart';
 import 'package:user_app/features/home/presentation/widgets/detailed_page/addr_review_bottom_sheet.dart';
 import 'package:user_app/features/home/presentation/widgets/section_tile.dart';
@@ -76,45 +75,54 @@ Widget build(BuildContext context) {
                     ),
                 ],
               ),
-              if(reviews.isEmpty)Center(child: Text("No reviews yet."),),
-              const SizedBox(height: 8),
-              
+             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (reviews.isEmpty)
+                    const Center(child: Text("No reviews yet.")),
 
-              // Display reviews
-              ...reviews.take(displayedReviewCount).map(
-                (review) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: CourseReviewCard(
-                    name: review.reviewerName,
-                    rating: review.rating,
-                    review: review.review,
-                    likes: 0,
-                    timeAgo: _timeAgo(review.reviewedAt),
-                    imageUrl: review.reviewerImage,
+                  const SizedBox(height: 8),
+
+                  ...reviews.take(displayedReviewCount).map(
+                    (review) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: CourseReviewCard(
+                        name: review.reviewerName,
+                        rating: review.rating,
+                        review: review.review,
+                        likes: 0,
+                        timeAgo: _timeAgo(review.reviewedAt),
+                        imageUrl: review.reviewerImage,
+                      ),
+                    ),
                   ),
-                ),
-              ),
 
-              // Show "Show more" button or loading indicator
-              if (hasMoreReviews || displayedReviewCount < reviews.length)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: isLoadingMore
-                      ? const CircularProgressIndicator()
-                      : TextButton(
-                          onPressed: () {
-                            context.read<CourseCubit>().loadMoreReviews(context, course!);
-                          },
-                          child: const Text(
-                            'Show more.',
-                            style: TextStyle(
-                              color: Color(0xFFFF6636),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
+                  if (hasMoreReviews || displayedReviewCount < reviews.length)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: isLoadingMore
+                          ? const CircularProgressIndicator()
+                          : TextButton(
+                              onPressed: () {
+                                context.read<CourseCubit>().loadMoreReviews(context, course!);
+                              },
+                              child: const Text(
+                                'Show more.',
+                                style: TextStyle(
+                                  color: Color(0xFFFF6636),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                ),
+                    ),
+                ],
+              ),
+            ),
+
+              
             ],
           );
         }

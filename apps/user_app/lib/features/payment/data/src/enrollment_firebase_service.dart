@@ -22,6 +22,8 @@ abstract class EnrollmentFirebaseService {
     required String userId,
     required bool isCompleted,
   });
+
+  Future<Either<String,bool>> isCompleted(String userId, String courseId);
 }
 
 
@@ -132,5 +134,34 @@ Future<Either<String, bool>> updateEnrollStatus({
     return Left('Error updating enrollment: ${e.toString()}');
   }
 }
+
+  @override
+Future<Either<String, bool>> isCompleted(String userId, String courseId) async {
+  log('[isCompleted] Checking if course "$courseId" is completed for user: $userId');
+
+  try {
+    final querySnapshot = await _firestore
+        .collection('enrollments')
+        .where('userId', isEqualTo: userId)
+        .where('courseId', isEqualTo: courseId)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      log('[isCompleted] No enrollment found for this course and user.');
+      return const Right(false);
+    }
+
+    final data = querySnapshot.docs.first.data();
+    final isCompleted = data['isCompleted'] ?? false;
+
+    log('[isCompleted] Status: $isCompleted');
+    return Right(isCompleted as bool);
+  } catch (e) {
+    log('[isCompleted] Error: $e');
+    return Left('Failed to fetch course completion status');
+  }
+}
+
 
 }

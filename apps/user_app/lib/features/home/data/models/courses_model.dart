@@ -32,6 +32,7 @@ class CourseModel {
   final String? language;
   final MentorModel? mentor;
   final bool isEnrolled;
+  final bool isCompleted;
 
   CourseModel({
      this.mentor,
@@ -46,6 +47,7 @@ class CourseModel {
     required this.isActive,
     required this.enrolledCount,
     required this.isEnrolled,
+    required this.isCompleted,
      this.categoryName,
     required this.averageRating,
     required this.ratingBreakdown,
@@ -63,11 +65,11 @@ class CourseModel {
     this.language,
   });
 
-  factory CourseModel.fromJson(Map<String, dynamic> json, String docId,bool isSaved,bool isEnrolled) {
+  factory CourseModel.fromJson(Map<String, dynamic> json, String docId,bool isSaved,bool isEnrolled,bool isCompleted) {
     return CourseModel(
       
       id: docId,
-      
+      isCompleted: json['isCompleted']?? false,
       title: json['title'] ?? '',
       categoryId: json['category'] is Map ? json['category']['_id'] ?? '' : json['category'] ?? '',
       description: json['description'] ?? '',
@@ -215,9 +217,11 @@ class CourseModel {
     DateTime? updatedAt,
     String? language,
     MentorModel? mentor,
-    bool? isEnrolled
+    bool? isEnrolled,
+    bool? isCompleted
   }) {
     return CourseModel(
+      isCompleted: isCompleted?? this.isCompleted,
       mentor: mentor ?? this.mentor,
       id: id ?? this.id,
       title: title ?? this.title,
@@ -251,6 +255,7 @@ class CourseModel {
   CourseEntity toEntity() {
     return CourseEntity(
       id: id,
+      isCompleted: isCompleted,
       title: title,
       categoryId: categoryId,
       description: description,
@@ -282,6 +287,7 @@ class CourseModel {
 
 factory CourseModel.fromEntity(CourseEntity entity) {
   return CourseModel(
+    isCompleted: entity.isCompleted,
     id: entity.id,
     title: entity.title,
     categoryId: entity.categoryId,
@@ -319,6 +325,7 @@ CoursePreview toPreview(){
     courseTitle: title,
     price: price.toString(),
     thumbnail: courseThumbnail,
+    isComplted: isCompleted
     
     );
 }

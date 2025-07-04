@@ -7,15 +7,18 @@ class MentorModel {
   final String imageUrl;
   final String name;
   final List<String> courseIds;
+  final String bio;
+  final List<String>category;
 
   MentorModel({
     required this.id,
     required this.imageUrl,
     required this.name,
-    required this.courseIds
+    required this.courseIds,
+    required this.bio,
+    required this.category
   });
 
-  // From JSON (Map) to MentorModel object
   factory MentorModel.fromJson(Map<String, dynamic> json) {
   log('[MentorModel.fromJson] Raw JSON: $json');
 
@@ -26,14 +29,13 @@ class MentorModel {
     courseIds: (json['courses'] as List<dynamic>? ?? [])
         .map((e) => e.toString())
         .toList(),
-    
-    // Add these if your model has more fields:
-    // bio: json['bio'] as String? ?? '',
-    // email: json['email'] as String? ?? '',
-    // isVerified: json['is_verified'] as bool? ?? false,
-    // lastActive: json['lastActive'], // handle timestamp parsing if needed
+    bio: json['bio'] ?? '',
+    category: (json['categories'] is List)
+        ? (json['categories'] as List).map((e) => e.toString()).toList()
+        : [json['categories'].toString()],
   );
 }
+
 
 
 
@@ -52,8 +54,8 @@ class MentorModel {
       imageUrl: imageUrl,
       name: name,
       sessions: courseIds,
-      rating: 2,
-      specialization: "Good"
+      bio: bio,
+      specialization: category
 
     );
   }

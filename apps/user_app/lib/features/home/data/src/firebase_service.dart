@@ -26,6 +26,7 @@ abstract class CoursesFirebaseService {
 });
   Future<Either<String, List<ReviewModel>>> getReviews(GetReviewsParams params);
   Future<Either<String,ReviewModel>> addReview(ReviewModel review);
+  Future<Either<String,bool>> isCompleted(String userId, String courseId);
 }
 
 class CoursesFirebaseServicesImp extends CoursesFirebaseService {
@@ -216,6 +217,7 @@ Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> ids) a
           averageRating: (data['average_rating'] ?? 0).toDouble(),
           categoryname: data['category_name'] ?? '',
           price: data['price']?.toString() ?? 'Free',
+          isComplted: data['isCompelted'] ?? false
         );
 
         courses.add(course);
@@ -252,6 +254,7 @@ Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> ids) a
     final courses = snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return CoursePreview(
+        isComplted: data['isCompelted'] ?? false,
         id: doc.id,
         courseTitle: data['title'] ?? '',
         thumbnail: data['course_thumbnail'] ?? '',
@@ -324,6 +327,12 @@ Future<Either<String, ReviewModel>> addReview(ReviewModel review) async {
     return Left('Failed to add review: ${e.toString()}');
   }
 }
+
+  @override
+  Future<Either<String, bool>> isCompleted(String userId, String courseId) {
+    // TODO: implement isCompleted
+    throw UnimplementedError();
+  }
 
 }
 

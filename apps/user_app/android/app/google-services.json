@@ -44,12 +44,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:288935584617:android:a11caf74c4dfacd05993f8",
+        "mobilesdk_app_id": "1:288935584617:android:4f1b241192d4ce385993f8",
         "android_client_info": {
-          "package_name": "com.example.tutor_app"
+          "package_name": "in.skilnk.tutorapp"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "288935584617-mcjj33b4oet8i19l68b9gcso8e21dcua.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.skilnk.tutorapp",
+            "certificate_hash": "ce538ef302affce4f30d91df0689b240bacf64ce"
+          }
+        },
         {
           "client_id": "288935584617-bkfggihvm40s430cvm49qp4qhrb93270.apps.googleusercontent.com",
           "client_type": 3
@@ -80,12 +88,20 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:288935584617:android:a67991de5be286d45993f8",
+        "mobilesdk_app_id": "1:288935584617:android:7696f1f481d4891e5993f8",
         "android_client_info": {
-          "package_name": "com.example.user_app"
+          "package_name": "in.skilnk.user_app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "288935584617-a7g7c32r5umppth8f1nm4103guof4ts9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.skilnk.user_app",
+            "certificate_hash": "ce538ef302affce4f30d91df0689b240bacf64ce"
+          }
+        },
         {
           "client_id": "288935584617-bkfggihvm40s430cvm49qp4qhrb93270.apps.googleusercontent.com",
           "client_type": 3

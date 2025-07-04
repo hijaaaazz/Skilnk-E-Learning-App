@@ -170,38 +170,22 @@ class MentorsListWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    mentor.specialization,
+                                    mentor.specialization.join(', '),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       color: ExploreTheme.secondaryTextColor,
                                       fontSize: 14,
                                     ),
                                   ),
+
                                   const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.star, color: Colors.amber, size: 16),
-                                      Text(
-                                        ' ${mentor.rating}',
-                                        style: TextStyle(
-                                          color: ExploreTheme.secondaryTextColor,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      Text(
-                                        ' • ',
-                                        style: TextStyle(
-                                          color: ExploreTheme.secondaryTextColor,
-                                          fontSize: 14,
-                                        ),
-                      ),
-                                      Text(
-                                        '${mentor.sessions.length} sessions',
-                                        style: TextStyle(
-                                          color: ExploreTheme.secondaryTextColor,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
+                                  Text(
+                                    '${mentor.sessions.length} sessions',
+                                    style: TextStyle(
+                                      color: ExploreTheme.secondaryTextColor,
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -218,7 +202,7 @@ class MentorsListWidget extends StatelessWidget {
                                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                               ),
                               child: const Text(
-                                'Book',
+                                'Chat',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,

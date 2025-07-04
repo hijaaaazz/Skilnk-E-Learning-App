@@ -34,7 +34,6 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   void initState() {
     super.initState();
     _initializePage();
-    _scrollController.addListener(_updateAppBarState);
   }
 
   @override
@@ -68,14 +67,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     }
   }
 
-  void _updateAppBarState() {
-    if (_scrollController.hasClients && mounted) {
-      final expanded = _scrollController.offset <= MediaQuery.of(context).size.height * 0.3157;
-      if (_isAppBarExpanded != expanded) {
-        setState(() => _isAppBarExpanded = expanded);
-      }
-    }
-  }
+ 
 
   void _handleBookmarkTap(CourseEntity course) {
     final userId = context.read<AuthStatusCubit>().state.user?.userId;

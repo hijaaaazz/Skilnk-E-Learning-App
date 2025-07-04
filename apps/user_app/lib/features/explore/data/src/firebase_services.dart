@@ -136,6 +136,7 @@ class ExploreFirebaseServicesImp extends ExploreFirebaseService {
           final courses = snapshot.docs.map((doc) {
             final data = doc.data();
             return CoursePreview(
+              isComplted: data['isCompleted']?? false,
               id: doc.id,
               thumbnail: data['course_thumbnail'],
               courseTitle: data['title'],

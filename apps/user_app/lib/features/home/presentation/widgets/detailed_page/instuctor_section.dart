@@ -15,7 +15,10 @@ class InstructorSection extends StatelessWidget {
       children: [
         const SectionTitle(title: 'Instructor'),
         const SizedBox(height: 16),
-        InstructorCard(mentor: mentor),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: InstructorCard(mentor: mentor),
+        ),
         const SizedBox(height: 12),
       ],
     );

@@ -5,6 +5,7 @@ import 'package:user_app/features/course_list/data/models/load_course_params.dar
 import 'package:user_app/features/course_list/domain/usecase/get_list.dart';
 import 'package:user_app/features/course_list/presentation/bloc/course_list_event.dart';
 import 'package:user_app/features/course_list/presentation/bloc/course_list_state.dart';
+
 import 'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'package:user_app/service_locator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -5,6 +5,7 @@ class CoursePreview{
   final String courseTitle;
   final String price;
   final double averageRating;
+  final bool isComplted ;
 
   CoursePreview({
     required this.averageRating,
@@ -12,6 +13,7 @@ class CoursePreview{
     required this.courseTitle,
     required this.price,
     required this.id,
+    required this.isComplted,
     required this.thumbnail
   });
 

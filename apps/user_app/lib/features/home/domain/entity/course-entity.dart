@@ -5,6 +5,7 @@ import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
 
 class CourseEntity {
   final String id;
+  final bool isCompleted;
   final String title;
   final String categoryId;
   final String description;
@@ -33,6 +34,7 @@ class CourseEntity {
   final bool isEnrolled;
 
   const CourseEntity({
+    required this.isCompleted,
     required this.id,
     required this.title,
     required this.categoryId,
@@ -90,8 +92,10 @@ CourseEntity copyWith({
   DateTime? updatedAt,
   MentorEntity? mentor,
   bool? isEnrolled,
+  bool? isCompleted
 }) {
   return CourseEntity(
+    isCompleted: isCompleted?? this.isCompleted,
     id: id ?? this.id,
     title: title ?? this.title,
     categoryId: categoryId ?? this.categoryId,
@@ -127,6 +131,7 @@ CourseEntity copyWith({
 extension CourseEntityExtension on CourseEntity {
   CoursePreview toPreview() {
     return CoursePreview(
+      isComplted: isCompleted,
       id: id,
       courseTitle: title,
       categoryname: categoryName,

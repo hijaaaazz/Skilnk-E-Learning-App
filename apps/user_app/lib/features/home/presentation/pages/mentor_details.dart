@@ -9,12 +9,15 @@ import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_bloc.dart';
 import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_event.dart';
 import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_state.dart';
+import 'package:user_app/features/home/presentation/widgets/mentor_page/bio_section.dart';
+import 'package:user_app/features/home/presentation/widgets/mentor_page/courses_section.dart';
+import 'package:user_app/features/home/presentation/widgets/mentor_page/mentor_actions.dart';
 import 'package:user_app/features/home/presentation/widgets/mentor_page/skelton.dart';
+import 'package:user_app/presentation/account/widgets/app_bar.dart';
 
-// Main Widget
 class MentorDetailsPage extends StatelessWidget {
   final MentorEntity mentor;
-  
+
   const MentorDetailsPage({
     super.key,
     required this.mentor,
@@ -23,35 +26,38 @@ class MentorDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MentorDetailsBloc()..add(LoadMentorDetails(mentor))..add(LoadMentorCourses(mentor.sessions,mentor)),
+      create: (context) => MentorDetailsBloc()
+        ..add(LoadMentorDetails(mentor))
+        ..add(LoadMentorCourses(mentor.sessions, mentor)),
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+        backgroundColor: const Color(0xFFF8F9FA),
         body: BlocConsumer<MentorDetailsBloc, MentorDetailsState>(
           listener: (context, state) {
             if (state is ChatInitiated) {
-              // Navigate to chat screen or show dialog
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Chat with ${mentor.name} initiated')),
+                SnackBar(
+                  content: Text('Chat with ${mentor.name} initiated'),
+                  backgroundColor: const Color(0xFFFF6B35),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               );
             }
           },
           builder: (context, state) {
             if (state is MentorDetailsLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFFF6B35),
+                  strokeWidth: 3,
+                ),
+              );
             }
-            
             if (state is MentorDetailsLoaded) {
               return _buildContent(context, state);
             }
-            
             return const SizedBox.shrink();
           },
         ),
@@ -60,242 +66,209 @@ class MentorDetailsPage extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context, MentorDetailsLoaded state) {
-    return SingleChildScrollView(
-      physics: NeverScrollableScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildProfileSection(context, state),
-            
-            if (state.mentor.specialization.isNotEmpty)
-              _buildBioSection(context, state.mentor.specialization),
-        
-            if (state is MentorsCoursesLoadedState)
-              _buildCoursesSection(context, state.courses,mentor.sessions,mentor.name),
-        
-             if (state is MentorsCoursesLoadingState)
-             buildCoursesSkeletonSection(context)
-          ],
+    return CustomScrollView(
+      slivers: [
+        SkilnkAppBar(title: ""),
+       
+        // Content
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              _buildModernProfileSection(context, state),
+              if (state.mentor.bio.isNotEmpty)
+                BioSection(bio: state.mentor.bio),
+              if (state is MentorsCoursesLoadedState)
+                CoursesSection(
+                  courses: state.courses,
+                  sessionIds: mentor.sessions,
+                  mentorName: mentor.name,
+                ),
+              if (state is MentorsCoursesLoadingState)
+                buildCoursesSkeletonSection(context),
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
-      )
-
+      ],
     );
   }
 
-  Widget _buildProfileSection(BuildContext context, MentorDetailsLoaded state) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+  Widget _buildModernProfileSection(BuildContext context, MentorDetailsLoaded state) {
+    return Container(
+      transform: Matrix4.translationValues(0, -60, 0),
       child: Column(
         children: [
-          // Profile Image
+          // Profile Card
           Container(
-            width: 100,
-            height: 100,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            child: state.mentor.imageUrl.isNotEmpty
-                ? ClipOval(
-                    child: Image.network(
-                      state.mentor.imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : null,
-          ),
-          const SizedBox(height: 16),
-          
-          // Name
-          Text(
-            state.mentor.name,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF202244),
-            ),
-          ),
-          const SizedBox(height: 4),
-          
-          // Specialization
-          Text(
-            state.mentor.specialization,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF545454),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 20),
-          
-          // Stats Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildStatItem(
-                context,
-                state.mentor.sessions.length.toString(),
-                'Courses',
-              ),
-              Container(
-                height: 40,
-                width: 1,
-                color: Colors.grey.withOpacity(0.3),
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-              ),
-              // _buildStatItem(
-              //   context,
-              //   '15800',
-              //   'Students',
-              // ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          
-          // Buttons
-          Row(
-            children: [
-              // Follow Button
-             
-              
-              // Message Button
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    context.pushNamed(AppRouteConstants.chatPaage,
-                extra: mentor
-                );
-                  },
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF6636),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFF6636).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+            child: Column(
+              children: [
+                // Profile Image
+                Stack(
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 120,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
                         ),
-                      ],
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFF6B35).withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: state.mentor.imageUrl.isNotEmpty
+                          ? ClipOval(
+                              child: Image.network(
+                                state.mentor.imageUrl,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                                state.mentor.name.isNotEmpty
+                                    ? state.mentor.name[0].toUpperCase()
+                                    : 'M',
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
                     ),
-                    child: const Center(
-                      child: Text(
-                        'Message',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF00D4AA), Color(0xFF00E5BB)],
+                          ),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
                         ),
                       ),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                // Name
+                Text(
+                  state.mentor.name,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1A1A1A),
+                    letterSpacing: -0.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                // Specialization
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF6B35).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    state.mentor.specialization.join(' • '),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFFFF6B35),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 32),
+                // Stats
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildModernStatItem(
+                        state.mentor.sessions.length.toString(),
+                        'Courses',
+                        Icons.school_rounded,
+                      ),
+                     
+                      
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                // Action Button
+                MentorActions(mentor: state.mentor),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String value, String label) {
+  Widget _buildModernStatItem(String value, String label, IconData icon) {
     return Column(
       children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+        const SizedBox(height: 8),
         Text(
           value,
           style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF202244),
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1A1A1A),
           ),
         ),
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Color(0xFF545454),
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
             fontWeight: FontWeight.w500,
           ),
         ),
       ],
     );
   }
-
-  Widget _buildBioSection(BuildContext context, String bio) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 24, 20, 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F9F9),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.grey.withOpacity(0.2),
-        ),
-      ),
-      child: Text(
-        '"$bio"',
-        textAlign: TextAlign.center,
-        style: const TextStyle(
-          fontSize: 14,
-          fontStyle: FontStyle.italic,
-          color: Color(0xFF545454),
-          height: 1.5,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCoursesSection(BuildContext context, List<CoursePreview> courses, List<String> ids,String title) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Tab Header
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
-          child: GestureDetector(
-            onTap: (){
-              context.pushNamed(AppRouteConstants.courselistPaage, extra:  CourseListPageArgs(courseIds: ids, title: "$title's Courses"));
-            },
-            child: Row(
-              children: [
-                const Text(
-                  'Courses',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF202244),
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  'View All',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.blue[700],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        
-        // Course List
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: courses.length,
-          itemBuilder: (context, index) {
-            final course = courses[index];
-            return CourseTile(course: course);
-          },
-        ),
-      ],
-    );
-  }
-
 }
