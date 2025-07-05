@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
 class InstructorCard extends StatelessWidget {
   final MentorEntity mentor;

@@ -1,11 +1,11 @@
+import 'package:admin_app/features/courses/presentation/bloc/bloc/courses_bloc.dart';
 import 'package:admin_app/features/courses/presentation/pages/categories.dart';
 import 'package:admin_app/features/courses/presentation/pages/courses.dart';
 import 'package:admin_app/features/dashboard/presentation/pages/dashboard.dart';
 import 'package:admin_app/features/instructors/presentation/pages/instructors.dart';
-import 'package:admin_app/features/orders/presentation/pages/orders.dart';
-import 'package:admin_app/features/profile/presentation/pages/profile.dart';
 import 'package:admin_app/features/users/presentation/pages/users.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:admin_app/core/routes/app_route_constants.dart';
@@ -54,7 +54,10 @@ class AppRoutes {
               GoRoute(
                 path: "/courses",
                 name: AppRouteConstants.courses,
-                builder: (context, state) => const CoursesPage(),
+                builder: (context, state) => BlocProvider(
+                  create: (context) => CoursesBloc(),
+                  child: const CoursesPage(),
+                ),
                 routes: [
                   GoRoute(
                     path: "categories",

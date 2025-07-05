@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/explore/data/models/search_args.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
-import 'package:user_app/features/explore/presentation/theme.dart';
+import  'package:user_app/features/explore/data/models/search_args.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_event.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_state.dart';
+import  'package:user_app/features/explore/presentation/theme.dart';
 
 class CoursesFiltersWidget extends StatefulWidget {
   const CoursesFiltersWidget({super.key});

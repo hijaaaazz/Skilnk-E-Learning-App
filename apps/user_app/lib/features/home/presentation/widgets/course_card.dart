@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:user_app/common/widgets/app_text.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/common/widgets/app_text.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 
 class CourseCard extends StatelessWidget {
   final CoursePreview course;

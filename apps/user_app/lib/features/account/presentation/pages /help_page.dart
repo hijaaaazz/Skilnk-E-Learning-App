@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:user_app/features/account/presentation/pages%20/account.dart';
-import 'package:user_app/presentation/account/widgets/app_bar.dart';
+import  'package:user_app/features/account/presentation/pages%20/account.dart';
+import  'package:user_app/presentation/account/widgets/app_bar.dart';
 
 class HelpSupportPage extends StatefulWidget {
   const HelpSupportPage({super.key});

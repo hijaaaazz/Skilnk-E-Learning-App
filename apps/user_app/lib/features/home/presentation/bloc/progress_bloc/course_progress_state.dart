@@ -1,6 +1,6 @@
 
 // course_progress_state.dart
-import 'package:user_app/features/home/data/models/course_progress.dart';
+import  'package:user_app/features/home/data/models/course_progress.dart';
 
 abstract class CourseProgressState {
   const CourseProgressState();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/presentation/widgets/about_tab.dart';
-import 'package:user_app/features/home/presentation/widgets/detailed_page/curicculum_tab.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/presentation/widgets/about_tab.dart';
+import  'package:user_app/features/home/presentation/widgets/detailed_page/curicculum_tab.dart';
 
 class TabContent extends StatelessWidget {
   final CourseEntity course;

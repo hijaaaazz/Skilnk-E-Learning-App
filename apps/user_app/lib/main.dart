@@ -7,13 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:user_app/core/configs/theme/theme.dart';
-import 'package:user_app/core/routes/app_routes_config.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
-import 'package:user_app/features/library/presentation/bloc/library_bloc.dart';
-import 'package:user_app/firebase_options.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/core/configs/theme/theme.dart';
+import  'package:user_app/core/routes/app_routes_config.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
+import  'package:user_app/features/library/presentation/bloc/library_bloc.dart';
+import  'package:user_app/firebase_options.dart';
+import  'package:user_app/service_locator.dart';
 
 Future<void> main() async {
 
@@ -55,6 +55,7 @@ class Skilnk extends StatelessWidget {
 
       ],
       child: MaterialApp.router(
+        title: "Skilnk",
         themeMode: ThemeMode.system,
 
         theme: MyThemes.lightTheme,

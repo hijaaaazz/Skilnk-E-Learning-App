@@ -2,13 +2,13 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/chat/data/models/chat_model.dart';
-import 'package:user_app/features/chat/data/models/messgae_class.dart';
-import 'package:user_app/features/home/data/models/mentor_mode.dart';
+import  'package:user_app/features/chat/data/models/chat_model.dart';
+import  'package:user_app/features/chat/data/models/messgae_class.dart';
+import  'package:user_app/features/home/data/models/mentor_mode.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/chat/data/models/chat_model.dart';
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/features/chat/data/models/chat_model.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import 'dart:developer';
 
 abstract class ChatFirebaseService {

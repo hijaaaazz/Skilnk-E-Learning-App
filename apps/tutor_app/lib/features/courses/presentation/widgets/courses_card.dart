@@ -96,35 +96,35 @@ class CourseCard extends StatelessWidget {
           ),
         ),
       
-      // if (!course.isActive)
-      //   Positioned.fill(
-      //     child: ClipRRect(
-      //       borderRadius: const BorderRadius.only(
-      //         topLeft: Radius.circular(16),
-      //         topRight: Radius.circular(16),
-      //       ),
-      //       child: Container(
-      //         color: Colors.black.withOpacity(0.7),
-      //         child: Center(
-      //           child: Container(
-      //             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      //             decoration: BoxDecoration(
-      //               color: Colors.white,
-      //               borderRadius: const BorderRadius.all(Radius.circular(8)),
-      //             ),
-      //             child: const Text(
-      //               'INACTIVE',
-      //               style: TextStyle(
-      //                 color: Colors.black87,
-      //                 fontWeight: FontWeight.w600,
-      //                 fontSize: 12,
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //     ),
-      //   ),
+      if (!course.isActive)
+        Positioned.fill(
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            child: Container(
+              color: Colors.black.withOpacity(0.7),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  ),
+                  child: const Text(
+                    'INACTIVE',
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
     ],
   );
 }

@@ -3,14 +3,14 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:user_app/features/account/data/models/activity_model.dart';
-import 'package:user_app/features/account/data/models/update_dp_params.dart';
-import 'package:user_app/features/account/data/models/update_name_params.dart';
-import 'package:user_app/features/account/data/service/profile_cloudinary_service.dart';
-import 'package:user_app/features/account/data/service/profile_firebase_service.dart';
+import  'package:user_app/features/account/data/models/activity_model.dart';
+import  'package:user_app/features/account/data/models/update_dp_params.dart';
+import  'package:user_app/features/account/data/models/update_name_params.dart';
+import  'package:user_app/features/account/data/service/profile_cloudinary_service.dart';
+import  'package:user_app/features/account/data/service/profile_firebase_service.dart';
 
-import 'package:user_app/features/account/domain/repo/profile_repo.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/account/domain/repo/profile_repo.dart';
+import  'package:user_app/service_locator.dart';
 
 class ProfileRepoImp extends ProfileRepository {
   final cloudinaryService = serviceLocator<ProfileCloudinaryService>();

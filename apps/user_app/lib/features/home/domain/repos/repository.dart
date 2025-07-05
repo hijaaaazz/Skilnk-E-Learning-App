@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/course_list/data/models/load_course_params.dart';
-import 'package:user_app/features/home/data/models/banner_model.dart';
-import 'package:user_app/features/home/data/models/course_progress.dart';
-import 'package:user_app/features/home/data/models/get_progress_params.dart';
-import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
-import 'package:user_app/features/home/data/models/review_model.dart';
-import 'package:user_app/features/home/data/models/save_course_params.dart';
-import 'package:user_app/features/home/data/models/update_progress_params.dart';
-import 'package:user_app/features/home/domain/entity/category_entity.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
-import 'package:user_app/features/home/domain/usecases/get_reviews.dart';
+import  'package:user_app/features/course_list/data/models/load_course_params.dart';
+import  'package:user_app/features/home/data/models/banner_model.dart';
+import  'package:user_app/features/home/data/models/course_progress.dart';
+import  'package:user_app/features/home/data/models/get_progress_params.dart';
+import  'package:user_app/features/home/data/models/getcourse_details_params.dart';
+import  'package:user_app/features/home/data/models/review_model.dart';
+import  'package:user_app/features/home/data/models/save_course_params.dart';
+import  'package:user_app/features/home/data/models/update_progress_params.dart';
+import  'package:user_app/features/home/domain/entity/category_entity.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/home/domain/usecases/get_reviews.dart';
 
 abstract class CoursesRepository {
   Future<Either<String, List<CategoryEntity>>> getGategories();

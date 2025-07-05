@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/presentation/account/widgets/auth_input_fieds.dart';
-import 'package:user_app/presentation/account/widgets/authentication_form.dart';
+import  'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
+import  'package:user_app/presentation/account/widgets/auth_input_fieds.dart';
+import  'package:user_app/presentation/account/widgets/authentication_form.dart';
 
 class SignInForm extends StatelessWidget {
   const SignInForm({super.key});

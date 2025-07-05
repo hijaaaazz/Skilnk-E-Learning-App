@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/auth_input_fieds.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/auth_input_fieds.dart';
 
 class InfoSubmitionPage extends StatefulWidget {
   const InfoSubmitionPage({super.key});

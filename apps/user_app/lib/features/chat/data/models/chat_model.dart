@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
 class TutorChat extends Equatable {
   final String chatId;

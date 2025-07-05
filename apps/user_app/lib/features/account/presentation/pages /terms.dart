@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:user_app/presentation/account/widgets/app_bar.dart';
+import  'package:user_app/presentation/account/widgets/app_bar.dart';
 
 // Model for document items
 class DocumentItem {

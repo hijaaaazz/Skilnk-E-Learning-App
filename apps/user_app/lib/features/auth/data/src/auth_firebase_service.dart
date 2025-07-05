@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:user_app/features/auth/data/models/user_model.dart';
+import  'package:user_app/features/auth/data/models/user_model.dart';
 
 abstract class AuthFirebaseService {
   Future<Either<String, UserCredential>> createUserWithEmailPassword(String email, String password);
@@ -41,20 +41,32 @@ class AuthFirebaseServiceImp extends AuthFirebaseService {
     }
   }
 
-  @override
-  Future<Either<String, UserCredential>> loginWithEmailPassword(String email, String password) async {
-    try {
-      final credential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return Right(credential);
-    } on FirebaseAuthException catch (e) {
-      return Left(e.message ?? "Authentication error");
-    } catch (e) {
-      return Left("Failed to login");
+ @override
+Future<Either<String, UserCredential>> loginWithEmailPassword(String email, String password) async {
+  try {
+    final credential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    // ✅ Block check after sign-in
+    final userId = credential.user?.uid;
+    final userDoc = await _users.doc(userId).get();
+    final data = userDoc.data() as Map<String, dynamic>?;
+
+    if (data != null && data['isBlocked'] == true) {
+      await _auth.signOut(); // Log out the user immediately
+      return Left('Your account has been blocked by the admin.');
     }
+
+    return Right(credential);
+  } on FirebaseAuthException catch (e) {
+    return Left(e.message ?? "Authentication error");
+  } catch (e) {
+    return Left("Failed to login");
   }
+}
+
 
   @override
   Future<Either<String, User?>> signInWithGoogle() async {
@@ -69,6 +81,14 @@ class AuthFirebaseServiceImp extends AuthFirebaseService {
       );
 
       final authResult = await _auth.signInWithCredential(credential);
+      final userDoc = await _users.doc(authResult.user?.uid).get();
+      final data = userDoc.data() as Map<String, dynamic>?;
+
+      if (data != null && data['isBlocked'] == true) {
+        await _auth.signOut();
+        return Left('Your account has been blocked by the admin.');
+      }
+
       return Right(authResult.user);
     } catch (e) {
       return Left("Google sign in failed: $e");
@@ -99,15 +119,27 @@ class AuthFirebaseServiceImp extends AuthFirebaseService {
     }
   }
 
-  @override
-  Future<Either<String, Map<String, dynamic>?>> getUserData(String uid) async {
-    try {
-      final doc = await _users.doc(uid).get();
-      return Right(doc.exists ? doc.data() as Map<String, dynamic> : null);
-    } catch (e) {
-      return Left('Failed to fetch user data');
+ @override
+Future<Either<String, Map<String, dynamic>?>> getUserData(String uid) async {
+  try {
+    final doc = await _users.doc(uid).get();
+
+    if (!doc.exists) {
+      return Right(null); // User not found
     }
+
+    final data = doc.data() as Map<String, dynamic>;
+
+    if (data['isblocked'] == true) {
+      return Left('blocked'); // Send a signal to handle in UI layer
+    }
+
+    return Right(data);
+  } catch (e) {
+    return Left('Failed to fetch user data');
   }
+}
+
 
   @override
   Future<Either<String, String>> sendEmailVerification() async {

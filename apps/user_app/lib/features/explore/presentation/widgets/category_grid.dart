@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
-import 'package:user_app/features/home/domain/entity/category_entity.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_event.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_state.dart';
+import  'package:user_app/features/home/domain/entity/category_entity.dart';
 
 class CategoriesListWidget extends StatelessWidget {
   final List<CategoryEntity> categories;

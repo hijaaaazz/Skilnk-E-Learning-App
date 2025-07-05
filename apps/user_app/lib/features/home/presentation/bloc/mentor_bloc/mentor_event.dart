@@ -1,6 +1,6 @@
 
 // BLoC Events
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
 abstract class MentorDetailsEvent {}
 

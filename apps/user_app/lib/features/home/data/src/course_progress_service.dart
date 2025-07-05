@@ -4,10 +4,10 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/home/data/models/course_progress.dart';
-import 'package:user_app/features/home/data/models/update_progress_params.dart';
-import 'package:user_app/features/payment/data/src/enrollment_firebase_service.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/home/data/models/course_progress.dart';
+import  'package:user_app/features/home/data/models/update_progress_params.dart';
+import  'package:user_app/features/payment/data/src/enrollment_firebase_service.dart';
+import  'package:user_app/service_locator.dart';
 
 abstract class CourseProgressService {
   Future<void> createCourseProgress({

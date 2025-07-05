@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
-import 'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
-import 'package:user_app/features/account/presentation/widgets/bottom_sheet.dart';
-import 'package:user_app/features/auth/domain/entity/user.dart';
+import  'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
+import  'package:user_app/features/account/presentation/widgets/bottom_sheet.dart';
+import  'package:user_app/features/auth/domain/entity/user.dart';
 import 'dart:developer' as developer;
 
 class ProfileHeader extends StatefulWidget {

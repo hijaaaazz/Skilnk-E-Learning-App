@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/home/data/models/banner_model.dart';
+import  'package:user_app/features/home/data/models/banner_model.dart';
 
 abstract class BannerFirebaseService {
   Future<Either<String, List<BannerModel>>> getLatestBanners();

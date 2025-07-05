@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/payment/data/models/add_purchase_params.dart';
-import 'package:user_app/features/payment/presentation/bloc/bloc/enroll_bloc.dart';
-import 'package:user_app/features/payment/presentation/bloc/bloc/enroll_event.dart';
-import 'package:user_app/features/payment/presentation/bloc/bloc/enroll_state.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/payment/data/models/add_purchase_params.dart';
+import  'package:user_app/features/payment/presentation/bloc/bloc/enroll_bloc.dart';
+import  'package:user_app/features/payment/presentation/bloc/bloc/enroll_event.dart';
+import  'package:user_app/features/payment/presentation/bloc/bloc/enroll_state.dart';
 
 class EnrollmentBottomSheet extends StatelessWidget {
   final CourseEntity course;

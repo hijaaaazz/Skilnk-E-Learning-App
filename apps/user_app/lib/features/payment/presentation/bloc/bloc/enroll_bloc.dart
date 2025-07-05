@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/payment/data/models/add_purchase_params.dart';
-import 'package:user_app/features/payment/domain/usecase/enroll_course.dart';
-import 'package:user_app/features/payment/presentation/bloc/bloc/enroll_event.dart';
-import 'package:user_app/features/payment/presentation/bloc/bloc/enroll_state.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/payment/data/models/add_purchase_params.dart';
+import  'package:user_app/features/payment/domain/usecase/enroll_course.dart';
+import  'package:user_app/features/payment/presentation/bloc/bloc/enroll_event.dart';
+import  'package:user_app/features/payment/presentation/bloc/bloc/enroll_state.dart';
+import  'package:user_app/service_locator.dart';
 
 class EnrollmentBloc extends Bloc<EnrollmentEvent, EnrollmentState> {
   late Razorpay _razorpay;

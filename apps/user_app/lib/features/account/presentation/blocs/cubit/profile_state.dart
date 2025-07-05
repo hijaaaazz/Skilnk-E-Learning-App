@@ -1,4 +1,4 @@
-import 'package:user_app/features/account/data/models/activity_model.dart';
+import  'package:user_app/features/account/data/models/activity_model.dart';
 
 abstract class ProfileState {
   final String? currentName;

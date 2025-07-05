@@ -1,8 +1,8 @@
 
 // lib/features/chat/presentation/bloc/chat_bloc/chat_event.dart
 import 'package:equatable/equatable.dart';
-import 'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
-import 'package:user_app/features/chat/data/models/messgae_class.dart';
+import  'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
+import  'package:user_app/features/chat/data/models/messgae_class.dart';
 
 abstract class ChatEvent extends Equatable {
   @override

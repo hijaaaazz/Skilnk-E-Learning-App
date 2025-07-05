@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chat_types;
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
-import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
-import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
-import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
-import 'package:user_app/features/chat/presentation/widgets/custom_message.dart';
-import 'package:user_app/features/chat/presentation/widgets/mentor_avatar.dart';
-import 'package:user_app/features/chat/presentation/widgets/typing_indicator.dart';
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
+import  'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
+import  'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
+import  'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
+import  'package:user_app/features/chat/presentation/widgets/custom_message.dart';
+import  'package:user_app/features/chat/presentation/widgets/mentor_avatar.dart';
+import  'package:user_app/features/chat/presentation/widgets/typing_indicator.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
 class ChatPage extends StatelessWidget {
   final MentorEntity mentor;

@@ -1,20 +1,32 @@
 part of 'user_management_cubit.dart';
 
 @immutable
-sealed class UserManagementState {}
-
-
-final class UsersLoading extends UserManagementState {}
-
-
-final class UserLoadingSucces extends UserManagementState {
+abstract class UserManagementState {
   final List<UserEntity> users;
-
-  UserLoadingSucces({required this.users});
   
+  const UserManagementState({this.users = const []});
 }
 
-final class UserLoadingError extends UserManagementState {}
+class UsersLoading extends UserManagementState {
+  const UsersLoading({super.users});
+}
 
+class UserLoadingSucces extends UserManagementState {
+  const UserLoadingSucces({required super.users});
+}
 
+class UserLoadingError extends UserManagementState {
+  final String? error;
+  
+  const UserLoadingError({super.users, this.error});
+}
 
+class UserUpdationSuccess extends UserManagementState {
+  const UserUpdationSuccess({required super.users});
+}
+
+class UserUpdationError extends UserManagementState {
+  final String? error;
+  
+  const UserUpdationError({required super.users, this.error});
+}

@@ -1,16 +1,16 @@
 // lib/features/explore/presentation/bloc/explore_bloc.dart
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/explore/data/models/search_args.dart';
-import 'package:user_app/features/explore/data/models/search_params_model.dart';
-import 'package:user_app/features/explore/domain/entities.dart/search-results.dart';
-import 'package:user_app/features/explore/domain/usecases/get_search_results.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
-import 'package:user_app/features/home/domain/entity/category_entity.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/explore/data/models/search_args.dart';
+import  'package:user_app/features/explore/data/models/search_params_model.dart';
+import  'package:user_app/features/explore/domain/entities.dart/search-results.dart';
+import  'package:user_app/features/explore/domain/usecases/get_search_results.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_event.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_state.dart';
+import  'package:user_app/features/home/domain/entity/category_entity.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/service_locator.dart';
 
 class ExploreBloc extends Bloc<ExploreEvent, ExploreState> {
   final GetSearchResultsUseCase _getSearchResultsUseCase = serviceLocator<GetSearchResultsUseCase>();

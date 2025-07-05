@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 
 abstract class LibraryFirebaseService{
   Future<Either<String ,List<String>>>getSavedCoursesIds(String userId);

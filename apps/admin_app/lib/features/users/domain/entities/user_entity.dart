@@ -1,16 +1,43 @@
-import 'dart:convert';
-
 class UserEntity {
-  final String userid;
+  final String userId;
   final String name;
   final String email;
-  final String password;
+  final String? image;
+  final bool emailVerified;
+  final bool isBlocked;
+  final DateTime? lastLogin;
+  final DateTime createdAt;
 
   UserEntity({
-    this.userid = "1122",
+    required this.userId,
     required this.name,
     required this.email,
-    required this.password,
+    this.image,
+    required this.emailVerified,
+    required this.isBlocked,
+    this.lastLogin,
+    required this.createdAt,
   });
 
+  UserEntity copyWith({
+    String? userId,
+    String? name,
+    String? email,
+    String? image,
+    bool? emailVerified,
+    bool? isBlocked,
+    DateTime? lastLogin,
+    DateTime? createdAt,
+  }) {
+    return UserEntity(
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      image: image ?? this.image,
+      emailVerified: emailVerified ?? this.emailVerified,
+      isBlocked: isBlocked ?? this.isBlocked,
+      lastLogin: lastLogin ?? this.lastLogin,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

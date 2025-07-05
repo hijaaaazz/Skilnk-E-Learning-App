@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import  'package:user_app/features/home/data/models/lecture_progress_model.dart';
 
 class LectureCard extends StatelessWidget {
   final LectureProgressModel lecture;

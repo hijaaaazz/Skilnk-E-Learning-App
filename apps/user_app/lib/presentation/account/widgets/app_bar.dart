@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/explore/presentation/theme.dart';
+import  'package:user_app/features/explore/presentation/theme.dart';
 
 class SkilnkAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
-import 'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
-import 'package:user_app/features/home/presentation/widgets/course_review_section.dart';
-import 'package:user_app/features/home/presentation/widgets/detailed_page/addr_review_bottom_sheet.dart';
-import 'package:user_app/features/home/presentation/widgets/section_tile.dart';
+import  'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
+import  'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
+import  'package:user_app/features/home/presentation/widgets/course_review_section.dart';
+import  'package:user_app/features/home/presentation/widgets/detailed_page/addr_review_bottom_sheet.dart';
+import  'package:user_app/features/home/presentation/widgets/section_tile.dart';
 
 class ReviewsSection extends StatelessWidget {
   const ReviewsSection({super.key});

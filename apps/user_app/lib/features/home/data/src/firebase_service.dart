@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/course_list/data/models/load_course_params.dart';
-import 'package:user_app/features/home/data/models/mentor_mode.dart';
-import 'package:user_app/features/home/data/models/review_model.dart';
-import 'package:user_app/features/home/data/models/save_course_params.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/course_list/data/models/load_course_params.dart';
+import  'package:user_app/features/home/data/models/mentor_mode.dart';
+import  'package:user_app/features/home/data/models/review_model.dart';
+import  'package:user_app/features/home/data/models/save_course_params.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'dart:developer';
 
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
-import 'package:user_app/features/home/domain/usecases/get_reviews.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/features/home/domain/usecases/get_reviews.dart';
 
 abstract class CoursesFirebaseService {
   Future<Either<String, List<Map<String, dynamic>>>> getCategories();
@@ -177,17 +177,23 @@ Future<Either<String, List<MentorEntity>>> getMentors() async {
   try {
     log("getMentors call started");
 
-    final querySnapshot = await _firestore.collection('mentors').limit(3).get();
+    final querySnapshot = await _firestore
+        .collection('mentors')
+        .where('is_verified', isEqualTo: true) // ✅ Only verified mentors
+        .limit(3)
+        .get();
 
     final docs = querySnapshot.docs;
 
     if (docs.isEmpty) {
-      return Left("No mentors found");
+      return Left("No verified mentors found");
     }
 
     final mentors = docs
         .map((doc) => MentorModel.fromJson(doc.data()).toEntity())
         .toList();
+
+    log("Parsed verified mentors: ${mentors.map((m) => m.name).toList()}");
 
     return Right(mentors);
   } catch (e) {
@@ -195,6 +201,7 @@ Future<Either<String, List<MentorEntity>>> getMentors() async {
     return Left("Error fetching mentors: $e");
   }
 }
+
 
   @override
 Future<Either<String, List<CoursePreview>>> getMentorCourses(List<String> ids) async {

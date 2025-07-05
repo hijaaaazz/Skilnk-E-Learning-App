@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
-import 'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
-import 'package:user_app/features/account/presentation/widgets/profile_header.dart';
-import 'package:user_app/features/account/presentation/widgets/profile_infosection.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
+import  'package:user_app/features/account/presentation/widgets/profile_header.dart';
+import  'package:user_app/features/account/presentation/widgets/profile_infosection.dart';
 import 'dart:developer' as developer;
 
 class ProfilePage extends StatelessWidget {

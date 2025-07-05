@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
-import 'package:user_app/features/home/presentation/widgets/instructor_card.dart';
-import 'package:user_app/features/home/presentation/widgets/section_tile.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/features/home/presentation/widgets/instructor_card.dart';
+import  'package:user_app/features/home/presentation/widgets/section_tile.dart';
 
 class InstructorSection extends StatelessWidget {
   final MentorEntity mentor;

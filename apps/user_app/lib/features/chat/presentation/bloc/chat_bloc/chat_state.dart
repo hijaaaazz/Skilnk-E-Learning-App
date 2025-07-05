@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chat_types;
-import 'package:user_app/features/chat/data/models/messgae_class.dart';
+import  'package:user_app/features/chat/data/models/messgae_class.dart';
 
 abstract class ChatScreenState extends Equatable {
   @override

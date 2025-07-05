@@ -1,16 +1,16 @@
 
 // course_progress_bloc.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/home/data/models/course_progress.dart';
-import 'package:user_app/features/home/data/models/get_progress_params.dart';
-import 'package:user_app/features/home/data/models/update_progress_params.dart';
-import 'package:user_app/features/home/domain/usecases/get_course_progress.dart';
-import 'package:user_app/features/home/domain/usecases/udpate_course_progress.dart';
+import  'package:user_app/features/home/data/models/course_progress.dart';
+import  'package:user_app/features/home/data/models/get_progress_params.dart';
+import  'package:user_app/features/home/data/models/update_progress_params.dart';
+import  'package:user_app/features/home/domain/usecases/get_course_progress.dart';
+import  'package:user_app/features/home/domain/usecases/udpate_course_progress.dart';
 import 'dart:developer';
 
-import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_event.dart';
-import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_state.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_event.dart';
+import  'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_state.dart';
+import  'package:user_app/service_locator.dart';
 
 class CourseProgressBloc extends Bloc<CourseProgressEvent, CourseProgressState> {
   

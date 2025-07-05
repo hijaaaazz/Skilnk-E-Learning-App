@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
 
 class ImagePickerBottomSheet extends StatelessWidget {
   final String userId;

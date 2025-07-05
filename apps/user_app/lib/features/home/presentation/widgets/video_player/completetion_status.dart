@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/common/widgets/app_text.dart';
+import  'package:user_app/common/widgets/app_text.dart';
 
 class IsCompletedBadge extends StatelessWidget {
   final bool isCompleted;

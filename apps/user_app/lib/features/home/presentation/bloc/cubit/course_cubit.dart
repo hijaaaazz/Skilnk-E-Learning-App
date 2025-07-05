@@ -1,18 +1,18 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/home/data/models/getcourse_details_params.dart';
-import 'package:user_app/features/home/data/models/review_model.dart';
-import 'package:user_app/features/home/data/models/save_course_params.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/domain/entity/saving_status.dart';
-import 'package:user_app/features/home/domain/usecases/add_new_review.dart';
-import 'package:user_app/features/home/domain/usecases/get_course_details.dart';
-import 'package:user_app/features/home/domain/usecases/get_reviews.dart';
-import 'package:user_app/features/home/domain/usecases/save_course.dart';
-import 'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
-import 'package:user_app/features/library/presentation/bloc/library_bloc.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/home/data/models/getcourse_details_params.dart';
+import  'package:user_app/features/home/data/models/review_model.dart';
+import  'package:user_app/features/home/data/models/save_course_params.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/domain/entity/saving_status.dart';
+import  'package:user_app/features/home/domain/usecases/add_new_review.dart';
+import  'package:user_app/features/home/domain/usecases/get_course_details.dart';
+import  'package:user_app/features/home/domain/usecases/get_reviews.dart';
+import  'package:user_app/features/home/domain/usecases/save_course.dart';
+import  'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
+import  'package:user_app/features/library/presentation/bloc/library_bloc.dart';
+import  'package:user_app/service_locator.dart';
 //import 'get_reviews_params.dart';
 
 class CourseCubit extends Cubit<CourseState> {

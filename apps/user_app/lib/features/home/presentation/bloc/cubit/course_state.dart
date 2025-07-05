@@ -1,6 +1,6 @@
-import 'package:user_app/features/home/data/models/review_model.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/domain/entity/saving_status.dart';
+import  'package:user_app/features/home/data/models/review_model.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/domain/entity/saving_status.dart';
 
 sealed class CourseState {
   final CourseEntity? course;

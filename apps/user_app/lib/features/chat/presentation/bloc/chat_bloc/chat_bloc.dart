@@ -5,15 +5,15 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chat_types;
-import 'package:user_app/features/chat/data/models/messgae_class.dart';
-import 'package:user_app/features/chat/domain/usecaase/check_chat_exist.dart';
-import 'package:user_app/features/chat/domain/usecaase/loadchat_usecase.dart';
-import 'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/chat/data/models/messgae_class.dart';
+import  'package:user_app/features/chat/domain/usecaase/check_chat_exist.dart';
+import  'package:user_app/features/chat/domain/usecaase/loadchat_usecase.dart';
+import  'package:user_app/features/chat/domain/usecaase/send_message_usecase.dart';
+import  'package:user_app/service_locator.dart';
 import 'dart:developer';
 
-import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
-import 'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
+import  'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_event.dart';
+import  'package:user_app/features/chat/presentation/bloc/chat_bloc/chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatScreenState> {
   final chat_types.User user;

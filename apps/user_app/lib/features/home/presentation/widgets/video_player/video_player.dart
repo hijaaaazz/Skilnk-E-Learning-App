@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
-import 'package:user_app/features/home/presentation/widgets/video_player/video_controllers.dart';
+import  'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
+import  'package:user_app/features/home/presentation/widgets/video_player/video_controllers.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatelessWidget {

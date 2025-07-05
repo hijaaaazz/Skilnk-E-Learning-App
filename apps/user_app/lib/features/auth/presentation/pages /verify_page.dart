@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/auth/domain/entity/user.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/auth/domain/entity/user.dart';
 
 class VerifyPage extends StatelessWidget {
   final UserEntity user;

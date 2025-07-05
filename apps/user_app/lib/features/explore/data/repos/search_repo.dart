@@ -1,11 +1,11 @@
 import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/explore/data/models/search_params_model.dart';
-import 'package:user_app/features/explore/data/src/firebase_services.dart';
-import 'package:user_app/features/explore/domain/entities.dart/search-results.dart';
-import 'package:user_app/features/explore/domain/repos/search_repo.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/explore/data/models/search_params_model.dart';
+import  'package:user_app/features/explore/data/src/firebase_services.dart';
+import  'package:user_app/features/explore/domain/entities.dart/search-results.dart';
+import  'package:user_app/features/explore/domain/repos/search_repo.dart';
+import  'package:user_app/service_locator.dart';
 
 class SearchAndFilterRepositoryImp extends SearchAndFilterRepository{
   @override

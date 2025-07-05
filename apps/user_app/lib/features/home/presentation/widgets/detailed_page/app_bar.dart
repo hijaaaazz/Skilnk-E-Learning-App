@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
-import 'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
-import 'package:user_app/features/home/presentation/widgets/video_player/completetion_status.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
+import  'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
+import  'package:user_app/features/home/presentation/widgets/video_player/completetion_status.dart';
 
 class CourseAppBar extends StatelessWidget {
   final CourseEntity course;

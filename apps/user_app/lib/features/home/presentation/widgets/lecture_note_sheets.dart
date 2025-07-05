@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import 'package:user_app/features/home/domain/entity/lecture_details.dart';
+// import  'package:user_app/features/home/domain/entity/lecture_details.dart';
 
 // class LectureNotesSheet extends StatelessWidget {
 //   final List<LectureNote> notes;

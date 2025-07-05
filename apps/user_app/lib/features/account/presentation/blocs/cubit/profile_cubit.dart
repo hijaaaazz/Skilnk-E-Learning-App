@@ -2,15 +2,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:user_app/features/account/data/models/activity_model.dart';
-import 'package:user_app/features/account/data/models/update_dp_params.dart';
-import 'package:user_app/features/account/data/models/update_name_params.dart';
-import 'package:user_app/features/account/domain/usecase/get_recent_activities.dart';
-import 'package:user_app/features/account/domain/usecase/update_user_profile_pic.dart';
-import 'package:user_app/features/account/domain/usecase/update_username.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/account/data/models/activity_model.dart';
+import  'package:user_app/features/account/data/models/update_dp_params.dart';
+import  'package:user_app/features/account/data/models/update_name_params.dart';
+import  'package:user_app/features/account/domain/usecase/get_recent_activities.dart';
+import  'package:user_app/features/account/domain/usecase/update_user_profile_pic.dart';
+import  'package:user_app/features/account/domain/usecase/update_username.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
+import  'package:user_app/service_locator.dart';
 import 'dart:developer' as developer;
 
 class ProfileCubit extends Cubit<ProfileState> {

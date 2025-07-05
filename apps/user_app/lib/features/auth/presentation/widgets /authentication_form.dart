@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
-import 'package:user_app/common/widgets/basic_reactive_button.dart';
-import 'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/account/presentation/widgets/buttons.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/signin_section.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/signup_section.dart';
+import  'package:user_app/common/bloc/reactivebutton_cubit/button_cubit.dart';
+import  'package:user_app/common/widgets/basic_reactive_button.dart';
+import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/account/presentation/widgets/buttons.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/signin_section.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/signup_section.dart';
 
 class AuthForm extends StatelessWidget {
   final bool isInitialMode;

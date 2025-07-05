@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:user_app/features/account/presentation/widgets/image_options.dart';
+import  'package:user_app/features/account/presentation/widgets/image_options.dart';
 
 void showProfileImageBottomSheet(BuildContext context) {
   showModalBottomSheet(

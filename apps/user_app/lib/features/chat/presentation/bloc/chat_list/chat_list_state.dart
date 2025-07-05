@@ -2,7 +2,7 @@
 
 
 import 'package:equatable/equatable.dart';
-import 'package:user_app/features/chat/data/models/chat_model.dart';
+import  'package:user_app/features/chat/data/models/chat_model.dart';
 
 abstract class ChatListState extends Equatable {
   @override

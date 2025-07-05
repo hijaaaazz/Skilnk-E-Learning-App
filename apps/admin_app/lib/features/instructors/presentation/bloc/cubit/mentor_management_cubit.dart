@@ -1,6 +1,7 @@
+import 'package:admin_app/features/instructors/data/models/update_params.dart';
 import 'package:admin_app/features/instructors/domain/entities/mentor_entity.dart';
 import 'package:admin_app/features/instructors/domain/usecases/get_mentors.dart';
-import 'package:admin_app/features/instructors/domain/usecases/update_mentor.dart';
+import 'package:admin_app/features/instructors/domain/usecases/verify_mentor.dart';
 import 'package:admin_app/features/instructors/presentation/bloc/cubit/mentor_management_state.dart';
 import 'package:admin_app/features/users/domain/entities/user_entity.dart';
 import 'package:admin_app/service_provider.dart';
@@ -23,10 +24,10 @@ class MentorManagementCubit extends Cubit<MentorManagementState> {
     );
   }
 
-  void updateMentor(MentorEntity updatedMentor) async {
+  void updateMentor(MentorEntity updatedMentor,bool toggle) async {
     emit(MentorsUpdationLoading(mentors: state.mentors));
 
-    final response = await serviceLocator<UpdateMentorUseCase>().call(params: updatedMentor);
+    final response = await serviceLocator<VerifyMentor>().call(params: UpdateParams(tutorId: updatedMentor.tutorId, toggle: toggle));
     response.fold(
       (error) {
         emit(MentorsUpdationError(mentors: state.mentors));

@@ -1,4 +1,5 @@
 import 'package:admin_app/features/courses/data/models/category_model.dart';
+import 'package:admin_app/features/courses/data/models/course_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
@@ -7,10 +8,15 @@ abstract class CategoryFirebaseService {
   Future<Either<String, CategoryModel>> addnewCategories(CategoryModel category);
   Future<Either<String, bool>> deleteCategories(String id);
   Future<Either<String, CategoryModel>> updateCategories(CategoryModel updatedCategory);
+  Future<Either<String, CourseModel>> getCourseDetails(String courseId);
+  Future<Either<String, List<CourseModel>>> getCourses();
 }
+
+
 
 class CategoryFirebaseServiceImp extends CategoryFirebaseService {
   final _categoryCollection = FirebaseFirestore.instance.collection('categories');
+  final _courseCollection = FirebaseFirestore.instance.collection('courses');
 
   @override
   Future<Either<String, List<Map<String, dynamic>>>> getCategories() async {
@@ -74,4 +80,26 @@ class CategoryFirebaseServiceImp extends CategoryFirebaseService {
       return Left('Failed to update category: $e');
     }
   }
+
+   @override
+Future<Either<String, List<CourseModel>>> getCourses() async {
+  try {
+    final snapshot = await _courseCollection.get();
+    final courses = snapshot.docs
+        .map((doc) => CourseModel.fromMap(doc.data(),doc.id)) // ✅ fix: call doc.data()
+        .toList();
+    return Right(courses);
+  } catch (e) {
+    return Left('Failed to fetch courses: $e');
+  }
+}
+
+  
+  @override
+  Future<Either<String, CourseModel>> getCourseDetails(String courseId) {
+    // TODO: implement getCourseDetails
+    throw UnimplementedError();
+  }
+
+  
 }

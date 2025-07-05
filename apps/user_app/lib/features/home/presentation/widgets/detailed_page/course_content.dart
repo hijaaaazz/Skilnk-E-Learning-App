@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/presentation/widgets/course-info.dart';
-import 'package:user_app/features/home/presentation/widgets/detailed_page/app_bar.dart';
-import 'package:user_app/features/home/presentation/widgets/detailed_page/instuctor_section.dart';
-import 'package:user_app/features/home/presentation/widgets/detailed_page/review_section.dart';
-import 'package:user_app/features/home/presentation/widgets/detailed_page/tab_content.dart';
-import 'package:user_app/features/home/presentation/widgets/tab-selecter.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/presentation/widgets/course-info.dart';
+import  'package:user_app/features/home/presentation/widgets/detailed_page/app_bar.dart';
+import  'package:user_app/features/home/presentation/widgets/detailed_page/instuctor_section.dart';
+import  'package:user_app/features/home/presentation/widgets/detailed_page/review_section.dart';
+import  'package:user_app/features/home/presentation/widgets/detailed_page/tab_content.dart';
+import  'package:user_app/features/home/presentation/widgets/tab-selecter.dart';
 
 class CourseContent extends StatelessWidget {
   final CourseEntity course;

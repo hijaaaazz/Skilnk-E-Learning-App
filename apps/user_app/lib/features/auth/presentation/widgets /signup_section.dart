@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/account/presentation/widgets/buttons.dart';
-import 'package:user_app/features/auth/data/models/user_creation_req.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/auth_input_fieds.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/authentication_form.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/account/presentation/widgets/buttons.dart';
+import  'package:user_app/features/auth/data/models/user_creation_req.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/auth_input_fieds.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/authentication_form.dart';
 
 class SignUpForm extends StatelessWidget {
   const SignUpForm({super.key});

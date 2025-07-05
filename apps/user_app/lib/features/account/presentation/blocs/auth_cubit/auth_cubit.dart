@@ -1,22 +1,22 @@
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:user_app/core/usecase/usecase.dart';
-import 'package:user_app/features/auth/data/models/user_creation_req.dart';
-import 'package:user_app/features/auth/data/models/user_model.dart';
-import 'package:user_app/features/auth/data/models/user_signin_model.dart';
-import 'package:user_app/features/auth/domain/entity/user.dart';
-import 'package:user_app/features/auth/domain/usecases/check_verification.dart';
-import 'package:user_app/features/auth/domain/usecases/get_user.dart';
-import 'package:user_app/features/auth/domain/usecases/logout.dart';
-import 'package:user_app/features/auth/domain/usecases/register.dart';
-import 'package:user_app/features/auth/domain/usecases/resent_verification.dart';
-import 'package:user_app/features/auth/domain/usecases/reset_pass.dart';
-import 'package:user_app/features/auth/domain/usecases/signin.dart';
-import 'package:user_app/features/auth/domain/usecases/signin_with_google.dart';
-import 'package:user_app/features/auth/domain/usecases/signup.dart';
-import 'package:user_app/features/auth/domain/usecases/verify.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/core/usecase/usecase.dart';
+import  'package:user_app/features/auth/data/models/user_creation_req.dart';
+import  'package:user_app/features/auth/data/models/user_model.dart';
+import  'package:user_app/features/auth/data/models/user_signin_model.dart';
+import  'package:user_app/features/auth/domain/entity/user.dart';
+import  'package:user_app/features/auth/domain/usecases/check_verification.dart';
+import  'package:user_app/features/auth/domain/usecases/get_user.dart';
+import  'package:user_app/features/auth/domain/usecases/logout.dart';
+import  'package:user_app/features/auth/domain/usecases/register.dart';
+import  'package:user_app/features/auth/domain/usecases/resent_verification.dart';
+import  'package:user_app/features/auth/domain/usecases/reset_pass.dart';
+import  'package:user_app/features/auth/domain/usecases/signin.dart';
+import  'package:user_app/features/auth/domain/usecases/signin_with_google.dart';
+import  'package:user_app/features/auth/domain/usecases/signup.dart';
+import  'package:user_app/features/auth/domain/usecases/verify.dart';
+import  'package:user_app/service_locator.dart';
 
 
 enum AuthStatus {

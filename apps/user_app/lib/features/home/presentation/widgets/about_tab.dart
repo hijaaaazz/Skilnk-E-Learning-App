@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/presentation/widgets/course_fueture_.item.dart';
-import 'package:user_app/features/home/presentation/widgets/section_tile.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/presentation/widgets/course_fueture_.item.dart';
+import  'package:user_app/features/home/presentation/widgets/section_tile.dart';
 
 class AboutTab extends StatefulWidget {
   final CourseEntity course;

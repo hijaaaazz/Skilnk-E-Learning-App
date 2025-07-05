@@ -1,4 +1,5 @@
 import 'package:admin_app/features/courses/data/models/category_model.dart';
+import 'package:admin_app/features/courses/data/models/course_model.dart';
 import 'package:admin_app/features/courses/data/src/firebase_service.dart';
 import 'package:admin_app/features/courses/domain/entities/category_entity.dart';
 import 'package:admin_app/features/courses/domain/repositories/category_repo.dart';
@@ -52,6 +53,26 @@ Future<Either<String, CategoryEntity>> addNewCategories(CategoryEntity category)
   return result.fold(
     (l) => left(l),
     (r) => right(r.toEntity()),
+  );
+  }
+
+  @override
+  Future<Either<String, CourseModel>> getCourseDetails(String id)async{
+    final result = await serviceLocator<CategoryFirebaseService>().getCourseDetails(id);
+
+  return result.fold(
+    (l) => left(l),
+    (r) => right(r),
+  );
+  }
+
+  @override
+  Future<Either<String, List<CourseModel>>> getCourses()async{
+   final result = await serviceLocator<CategoryFirebaseService>().getCourses();
+
+  return result.fold(
+    (l) => left(l),
+    (r) => right(r),
   );
   }
 }

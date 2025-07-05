@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/account/data/models/activity_model.dart';
+import  'package:user_app/features/account/data/models/activity_model.dart';
 
 abstract class FirebaseProfileService {
   Future<Either<String, String>> updateProfilePic(String userId, String imageUrl);

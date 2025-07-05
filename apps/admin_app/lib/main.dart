@@ -4,7 +4,6 @@ import 'package:admin_app/features/splash/presentation/pages/splash.dart';
 import 'package:admin_app/features/users/presentation/bloc/cubit/user_management_cubit.dart';
 import 'package:admin_app/firebase_options.dart';
 import 'package:admin_app/features/landing/presentation/bloc/landing_navigation_cubit.dart';
-import 'package:admin_app/features/profile/presentation/bloc/auth_cubit.dart';
 import 'package:admin_app/service_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,7 @@ class Skilnk extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_)=> LandingNavigationCubit()),
-        BlocProvider(create: (_)=> AuthCubit()),
+        //BlocProvider(create: (_)=> AuthCubit()),
       
       ],
       child: MaterialApp.router(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
-import 'package:user_app/features/explore/presentation/widgets/course_tile.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/course_list/data/models/list_page_arg.dart';
+import  'package:user_app/features/explore/presentation/widgets/course_tile.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 
 class CoursesSection extends StatelessWidget {
   final List<CoursePreview> courses;
@@ -88,21 +88,7 @@ class CoursesSection extends StatelessWidget {
           itemCount: courses.length,
           itemBuilder: (context, index) {
             final course = courses[index];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: CourseTile(course: course),
-            );
+            return CourseTile(course: course);
           },
         ),
       ],

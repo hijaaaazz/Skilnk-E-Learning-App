@@ -1,4 +1,3 @@
-
 import 'package:admin_app/features/instructors/domain/entities/mentor_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -6,168 +5,171 @@ class MentorModel {
   final String tutorId;
   final String? username;
   final String name;
+  final String nameLower;
   final String email;
   final String? phone;
-  final String? image;
+  final String? profileImage;
   final String? bio;
-  final bool infoSubmitted;
   final bool emailVerified;
-  final bool isblocked;
   final bool? isVerified;
   final bool? status;
   final List<String>? courseIds;
+  final List<String>? categories;
   final DateTime? lastActive;
   final DateTime? lastLogin;
-  final DateTime createdDate;
-  final DateTime updatedDate;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   MentorModel({
     required this.tutorId,
     required this.name,
+    required this.nameLower,
     this.username,
     required this.email,
-     this.phone,
-     required this.isblocked,
-    this.image,
-    this.infoSubmitted = false,
-     this.bio,
+    this.phone,
+    this.profileImage,
+    this.bio,
     required this.emailVerified,
-     this.isVerified,
-     this.status,
-     this.courseIds,
-     this.lastActive,
-     this.lastLogin,
-    required this.createdDate,
-    required this.updatedDate,
+    this.isVerified,
+    this.status,
+    this.courseIds,
+    this.categories,
+    this.lastActive,
+    this.lastLogin,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  // From JSON
- factory MentorModel.fromJson(Map<String, dynamic> json) {
-  return MentorModel(
-    tutorId: json['tutor_id'] ?? '',
-    name: json['full_name'] ?? '',
-    email: json['email'] ?? '',
-    username: json['username'],
-    phone: json['phone'],
-    image: json['profile_image'],
-    bio: json['bio'],
-    emailVerified: json['email_verified'] ?? false,
-    isVerified: json['is_verified'],
-    isblocked: json['is_blocked'] ?? false,
-    status: json['status'],
-    courseIds: (json['courses'] as List<dynamic>?)?.cast<String>(),
-    lastActive: (json['lastActive'] as Timestamp?)?.toDate(),
-    lastLogin: (json['lastLogin'] as Timestamp?)?.toDate(),
-    createdDate: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-    updatedDate: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-  );
-}
+  // From Firebase JSON
+  factory MentorModel.fromJson(Map<String, dynamic> json) {
+    return MentorModel(
+      tutorId: json['tutor_id'] ?? '',
+      name: json['full_name'] ?? '',
+      nameLower: json['name_lower'] ?? '',
+      email: json['email'] ?? '',
+      username: json['username'],
+      phone: json['phone'],
+      profileImage: json['profile_image'],
+      bio: json['bio'],
+      emailVerified: json['email_verified'] ?? false,
+      isVerified: json['is_verified'],
+      status: json['status'],
+      courseIds: (json['courses'] as List<dynamic>?)?.cast<String>(),
+      categories: (json['categories'] as List<dynamic>?)?.cast<String>(),
+      lastActive: (json['lastActive'] as Timestamp?)?.toDate(),
+      lastLogin: (json['lastLogin'] as Timestamp?)?.toDate(),
+      createdAt: (json['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (json['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
 
-  //  To JSON
- Map<String, dynamic> toJson() {
-  return {
-    'tutor_id': tutorId,
-    'full_name': name,
-    'email': email,
-    'username': username,
-    'phone': phone,
-    'profile_image': image,
-    'bio': bio,
-    'email_verified': emailVerified,
-    'is_verified': isVerified,
-    'status': status,
-    'courses': courseIds,
-    'lastActive': lastActive,
-    'lastLogin': lastLogin,
-    'createdAt': createdDate,
-    'updatedAt': updatedDate,
-  };
-}
+  // To Firebase JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'tutor_id': tutorId,
+      'full_name': name,
+      'name_lower': nameLower,
+      'email': email,
+      'username': username,
+      'phone': phone,
+      'profile_image': profileImage,
+      'bio': bio,
+      'email_verified': emailVerified,
+      'is_verified': isVerified,
+      'status': status,
+      'courses': courseIds,
+      'categories': categories,
+      'lastActive': lastActive != null ? Timestamp.fromDate(lastActive!) : null,
+      'lastLogin': lastLogin != null ? Timestamp.fromDate(lastLogin!) : null,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
+    };
+  }
 
-
-  //  From Entity
+  // From Entity
   factory MentorModel.fromEntity(MentorEntity entity) {
     return MentorModel(
       tutorId: entity.tutorId,
       name: entity.name,
-      username: entity.username, 
+      nameLower: entity.name.toLowerCase(),
+      username: entity.username,
       email: entity.email,
       phone: entity.phone,
-      image: entity.image,
+      profileImage: entity.image,
       bio: entity.bio,
       emailVerified: entity.emailVerified,
       isVerified: entity.isVerified,
       status: entity.status,
-      isblocked: entity.isblocked,
       courseIds: entity.courseIds,
+      categories: entity.categories,
       lastActive: entity.lastActive,
       lastLogin: entity.lastLogin,
-      createdDate: entity.createdDate,
-      updatedDate: entity.updatedDate,
+      createdAt: entity.createdDate,
+      updatedAt: entity.updatedDate,
     );
   }
 
-  //  To Entity
+  // To Entity
   MentorEntity toEntity() {
     return MentorEntity(
       name: name,
       username: username,
       email: email,
       phone: phone,
-      image: image,
+      image: profileImage,
       bio: bio,
-      isblocked: isblocked,
+      isblocked: false, // Default value, update based on your needs
       emailVerified: emailVerified,
       isVerified: isVerified ?? false,
       status: status,
       tutorId: tutorId,
       courseIds: courseIds,
+      categories: categories,
       lastActive: lastActive,
       lastLogin: lastLogin,
-      createdDate: createdDate,
-      updatedDate: updatedDate,
+      createdDate: createdAt,
+      updatedDate: updatedAt,
     );
   }
 
-  //  copyWith method
+  // copyWith method
   MentorModel copyWith({
-    String? userId,
+    String? tutorId,
     String? name,
+    String? nameLower,
     String? username,
     String? email,
     String? phone,
-    String? image,
+    String? profileImage,
     String? bio,
-    bool? infoSubmitted,
     bool? emailVerified,
     bool? isVerified,
-    bool? isblocked,
     bool? status,
-    String? tutorId,
     List<String>? courseIds,
+    List<String>? categories,
     DateTime? lastActive,
     DateTime? lastLogin,
-    DateTime? createdDate,
-    DateTime? updatedDate,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return MentorModel(
       tutorId: tutorId ?? this.tutorId,
       name: name ?? this.name,
+      nameLower: nameLower ?? this.nameLower,
       username: username ?? this.username,
       email: email ?? this.email,
       phone: phone ?? this.phone,
-      image: image ?? this.image,
+      profileImage: profileImage ?? this.profileImage,
       bio: bio ?? this.bio,
-      infoSubmitted: infoSubmitted ?? this.infoSubmitted,
       emailVerified: emailVerified ?? this.emailVerified,
-      isblocked: isblocked ?? this.isblocked,
       isVerified: isVerified ?? this.isVerified,
       status: status ?? this.status,
       courseIds: courseIds ?? this.courseIds,
+      categories: categories ?? this.categories,
       lastActive: lastActive ?? this.lastActive,
       lastLogin: lastLogin ?? this.lastLogin,
-      createdDate: createdDate ?? this.createdDate,
-      updatedDate: updatedDate ?? this.updatedDate,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

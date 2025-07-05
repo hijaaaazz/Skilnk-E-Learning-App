@@ -1,4 +1,4 @@
-import 'package:user_app/features/home/domain/entity/category_entity.dart';
+import  'package:user_app/features/home/domain/entity/category_entity.dart';
 
 class CategoryModel {
   final String id;

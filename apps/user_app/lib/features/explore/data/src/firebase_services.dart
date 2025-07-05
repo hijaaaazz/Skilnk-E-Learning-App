@@ -2,12 +2,12 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/explore/data/models/search_args.dart';
-import 'package:user_app/features/explore/data/models/search_params_model.dart';
-import 'package:user_app/features/explore/domain/entities.dart/search-results.dart';
-import 'package:user_app/features/home/data/models/category_model.dart';
-import 'package:user_app/features/home/data/models/mentor_mode.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/explore/data/models/search_args.dart';
+import  'package:user_app/features/explore/data/models/search_params_model.dart';
+import  'package:user_app/features/explore/domain/entities.dart/search-results.dart';
+import  'package:user_app/features/home/data/models/category_model.dart';
+import  'package:user_app/features/home/data/models/mentor_mode.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 
 abstract class ExploreFirebaseService {
   Future<Either<String, SearchResult>> getSearchResults(SearchParams params);

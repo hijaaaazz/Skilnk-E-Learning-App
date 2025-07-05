@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
-import 'package:user_app/features/payment/presentation/bloc/bloc/enroll_bloc.dart';
-import 'package:user_app/features/payment/presentation/bloc/bloc/enroll_state.dart';
-import 'package:user_app/features/payment/presentation/widgets/payment_bottom_sheet.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
+import  'package:user_app/features/payment/presentation/bloc/bloc/enroll_bloc.dart';
+import  'package:user_app/features/payment/presentation/bloc/bloc/enroll_state.dart';
+import  'package:user_app/features/payment/presentation/widgets/payment_bottom_sheet.dart';
 
 class EnrollmentHandler {
   static void handleAction(BuildContext context, CourseEntity course, VoidCallback onNavigate) {

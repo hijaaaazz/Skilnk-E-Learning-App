@@ -46,7 +46,6 @@ dependencies:
   json_serializable: ^6.9.4
 
 dev_dependencies:
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -55,7 +54,15 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.11.0
 
+flutter_icons:
+  android: true # generate Android launcher icons
+  ios: true # generate iOS launcher icons
+  web: # ← must be a map, not a bool
+    generate: true # whether to generate favicon/web icons
+    image_path: "assets/images/app_icon.png" # source for web icons
+  image_path: "assets/images/app_icon.png" # fallback default for any platform
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter packages.
@@ -68,7 +75,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
-    - assets/animations/
+    - assets/images/app_icon.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see

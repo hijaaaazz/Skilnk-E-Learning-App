@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
-import 'package:user_app/features/explore/presentation/widgets/course_tile.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
-import 'package:user_app/features/home/domain/entity/instructor_entity.dart';
-import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_bloc.dart';
-import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_event.dart';
-import 'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_state.dart';
-import 'package:user_app/features/home/presentation/widgets/mentor_page/bio_section.dart';
-import 'package:user_app/features/home/presentation/widgets/mentor_page/courses_section.dart';
-import 'package:user_app/features/home/presentation/widgets/mentor_page/mentor_actions.dart';
-import 'package:user_app/features/home/presentation/widgets/mentor_page/skelton.dart';
-import 'package:user_app/presentation/account/widgets/app_bar.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/course_list/data/models/list_page_arg.dart';
+import  'package:user_app/features/explore/presentation/widgets/course_tile.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
+import  'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_bloc.dart';
+import  'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_event.dart';
+import  'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_state.dart';
+import  'package:user_app/features/home/presentation/widgets/mentor_page/bio_section.dart';
+import  'package:user_app/features/home/presentation/widgets/mentor_page/courses_section.dart';
+import  'package:user_app/features/home/presentation/widgets/mentor_page/mentor_actions.dart';
+import  'package:user_app/features/home/presentation/widgets/mentor_page/skelton.dart';
+import  'package:user_app/presentation/account/widgets/app_bar.dart';
 
 class MentorDetailsPage extends StatelessWidget {
   final MentorEntity mentor;

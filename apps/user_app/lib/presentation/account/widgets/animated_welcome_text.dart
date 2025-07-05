@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/common/widgets/app_text.dart';
+import  'package:user_app/common/widgets/app_text.dart';
 
 // ignore: must_be_immutable
 class AnimatedWelcomeText extends StatelessWidget {

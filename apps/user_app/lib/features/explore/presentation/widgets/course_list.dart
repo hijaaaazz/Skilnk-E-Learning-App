@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
-import 'package:user_app/features/explore/presentation/theme.dart';
-import 'package:user_app/features/explore/presentation/widgets/course_tile.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_event.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_state.dart';
+import  'package:user_app/features/explore/presentation/theme.dart';
+import  'package:user_app/features/explore/presentation/widgets/course_tile.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 
 class CoursesListWidget extends StatelessWidget {
   final List<CoursePreview> courses;

@@ -5,9 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-import 'package:user_app/features/home/data/models/update_progress_params.dart';
-import 'package:user_app/features/home/domain/usecases/udpate_course_progress.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/home/data/models/update_progress_params.dart';
+import  'package:user_app/features/home/domain/usecases/udpate_course_progress.dart';
+import  'package:user_app/service_locator.dart';
 import 'package:video_player/video_player.dart';
 
 part 'video_player_event.dart';

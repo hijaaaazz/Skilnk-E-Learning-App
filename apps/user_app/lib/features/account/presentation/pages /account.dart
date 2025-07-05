@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/account/presentation/widgets/option_tile.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/account/presentation/widgets/option_tile.dart';
 import 'package:user_app/presentation/account/widgets/app_bar.dart';
-import 'package:user_app/presentation/account/widgets/unathenticated.dart';
+import  'package:user_app/presentation/account/widgets/unathenticated.dart';
 import 'package:share_plus/share_plus.dart';
 
 
@@ -15,7 +15,7 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SkilnkAppBar(title: "Account"),
+      appBar: SkilnkAppBar(title:"Account"),
       body: BlocBuilder<AuthStatusCubit, AuthStatusState>(
         builder: (context, state) {
           if (state.status == AuthStatus.emailVerified) {

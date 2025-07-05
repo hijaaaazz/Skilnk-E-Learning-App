@@ -2,16 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/animated_widgets/animated_container.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/animated_widgets/animated_welcome_text.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/animated_widgets/background_gradient.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/authentication_form.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/forgot_password_dialog.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/signin_section.dart';
-import 'package:user_app/features/auth/presentation/widgets%20/signup_section.dart';
+import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
+import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/animated_widgets/animated_container.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/animated_widgets/animated_welcome_text.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/animated_widgets/background_gradient.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/authentication_form.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/forgot_password_dialog.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/signin_section.dart';
+import  'package:user_app/features/auth/presentation/widgets%20/signup_section.dart';
 
 class AuthenticationPage extends StatelessWidget {
   const AuthenticationPage({super.key});

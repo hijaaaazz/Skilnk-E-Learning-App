@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:user_app/features/home/data/models/lecture_model.dart';
-import 'package:user_app/features/home/data/models/mentor_mode.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/home/data/models/lecture_model.dart';
+import  'package:user_app/features/home/data/models/mentor_mode.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 
 class CourseModel {
   final String id;

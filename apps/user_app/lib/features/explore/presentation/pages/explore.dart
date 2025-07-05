@@ -1,20 +1,20 @@
 // lib/features/explore/presentation/pages/explore_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/core/debouncer.dart';
-import 'package:user_app/features/explore/data/models/search_args.dart';
-import 'package:user_app/features/explore/data/models/search_params_model.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_event.dart';
-import 'package:user_app/features/explore/presentation/bloc/explore_state.dart';
-import 'package:user_app/features/explore/presentation/theme.dart';
-import 'package:user_app/features/explore/presentation/widgets/category_grid.dart';
-import 'package:user_app/features/explore/presentation/widgets/course_filters.dart';
-import 'package:user_app/features/explore/presentation/widgets/course_list.dart';
-import 'package:user_app/features/explore/presentation/widgets/main_chips.dart';
-import 'package:user_app/features/explore/presentation/widgets/mentors_list.dart';
-import 'package:user_app/features/explore/presentation/widgets/search_bar.dart';
-import 'package:user_app/presentation/account/widgets/app_bar.dart';
+import  'package:user_app/core/debouncer.dart';
+import  'package:user_app/features/explore/data/models/search_args.dart';
+import  'package:user_app/features/explore/data/models/search_params_model.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_bloc.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_event.dart';
+import  'package:user_app/features/explore/presentation/bloc/explore_state.dart';
+import  'package:user_app/features/explore/presentation/theme.dart';
+import  'package:user_app/features/explore/presentation/widgets/category_grid.dart';
+import  'package:user_app/features/explore/presentation/widgets/course_filters.dart';
+import  'package:user_app/features/explore/presentation/widgets/course_list.dart';
+import  'package:user_app/features/explore/presentation/widgets/main_chips.dart';
+import  'package:user_app/features/explore/presentation/widgets/mentors_list.dart';
+import  'package:user_app/features/explore/presentation/widgets/search_bar.dart';
+import  'package:user_app/presentation/account/widgets/app_bar.dart';
 
 class ExplorePage extends StatelessWidget {
   final SearchParams? queryParams;

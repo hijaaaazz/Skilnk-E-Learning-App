@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/data/models/course_progress.dart';
+import  'package:user_app/features/home/data/models/course_progress.dart';
 
 class ProgressOverviewCard extends StatelessWidget {
   final CourseProgressModel courseProgress;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/data/models/banner_model.dart';
-import 'package:user_app/features/home/presentation/widgets/categories-section.dart';
-import 'package:user_app/features/home/presentation/widgets/courses_section.dart';
-import 'package:user_app/features/home/presentation/widgets/header_section.dart';
-import 'package:user_app/features/home/presentation/widgets/promotion_card.dart';
+import  'package:user_app/features/home/data/models/banner_model.dart';
+import  'package:user_app/features/home/presentation/widgets/categories-section.dart';
+import  'package:user_app/features/home/presentation/widgets/courses_section.dart';
+import  'package:user_app/features/home/presentation/widgets/header_section.dart';
+import  'package:user_app/features/home/presentation/widgets/promotion_card.dart';
 
 // Example of updating your body layout to use the SliverAppBar approach
 class HomePage extends StatelessWidget {

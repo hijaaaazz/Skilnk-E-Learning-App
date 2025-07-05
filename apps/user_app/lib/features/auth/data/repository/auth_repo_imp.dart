@@ -1,12 +1,12 @@
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
-import 'package:user_app/features/auth/data/models/user_creation_req.dart';
-import 'package:user_app/features/auth/data/models/user_model.dart';
-import 'package:user_app/features/auth/data/models/user_signin_model.dart';
-import 'package:user_app/features/auth/data/src/auth_firebase_service.dart';
-import 'package:user_app/features/auth/domain/entity/user.dart';
-import 'package:user_app/features/auth/domain/repository/auth.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/auth/data/models/user_creation_req.dart';
+import  'package:user_app/features/auth/data/models/user_model.dart';
+import  'package:user_app/features/auth/data/models/user_signin_model.dart';
+import  'package:user_app/features/auth/data/src/auth_firebase_service.dart';
+import  'package:user_app/features/auth/domain/entity/user.dart';
+import  'package:user_app/features/auth/domain/repository/auth.dart';
+import  'package:user_app/service_locator.dart';
 
 class AuthenticationRepoImplementation extends AuthRepository {
   final AuthFirebaseService _authService = serviceLocator<AuthFirebaseService>();

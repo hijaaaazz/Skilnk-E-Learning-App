@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:user_app/features/home/domain/entity/course-entity.dart';
+import  'package:user_app/features/home/domain/entity/course-entity.dart';
 
 class CurriculumTab extends StatelessWidget {
   final CourseEntity course;

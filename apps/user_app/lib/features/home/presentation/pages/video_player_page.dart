@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
-import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_bloc.dart';
-import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_event.dart';
-import 'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_state.dart';
-import 'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
-import 'package:user_app/features/home/presentation/widgets/video_player/pdf_widget.dart';
-import 'package:user_app/features/home/presentation/widgets/video_player/video_player.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import  'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_bloc.dart';
+import  'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_event.dart';
+import  'package:user_app/features/home/presentation/bloc/progress_bloc/course_progress_state.dart';
+import  'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
+import  'package:user_app/features/home/presentation/widgets/video_player/pdf_widget.dart';
+import  'package:user_app/features/home/presentation/widgets/video_player/video_player.dart';
 import 'dart:developer';
 
 class VideoPlayerPage extends StatefulWidget {

@@ -16,7 +16,7 @@ class UsersFirebaseServiceImp extends UsersFirebaseService {
 
       // Convert the snapshot to a list of maps
       List<Map<String, dynamic>> users = snapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)  // convert each document to Map
+          .map((doc) => doc.data())  // convert each document to Map
           .toList();
 
       // Log the name of the first user (for debugging purposes)

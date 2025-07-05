@@ -1,12 +1,12 @@
 // library_bloc.dart
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
-import 'package:user_app/features/library/domain/usecases/get_enrolled_courses_ids.dart';
-import 'package:user_app/features/library/domain/usecases/get_saved_courses_ids.dart';
-import 'package:user_app/features/library/domain/usecases/get_user_courses.dart';
-import 'package:user_app/features/library/domain/usecases/getsaved_usecase.dart';
-import 'package:user_app/service_locator.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/library/domain/usecases/get_enrolled_courses_ids.dart';
+import  'package:user_app/features/library/domain/usecases/get_saved_courses_ids.dart';
+import  'package:user_app/features/library/domain/usecases/get_user_courses.dart';
+import  'package:user_app/features/library/domain/usecases/getsaved_usecase.dart';
+import  'package:user_app/service_locator.dart';
 
 part 'library_event.dart';
 part 'library_state.dart';

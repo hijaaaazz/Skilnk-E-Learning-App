@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:user_app/data/auth/models/user_creation_req.dart';
+import  'package:user_app/data/auth/models/user_creation_req.dart';
 
 abstract class AuthFirebaseService {
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
-import 'package:user_app/presentation/account/widgets/slanded_clipper.dart';
+import  'package:user_app/presentation/account/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
+import  'package:user_app/presentation/account/widgets/slanded_clipper.dart';
 
 // ignore: must_be_immutable
 class AnimatedBackgroundContainer extends StatelessWidget {

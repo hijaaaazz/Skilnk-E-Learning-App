@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 @immutable

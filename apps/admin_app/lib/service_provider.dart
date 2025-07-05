@@ -8,12 +8,13 @@ import 'package:admin_app/features/courses/domain/repositories/category_repo.dar
 import 'package:admin_app/features/courses/domain/usecases/add_category.dart';
 import 'package:admin_app/features/courses/domain/usecases/delete_category.dart';
 import 'package:admin_app/features/courses/domain/usecases/get_categories.dart';
+import 'package:admin_app/features/courses/domain/usecases/get_courses.dart';
 import 'package:admin_app/features/courses/domain/usecases/update_category.dart';
 import 'package:admin_app/features/instructors/data/repos/user_management_repo.dart';
 import 'package:admin_app/features/instructors/data/src/mentors_firebase_service.dart';
 import 'package:admin_app/features/instructors/domain/repos/mentor_managment.dart';
 import 'package:admin_app/features/instructors/domain/usecases/get_mentors.dart';
-import 'package:admin_app/features/instructors/domain/usecases/update_mentor.dart';
+import 'package:admin_app/features/instructors/domain/usecases/verify_mentor.dart';
 import 'package:admin_app/features/users/data/repos/user_management_repo.dart';
 import 'package:admin_app/features/users/data/src/users_firebase_service.dart';
 import 'package:admin_app/features/users/domain/repos/user_managment.dart';
@@ -76,8 +77,8 @@ Future<void> initializeDependencies() async {
     () => GetMentorsUseCase()
   );
 
-  serviceLocator.registerLazySingleton<UpdateMentorUseCase>(
-    () => UpdateMentorUseCase()
+  serviceLocator.registerLazySingleton<VerifyMentor>(
+    () => VerifyMentor()
   );
 
   serviceLocator.registerLazySingleton<GetCategoryUsecase>(
@@ -94,6 +95,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<UpdateCategoryUseCase>(
     () => UpdateCategoryUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetCoursesUsecase>(
+    () => GetCoursesUsecase()
   );
 }
 

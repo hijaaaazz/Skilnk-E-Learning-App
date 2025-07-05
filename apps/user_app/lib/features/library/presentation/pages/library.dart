@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:user_app/core/routes/app_route_constants.dart';
-import 'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
-import 'package:user_app/features/home/presentation/widgets/course_card.dart';
-import 'package:user_app/features/library/presentation/bloc/library_bloc.dart';
-import 'package:user_app/presentation/account/widgets/app_bar.dart';
+import  'package:user_app/core/routes/app_route_constants.dart';
+import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
+import  'package:user_app/features/course_list/data/models/list_page_arg.dart';
+import  'package:user_app/features/home/presentation/widgets/course_card.dart';
+import  'package:user_app/features/library/presentation/bloc/library_bloc.dart';
+import  'package:user_app/presentation/account/widgets/app_bar.dart';
 // Import your skeleton widget here
-// import 'package:user_app/path/to/your/course_card_skeleton.dart';
+// import  'package:user_app/path/to/your/course_card_skeleton.dart';
 
 class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});

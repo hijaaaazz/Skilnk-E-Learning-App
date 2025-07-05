@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:user_app/features/course_list/data/models/list_page_arg.dart';
-import 'package:user_app/features/course_list/presentation/bloc/course_list_bloc.dart';
-import 'package:user_app/features/course_list/presentation/bloc/course_list_event.dart';
-import 'package:user_app/features/course_list/presentation/bloc/course_list_state.dart';
-import 'package:user_app/features/explore/presentation/widgets/course_tile.dart';
-import 'package:user_app/features/home/domain/entity/course_privew.dart';
-import 'package:user_app/features/home/presentation/widgets/mentor_page/skelton.dart';
-import 'package:user_app/presentation/account/widgets/app_bar.dart';
+import  'package:user_app/features/course_list/data/models/list_page_arg.dart';
+import  'package:user_app/features/course_list/presentation/bloc/course_list_bloc.dart';
+import  'package:user_app/features/course_list/presentation/bloc/course_list_event.dart';
+import  'package:user_app/features/course_list/presentation/bloc/course_list_state.dart';
+import  'package:user_app/features/explore/presentation/widgets/course_tile.dart';
+import  'package:user_app/features/home/domain/entity/course_privew.dart';
+import  'package:user_app/features/home/presentation/widgets/mentor_page/skelton.dart';
+import  'package:user_app/presentation/account/widgets/app_bar.dart';
 // Import your skeleton widget here
-// import 'package:user_app/path/to/your/course_tile_skeleton.dart';
+// import  'package:user_app/path/to/your/course_tile_skeleton.dart';
 
 class CourseList extends StatefulWidget {
   final CourseListPageArgs args;

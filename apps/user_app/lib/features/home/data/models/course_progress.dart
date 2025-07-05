@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:user_app/features/home/data/models/lecture_progress_model.dart';
-import 'package:user_app/features/home/domain/entity/lecture_entity.dart';
+import  'package:user_app/features/home/data/models/lecture_progress_model.dart';
+import  'package:user_app/features/home/domain/entity/lecture_entity.dart';
 
 class CourseProgressModel {
   final String id;
