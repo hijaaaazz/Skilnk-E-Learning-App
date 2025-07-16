@@ -96,42 +96,12 @@ class _InstructorsPageState extends State<InstructorsPage> {
           
           const SizedBox(height: 12),
           
-          // Filter Chips
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildFilterChip('All'),
-                _buildFilterChip('Verified'),
-                _buildFilterChip('Unverified'),
-                _buildFilterChip('Email Verified'),
-                _buildFilterChip('Has Courses'),
-              ],
-            ),
-          ),
+         
         ],
       ),
     );
   }
 
-  Widget _buildFilterChip(String filter) {
-    final isSelected = selectedFilter == filter;
-    
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(filter),
-        selected: isSelected,
-        onSelected: (selected) {
-          setState(() {
-            selectedFilter = selected ? filter : 'All';
-          });
-        },
-        selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-        checkmarkColor: Theme.of(context).primaryColor,
-      ),
-    );
-  }
 
   Widget _buildErrorState(BuildContext context) {
     return Center(

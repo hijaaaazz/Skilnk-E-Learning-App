@@ -10,7 +10,7 @@ import 'package:dartz/dartz.dart';
 class AddNewCategoryUsecase implements Usecase<Either<String, CategoryEntity>, CategoryEntity> {
   @override
   Future<Either<String, CategoryEntity>> call({required CategoryEntity params}) async {
-    final result = await serviceLocator<CategoryRepository>().addNewCategories(params);
+    final result = await serviceLocator<CourseRepository>().addNewCategories(params);
     return result.fold(
       (l) {
 

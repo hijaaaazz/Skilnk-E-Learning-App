@@ -10,4 +10,5 @@ class AppRouteConstants {
   static const String users = "users";         // Fixed typo
   static const String settings = "settings";
   static const String coursecategory = "category";
+  static const String course = "course";
 }

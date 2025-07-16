@@ -8,6 +8,6 @@ import 'package:dartz/dartz.dart';
 class GetCategoryUsecase implements Usecase<Either<String, List<CategoryEntity>>, NoParams> {
   @override
   Future<Either<String, List<CategoryEntity>>> call({required NoParams params}) async {
-    return await serviceLocator<CategoryRepository>().getCategories();
+    return await serviceLocator<CourseRepository>().getCategories();
   }
 }

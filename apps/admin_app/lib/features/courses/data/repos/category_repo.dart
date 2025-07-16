@@ -6,7 +6,7 @@ import 'package:admin_app/features/courses/domain/repositories/category_repo.dar
 import 'package:admin_app/service_provider.dart';
 import 'package:dartz/dartz.dart';
 
-class CategoryRepoImplementation extends CategoryRepository {
+class CourseRepoImplementation extends CourseRepository {
   @override
 Future<Either<String, List<CategoryEntity>>> getCategories() async {
   final result = await serviceLocator<CategoryFirebaseService>().getCategories();
@@ -69,6 +69,16 @@ Future<Either<String, CategoryEntity>> addNewCategories(CategoryEntity category)
   @override
   Future<Either<String, List<CourseModel>>> getCourses()async{
    final result = await serviceLocator<CategoryFirebaseService>().getCourses();
+
+  return result.fold(
+    (l) => left(l),
+    (r) => right(r),
+  );
+  }
+  
+  @override
+  Future<Either<String, bool>> bantCourse(String id)async {
+    final result = await serviceLocator<CategoryFirebaseService>().banCourse(id);
 
   return result.fold(
     (l) => left(l),

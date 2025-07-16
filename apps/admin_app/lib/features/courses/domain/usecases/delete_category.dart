@@ -11,7 +11,7 @@ import 'package:dartz/dartz.dart';
 class DeleteCategoryuseCase implements Usecase<Either<String, bool>, String> {
   @override
   Future<Either<String, bool>> call({required String params}) async {
-    final result = await serviceLocator<CategoryRepository>().deleteCategories(params);
+    final result = await serviceLocator<CourseRepository>().deleteCategories(params);
     return result.fold(
       (l) {
         return Left(l); // Returning the error message if failed

@@ -1,9 +1,12 @@
 import 'dart:developer';
+import 'package:admin_app/features/instructors/data/models/update_params.dart';
+import 'package:admin_app/features/users/data/models/user-update_params.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class UsersFirebaseService {
   Future<Either<String, List<Map<String, dynamic>>>> getUsers();
+  Future<Either<String, bool>> toggleBlock(UserUpdateParams params);
 }
 
 class UsersFirebaseServiceImp extends UsersFirebaseService {
@@ -33,4 +36,26 @@ class UsersFirebaseServiceImp extends UsersFirebaseService {
       return Left("Failed to fetch users: $e");
     }
   }
+  
+  @override
+Future<Either<String, bool>> toggleBlock(UserUpdateParams params) async {
+  try {
+    final docRef = FirebaseFirestore.instance.collection('users').doc(params.userId); // assuming tutorId = userId
+    final snapshot = await docRef.get();
+
+    if (!snapshot.exists) {
+      return Left("User not found");
+    }
+
+
+    final newStatus = params.toggle;
+
+    await docRef.update({'isBlocked': newStatus});
+
+    return Right(newStatus);
+  } catch (e) {
+    return Left("Failed to toggle block status: $e");
+  }
+}
+
 }

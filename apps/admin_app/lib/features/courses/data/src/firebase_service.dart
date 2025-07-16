@@ -10,6 +10,7 @@ abstract class CategoryFirebaseService {
   Future<Either<String, CategoryModel>> updateCategories(CategoryModel updatedCategory);
   Future<Either<String, CourseModel>> getCourseDetails(String courseId);
   Future<Either<String, List<CourseModel>>> getCourses();
+  Future<Either<String, bool>> banCourse(String id);
 }
 
 
@@ -94,12 +95,38 @@ Future<Either<String, List<CourseModel>>> getCourses() async {
   }
 }
 
+
+  @override
+Future<Either<String, bool>> banCourse(String id) async {
+  try {
+    final docRef = _courseCollection.doc(id);
+    final snapshot = await docRef.get();
+
+    if (!snapshot.exists) {
+      return Left("Course not found");
+    }
+
+    final currentData = snapshot.data() as Map<String, dynamic>;
+    final currentIsBanned = currentData['isBanned'] as bool? ?? false;
+
+    final newIsBanned = !currentIsBanned;
+
+    await docRef.update({'isBanned': newIsBanned});
+
+    return Right(newIsBanned);
+  } catch (e) {
+    return Left('Failed to toggle ban status: $e');
+  }
+}
+
+
   
   @override
   Future<Either<String, CourseModel>> getCourseDetails(String courseId) {
     // TODO: implement getCourseDetails
     throw UnimplementedError();
   }
+  
 
   
 }

@@ -1,6 +1,8 @@
+import 'package:admin_app/core/routes/app_route_constants.dart';
 import 'package:admin_app/features/courses/presentation/bloc/bloc/courses_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../widgets/course_card.dart';
 import '../../data/models/course_model.dart';
 
@@ -19,16 +21,7 @@ class _CoursesPageState extends State<CoursesPage> {
     context.read<CoursesBloc>().add(FetchCourses());
   }
 
-  void _navigateToCourseDetail(CourseModel course) {
-    // TODO: Implement navigation to course detail page
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => CourseDetailPage(course: course),
-    //   ),
-    // );
-    print('Navigate to course: ${course.title}');
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +34,7 @@ class _CoursesPageState extends State<CoursesPage> {
         actions: [
           TextButton(
             onPressed: () {
-              // TODO: Navigate to course categories
+             context.pushNamed(AppRouteConstants.coursecategory);
             },
             child: const Text('Course Categories'),
           ),
@@ -197,7 +190,6 @@ class _CoursesPageState extends State<CoursesPage> {
             final course = courses[index];
             return CourseCard(
               course: course,
-              onTap: () => _navigateToCourseDetail(course),
             );
           },
         );

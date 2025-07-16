@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:admin_app/features/instructors/data/models/update_params.dart';
+import 'package:admin_app/features/users/data/models/user-update_params.dart';
 import 'package:admin_app/features/users/data/models/user_model.dart';
 import 'package:admin_app/features/users/data/src/users_firebase_service.dart';
 import 'package:admin_app/features/users/domain/entities/user_entity.dart';
@@ -30,4 +32,21 @@ class UsersRepoImp extends UsersRepo {
       },
     );
   }
-}
+
+  @override
+  Future<Either<String, bool>> toggleBlock(UserUpdateParams params)async{
+    var result = await serviceLocator<UsersFirebaseService>().toggleBlock(params);
+    return result.fold(
+      (error) {
+        return left(error);
+      },
+      (data) {
+        log("converted to entity");
+
+        
+
+        return Right(data);
+      },
+    );
+  }
+  }

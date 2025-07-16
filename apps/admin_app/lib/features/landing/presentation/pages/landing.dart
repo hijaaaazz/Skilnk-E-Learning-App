@@ -1,4 +1,6 @@
 import 'package:admin_app/common/widgets/appbar.dart';
+import 'package:admin_app/core/routes/app_route_constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -179,9 +181,9 @@ void _showLogoutDialog(BuildContext context) {
         TextButton(
           child: const Text('Logout'),
           onPressed: () {
-            Navigator.pop(context);
-            // 🔁 Add your logout logic here
-            // Example: context.go("/login");
+            context.pop();
+            FirebaseAuth.instance.signOut();
+            context.goNamed(AppRouteConstants.auth);
           },
         ),
       ],

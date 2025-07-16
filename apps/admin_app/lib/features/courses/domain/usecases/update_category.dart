@@ -8,6 +8,6 @@ import 'package:dartz/dartz.dart';
 class UpdateCategoryUseCase implements Usecase<Either<String, CategoryEntity>, CategoryEntity> {
   @override
   Future<Either<String, CategoryEntity>> call( {required CategoryEntity params}) async {
-    return await serviceLocator<CategoryRepository>().updateCategories(params);
+    return await serviceLocator<CourseRepository>().updateCategories(params);
   }
 }

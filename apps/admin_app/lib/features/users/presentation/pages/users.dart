@@ -95,39 +95,8 @@ class _UsersPageState extends State<UsersPage> {
           
           const SizedBox(height: 12),
           
-          // Filter Chips
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _buildFilterChip('All'),
-                _buildFilterChip('Active'),
-                _buildFilterChip('Blocked'),
-                _buildFilterChip('Email Verified'),
-                _buildFilterChip('Recently Active'),
-              ],
-            ),
-          ),
+          
         ],
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(String filter) {
-    final isSelected = selectedFilter == filter;
-    
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: FilterChip(
-        label: Text(filter),
-        selected: isSelected,
-        onSelected: (selected) {
-          setState(() {
-            selectedFilter = selected ? filter : 'All';
-          });
-        },
-        selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-        checkmarkColor: Theme.of(context).primaryColor,
       ),
     );
   }
@@ -211,7 +180,7 @@ class _UsersPageState extends State<UsersPage> {
       child: Column(
         children: [
           // Stats Row
-          _buildStatsRow(users),
+        
           
           // Users List
           Expanded(
@@ -222,66 +191,6 @@ class _UsersPageState extends State<UsersPage> {
                 final user = users[index];
                 return UserCard(user: user);
               },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatsRow(List<UserEntity> users) {
-    final totalUsers = users.length;
-    final activeUsers = users.where((u) => !u.isBlocked).length;
-    final blockedUsers = users.where((u) => u.isBlocked).length;
-    final verifiedUsers = users.where((u) => u.emailVerified).length;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildStatCard('Total', totalUsers, Colors.blue),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _buildStatCard('Active', activeUsers, Colors.green),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _buildStatCard('Blocked', blockedUsers, Colors.red),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: _buildStatCard('Verified', verifiedUsers, Colors.orange),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatCard(String label, int count, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Text(
-            count.toString(),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
             ),
           ),
         ],

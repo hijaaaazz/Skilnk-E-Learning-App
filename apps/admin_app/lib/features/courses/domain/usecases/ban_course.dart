@@ -5,9 +5,9 @@ import 'package:admin_app/service_provider.dart';
 import 'package:dartz/dartz.dart';
 
 
-class GetCoursesUsecase implements Usecase<Either<String, List<CourseModel>>, NoParams> {
+class BanCourseUsecase implements Usecase<Either<String, bool>, String> {
   @override
-  Future<Either<String, List<CourseModel>>> call({required NoParams params}) async {
-    return await serviceLocator<CourseRepository>().getCourses();
+  Future<Either<String, bool>> call({required String params}) async {
+    return await serviceLocator<CourseRepository>().bantCourse(params);
   }
 }
