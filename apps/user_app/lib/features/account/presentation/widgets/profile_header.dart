@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import  'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
-import  'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
-import  'package:user_app/features/account/presentation/widgets/bottom_sheet.dart';
-import  'package:user_app/features/auth/domain/entity/user.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../blocs/cubit/profile_cubit.dart';
+import '../blocs/cubit/profile_state.dart';
+import 'bottom_sheet.dart';
+import '../../../../features/auth/domain/entity/user.dart';
 import 'dart:developer' as developer;
 
 class ProfileHeader extends StatefulWidget {
@@ -26,9 +27,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     super.initState();
     _nameController = TextEditingController(text: widget.user.name);
     context.read<ProfileCubit>().initializeWithUserData(
-          name: widget.user.name,
-          imageUrl: widget.user.image,
-        );
+      name: widget.user.name,
+      imageUrl: widget.user.image,
+    );
   }
 
   @override
@@ -41,11 +42,11 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     if (_nameController.text.trim().isNotEmpty &&
         _nameController.text.trim().length <= maxNameLength) {
       context.read<ProfileCubit>().updateUserNameOptimistic(
-            userId: widget.user.userId,
-            newName: _nameController.text.trim(),
-            originalName: widget.user.name,
-            context: context,
-          );
+        userId: widget.user.userId,
+        newName: _nameController.text.trim(),
+        originalName: widget.user.name,
+        context: context,
+      );
     }
   }
 
@@ -57,13 +58,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.deepOrange.shade800, Colors.deepOrange.shade600],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: const BorderRadius.only(
+      decoration: const BoxDecoration(
+        gradient: AppColors.primaryGradient,
+        borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
         ),
@@ -88,6 +85,14 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              // ignore: deprecated_member_use
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 12,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(60),
@@ -98,6 +103,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         Positioned.fill(
                           child: Container(
                             decoration: BoxDecoration(
+                              // ignore: deprecated_member_use
                               color: Colors.black.withOpacity(0.3),
                               shape: BoxShape.circle,
                             ),
@@ -114,11 +120,11 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.deepOrange.shade800, width: 2),
+                          border: Border.all(color: AppColors.primaryOrange, width: 2),
                         ),
                         child: Icon(
                           Icons.camera_alt,
-                          color: Colors.deepOrange.shade800,
+                          color: AppColors.primaryOrange,
                           size: 18,
                         ),
                       ),
@@ -131,7 +137,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             BlocBuilder<ProfileCubit, ProfileState>(
               builder: (context, profileState) {
                 String currentName = profileState.currentName ?? widget.user.name;
-
                 if (profileState is ProfileNameUpdated &&
                     _nameController.text != profileState.name) {
                   _nameController.text = profileState.name;
@@ -164,6 +169,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         const SizedBox(width: 8),
                         Icon(
                           Icons.edit,
+                          // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.8),
                           size: 20,
                         ),
@@ -214,6 +220,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         onTap: _saveName,
                         child: Icon(
                           Icons.check,
+                          // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.8),
                           size: 20,
                         ),
@@ -226,6 +233,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         },
                         child: Icon(
                           Icons.close,
+                          // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.8),
                           size: 20,
                         ),
@@ -286,6 +294,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                         const SizedBox(width: 8),
                         Icon(
                           Icons.edit,
+                          // ignore: deprecated_member_use
                           color: Colors.white.withOpacity(0.8),
                           size: 20,
                         ),
@@ -300,6 +309,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               widget.user.email,
               style: TextStyle(
                 fontSize: 16,
+                // ignore: deprecated_member_use
                 color: Colors.white.withOpacity(0.9),
               ),
             ),
@@ -311,39 +321,30 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
   Widget _buildProfileImage(ProfileState profileState) {
     String? imageUrl;
-
-    // Handle each state explicitly
+    
     if (profileState is ProfileImageOptimisticUpdate) {
-      imageUrl = profileState.optimisticImageUrl; // Local file path
+      imageUrl = profileState.optimisticImageUrl;
     } else if (profileState is ProfileImagePickerLoading) {
-      imageUrl = profileState.optimisticImageUrl; // Local file path during upload
+      imageUrl = profileState.optimisticImageUrl;
     } else if (profileState is ProfileImageUpdated) {
-      imageUrl = profileState.imageUrl; // Server URL after successful upload
+      imageUrl = profileState.imageUrl;
     } else if (profileState is ProfileImageShowMode) {
-      imageUrl = profileState.currentImageUrl; // Persist updated image
+      imageUrl = profileState.currentImageUrl;
     } else if (profileState is ProfileImageUpdateFailed) {
-      imageUrl = profileState.currentImageUrl ?? widget.user.image; // Revert to previous or user image
-    } else if (profileState is ProfileNameOptimisticUpdate ||
-               profileState is ProfileNameEditLoading ||
-               profileState is ProfileNameUpdated ||
-               profileState is ProfileNameUpdateFailed ||
-               profileState is ProfileNameEditMode ||
-               profileState is ProfileNameShowMode ||
-               profileState is ProfileInitial ||
-               profileState is ProfileActivitiesLoading ||
-               profileState is ProfileActivitiesLoaded ||
-               profileState is ProfileError) {
-      imageUrl = profileState.currentImageUrl ?? widget.user.image; // Use current or user image
+      imageUrl = profileState.currentImageUrl ?? widget.user.image;
+    } else {
+      imageUrl = profileState.currentImageUrl ?? widget.user.image;
     }
 
     developer.log('Selected imageUrl: $imageUrl for state: ${profileState.runtimeType}');
+
     if (imageUrl != null && imageUrl.isNotEmpty) {
       if (imageUrl.startsWith('http')) {
         return CachedNetworkImage(
           imageUrl: imageUrl,
           fit: BoxFit.cover,
           placeholder: (context, url) => const CircularProgressIndicator(
-            color: Colors.deepOrange,
+            color: AppColors.primaryOrange,
           ),
           errorWidget: (context, url, error) => const Icon(
             Icons.person,
@@ -363,7 +364,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
         );
       }
     }
-
     return const Icon(
       Icons.person,
       size: 60,

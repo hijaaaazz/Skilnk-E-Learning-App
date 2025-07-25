@@ -26,7 +26,6 @@ class ProfileNameOptimisticUpdate extends ProfileState {
   const ProfileNameOptimisticUpdate(this.optimisticName, {super.currentImageUrl})
       : super(currentName: optimisticName);
 
-  @override
   List<Object?> get props => [optimisticName, currentImageUrl];
 }
 
@@ -36,7 +35,6 @@ class ProfileNameEditLoading extends ProfileState {
   const ProfileNameEditLoading({this.optimisticName, super.currentImageUrl})
       : super(currentName: optimisticName);
 
-  @override
   List<Object?> get props => [optimisticName, currentImageUrl];
 }
 
@@ -46,7 +44,6 @@ class ProfileNameUpdated extends ProfileState {
   const ProfileNameUpdated(this.name, {super.currentImageUrl})
       : super(currentName: name);
 
-  @override
   List<Object?> get props => [name, currentImageUrl];
 }
 
@@ -60,7 +57,6 @@ class ProfileImageOptimisticUpdate extends ProfileState {
   const ProfileImageOptimisticUpdate(this.optimisticImageUrl, {super.currentName})
       : super(currentImageUrl: optimisticImageUrl);
 
-  @override
   List<Object?> get props => [optimisticImageUrl, currentName];
 }
 
@@ -70,7 +66,6 @@ class ProfileImagePickerLoading extends ProfileState {
   const ProfileImagePickerLoading({this.optimisticImageUrl, super.currentName})
       : super(currentImageUrl: optimisticImageUrl);
 
-  @override
   List<Object?> get props => [optimisticImageUrl, currentName];
 }
 
@@ -80,7 +75,6 @@ class ProfileImageUpdated extends ProfileState {
   const ProfileImageUpdated(this.imageUrl, {super.currentName})
       : super(currentImageUrl: imageUrl);
 
-  @override
   List<Object?> get props => [imageUrl, currentName];
 }
 
@@ -101,7 +95,6 @@ class ProfileActivitiesLoaded extends ProfileState {
 
   const ProfileActivitiesLoaded(this.activities, {super.currentName, super.currentImageUrl});
 
-  @override
   List<Object?> get props => [activities, currentName, currentImageUrl];
 }
 
@@ -110,6 +103,5 @@ class ProfileError extends ProfileState {
 
   const ProfileError(this.message, {super.currentName, super.currentImageUrl});
 
-  @override
   List<Object?> get props => [message, currentName, currentImageUrl];
 }

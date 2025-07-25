@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import  'package:user_app/features/home/domain/entity/course-entity.dart';
 import  'package:user_app/features/payment/data/models/add_purchase_params.dart';
@@ -46,13 +47,7 @@ class EnrollmentBottomSheet extends StatelessWidget {
     return BlocListener<EnrollmentBloc, EnrollmentState>(
       listener: (context, state) {
         if (state is EnrollmentError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          SnackBarUtils.showMinimalSnackBar(context,state.message);
         } else if (state is EnrollmentSuccess) {
           HapticFeedback.lightImpact();
           // Fix: Check if the widget is still mounted before navigating
@@ -124,6 +119,7 @@ class EnrollmentBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Color(0xFFFF6636).withOpacity(0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
@@ -381,6 +377,7 @@ class EnrollmentBottomSheet extends StatelessWidget {
                     backgroundColor: const Color(0xFFFF6636),
                     foregroundColor: Colors.white,
                     elevation: 0,
+                    // ignore: deprecated_member_use
                     shadowColor: const Color(0xFFFF6636).withOpacity(0.3),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
@@ -480,6 +477,7 @@ class EnrollmentBottomSheet extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.green.withOpacity(0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 8),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/core/routes/app_route_constants.dart';
 import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_cubit.dart';
 import  'package:user_app/features/account/presentation/blocs/animation_cubit/cubit/auth_animation_state.dart';
@@ -60,9 +61,8 @@ class SignUpForm extends StatelessWidget {
           BlocConsumer<AuthStatusCubit, AuthStatusState>(
             listener: (context, state) {
               if (state.status == AuthStatus.failure && state.message != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message!))
-                );
+                SnackBarUtils.showMinimalSnackBar(context,state.message!);
+              
               }
 
               if (state.status == AuthStatus.emailVerified) {

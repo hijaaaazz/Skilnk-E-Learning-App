@@ -1,7 +1,11 @@
+// ignore_for_file: deprecated_member_use, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import  'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
-import  'package:user_app/features/home/presentation/widgets/video_player/video_controllers.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../bloc/video_player_bloc/video_player_bloc.dart';
+import 'video_controllers.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerWidget extends StatelessWidget {
@@ -14,10 +18,10 @@ class VideoPlayerWidget extends StatelessWidget {
         if (previous.runtimeType != current.runtimeType) return true;
         if (current is VideoPlayerReady && previous is VideoPlayerReady) {
           return previous.isFullscreen != current.isFullscreen ||
-                 previous.isBuffering != current.isBuffering ||
-                 previous.isCompleted != current.isCompleted ||
-                 previous.isPlaying != current.isPlaying ||
-                 previous.controller != current.controller;
+              previous.isBuffering != current.isBuffering ||
+              previous.isCompleted != current.isCompleted ||
+              previous.isPlaying != current.isPlaying ||
+              previous.controller != current.controller;
         }
         return true;
       },
@@ -25,7 +29,6 @@ class VideoPlayerWidget extends StatelessWidget {
         if (state is VideoPlayerReady && state.isFullscreen) {
           return _buildFullscreenPlayer(state, context);
         }
-        
         return Container(
           color: Colors.black,
           child: SafeArea(
@@ -42,15 +45,12 @@ class VideoPlayerWidget extends StatelessWidget {
     if (state is VideoPlayerLoading) {
       return _buildLoadingState();
     }
-
     if (state is VideoPlayerError) {
       return _buildErrorState(state, context);
     }
-
     if (state is VideoPlayerReady) {
       return _buildNormalVideoPlayer(state, context);
     }
-
     return _buildInitialState();
   }
 
@@ -59,16 +59,27 @@ class VideoPlayerWidget extends StatelessWidget {
       aspectRatio: 16 / 9,
       child: Container(
         color: Colors.black,
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(
-                color: Colors.deepOrange,
-                strokeWidth: 3,
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
+                  color: AppColors.primaryOrange.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryOrange,
+                    strokeWidth: 3,
+                  ),
+                ),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Loading video...',
                 style: TextStyle(
                   color: Colors.white,
@@ -90,22 +101,30 @@ class VideoPlayerWidget extends StatelessWidget {
         color: Colors.black,
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(32),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.deepOrange,
-                  size: 48,
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryOrange.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Icon(
+                    Icons.error_outline,
+                    color: AppColors.primaryOrange,
+                    size: 40,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 const Text(
                   'Error loading video',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -117,21 +136,30 @@ class VideoPlayerWidget extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please go back and try again'),
-                        backgroundColor: Colors.deepOrange,
-                      ),
-                    );
+                    SnackBarUtils.showMinimalSnackBar(context,'Please go back and try again');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepOrange,
+                    backgroundColor: AppColors.primaryOrange,
                     foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    elevation: 0,
                   ),
-                  child: const Text('Retry'),
+                  child: const Text(
+                    'Try Again',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -157,26 +185,34 @@ class VideoPlayerWidget extends StatelessWidget {
                 child: VideoPlayer(state.controller),
               ),
             ),
-            
-            // Fixed buffering indicator
-            if (state.isBuffering && 
-                state.controller.value.isInitialized && 
-                !state.isCompleted)
+
+            // Modern buffering indicator
+            if (state.isBuffering && state.controller.value.isInitialized && !state.isCompleted)
               Container(
                 color: Colors.black.withOpacity(0.3),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.deepOrange,
-                    strokeWidth: 3,
+                child: Center(
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryOrange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryOrange,
+                        strokeWidth: 3,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            
-            // 🔧 FIXED: Show completion overlay only when completed AND not playing
+
+            // Completion overlay
             if (state.isCompleted && !state.isPlaying)
               _buildCompletionOverlay(context, state),
-            
-            // Video Controls - show when not completed OR when playing after completion
+
+            // Video Controls
             if (!state.isCompleted || state.isPlaying)
               const VideoControls(),
           ],
@@ -207,25 +243,33 @@ class VideoPlayerWidget extends StatelessWidget {
                 ),
               ),
             ),
-            
-            // Fixed buffering indicator for fullscreen
-            if (state.isBuffering && 
-                state.controller.value.isInitialized && 
-                !state.isCompleted)
+
+            // Fullscreen buffering indicator
+            if (state.isBuffering && state.controller.value.isInitialized && !state.isCompleted)
               Container(
                 color: Colors.black.withOpacity(0.3),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.deepOrange,
-                    strokeWidth: 3,
+                child: Center(
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryOrange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryOrange,
+                        strokeWidth: 4,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            
-            // 🔧 FIXED: Fullscreen completion overlay
+
+            // Fullscreen completion overlay
             if (state.isCompleted && !state.isPlaying)
               _buildCompletionOverlay(context, state),
-            
+
             // Video Controls
             if (!state.isCompleted || state.isPlaying)
               const VideoControls(),
@@ -235,74 +279,74 @@ class VideoPlayerWidget extends StatelessWidget {
     );
   }
 
-  // 🔧 IMPROVED: Better replay functionality
   Widget _buildCompletionOverlay(BuildContext context, VideoPlayerReady state) {
     return Container(
-      color: Colors.black.withOpacity(0.7),
+      color: Colors.black.withOpacity(0.8),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Completion badge
+            // Modern completion badge
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(20),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF4CAF50).withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-              child: Row(
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(
                     Icons.check_circle,
                     color: Colors.white,
-                    size: 20,
+                    size: 24,
                   ),
-                  SizedBox(width: 8),
+                  SizedBox(width: 12),
                   Text(
-                    'COMPLETED',
+                    'LECTURE COMPLETED',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            
-            // 🔧 IMPROVED: Better replay button logic
+            const SizedBox(height: 32),
+
+            // Modern replay button
             GestureDetector(
               onTap: () {
-                // Method 1: Use ReplayVideoEvent (if you added it to bloc)
-                // context.read<VideoPlayerBloc>().add(ReplayVideoEvent());
-                
-                // Method 2: Sequential events (current approach but improved)
-                context.read<VideoPlayerBloc>().add(
-                  SeekVideoEvent(Duration.zero),
-                );
-                // Small delay to ensure seek completes
-                Future.delayed(const Duration(milliseconds: 100), () {
-                  context.read<VideoPlayerBloc>().add(PlayVideoEvent());
-                });
+                context.read<VideoPlayerBloc>().add(ReplayVideoEvent());
               },
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.deepOrange,
+                  gradient: AppColors.primaryGradient,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 2,
+                      color: AppColors.primaryOrange.withOpacity(0.4),
+                      blurRadius: 16,
+                      spreadRadius: 4,
                     ),
                   ],
                 ),
                 child: const Icon(
                   Icons.replay,
-                  size: 36,
+                  size: 40,
                   color: Colors.white,
                 ),
               ),
@@ -312,8 +356,8 @@ class VideoPlayerWidget extends StatelessWidget {
               'Tap to replay',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -327,22 +371,30 @@ class VideoPlayerWidget extends StatelessWidget {
       aspectRatio: 16 / 9,
       child: Container(
         color: Colors.black,
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.play_circle_outline,
-                color: Colors.deepOrange,
-                size: 64,
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryOrange.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.play_circle_outline,
+                  color: AppColors.primaryOrange,
+                  size: 50,
+                ),
               ),
-              SizedBox(height: 16),
-              Text(
+              const SizedBox(height: 16),
+              const Text(
                 'Ready to play',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

@@ -1,7 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import  'package:user_app/features/home/presentation/bloc/video_player_bloc/video_player_bloc.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../bloc/video_player_bloc/video_player_bloc.dart';
 import 'dart:developer';
 
 class VideoControls extends StatelessWidget {
@@ -38,8 +41,8 @@ class VideoControls extends StatelessWidget {
                   Positioned(
                     top: MediaQuery.of(context).padding.top + 8,
                     left: 16,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 24),
+                    child: _buildModernControlButton(
+                      icon: Icons.arrow_back_ios,
                       onPressed: () {
                         log('Exiting fullscreen via back button');
                         context.read<VideoPlayerBloc>().add(ToggleFullscreenEvent());
@@ -47,7 +50,7 @@ class VideoControls extends StatelessWidget {
                     ),
                   ),
 
-                // Center play/pause button
+                // Center play/pause button (make smaller)
                 Center(
                   child: GestureDetector(
                     onTap: () {
@@ -55,21 +58,21 @@ class VideoControls extends StatelessWidget {
                       context.read<VideoPlayerBloc>().add(TogglePlayPauseEvent());
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(16), // Reduced from 20
                       decoration: BoxDecoration(
-                        color: Colors.deepOrange.withOpacity(0.9),
+                        gradient: AppColors.primaryGradient,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
-                            blurRadius: 8,
+                            color: AppColors.primaryOrange.withOpacity(0.4),
+                            blurRadius: 12,
                             spreadRadius: 2,
                           ),
                         ],
                       ),
                       child: Icon(
                         state.isPlaying ? Icons.pause : Icons.play_arrow,
-                        size: 36,
+                        size: 32, // Reduced from 40
                         color: Colors.white,
                       ),
                     ),
@@ -90,46 +93,43 @@ class VideoControls extends StatelessWidget {
                   ),
                 ),
 
-                // Bottom controls
+                // Bottom controls (reordered)
                 Positioned(
                   bottom: state.isFullscreen ? MediaQuery.of(context).padding.bottom + 8 : 8,
                   left: 16,
                   right: 16,
                   child: Column(
                     children: [
-                      // Progress bar
-                      
-                      
-                      // Control buttons
+                      // Control buttons first
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              _buildControlButton(
+                              _buildModernControlButton(
                                 icon: Icons.replay_10,
                                 onPressed: () {
                                   final newPosition = state.position - const Duration(seconds: 10);
                                   log('Rewinding to: $newPosition');
                                   context.read<VideoPlayerBloc>().add(
-                                        SeekVideoEvent(newPosition < Duration.zero ? Duration.zero : newPosition),
-                                      );
+                                    SeekVideoEvent(newPosition < Duration.zero ? Duration.zero : newPosition),
+                                  );
                                 },
                               ),
                               const SizedBox(width: 16),
-                              _buildControlButton(
+                              _buildModernControlButton(
                                 icon: Icons.forward_10,
                                 onPressed: () {
                                   final newPosition = state.position + const Duration(seconds: 10);
                                   log('Forwarding to: $newPosition');
                                   context.read<VideoPlayerBloc>().add(
-                                        SeekVideoEvent(newPosition > state.duration ? state.duration : newPosition),
-                                      );
+                                    SeekVideoEvent(newPosition > state.duration ? state.duration : newPosition),
+                                  );
                                 },
                               ),
                             ],
                           ),
-                          _buildControlButton(
+                          _buildModernControlButton(
                             icon: state.isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
                             onPressed: () {
                               log('Toggling fullscreen');
@@ -138,9 +138,11 @@ class VideoControls extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: _buildProgressBar(context, state)),
+                      
+                      const SizedBox(height: 16), // Space between buttons and progress bar
+                      
+                      // Progress bar below buttons
+                      _buildProgressBar(context, state),
                     ],
                   ),
                 ),
@@ -151,14 +153,25 @@ class VideoControls extends StatelessWidget {
                     top: state.isFullscreen ? MediaQuery.of(context).padding.top + 60 : 60,
                     right: 16,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(12),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF4CAF50), Color(0xFF66BB6A)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF4CAF50).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Icon(
                             Icons.check_circle,
                             color: Colors.white,
@@ -170,7 +183,7 @@ class VideoControls extends StatelessWidget {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 10,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -186,77 +199,58 @@ class VideoControls extends StatelessWidget {
   }
 
   Widget _buildProgressBar(BuildContext context, VideoPlayerReady state) {
-    return GestureDetector(
-      onHorizontalDragUpdate: (details) {
-        final box = context.findRenderObject() as RenderBox?;
-        if (box != null) {
-          final localOffset = box.globalToLocal(details.globalPosition);
-          final progress = (localOffset.dx / box.size.width).clamp(0.0, 1.0);
-          final newPosition = state.duration * progress;
-          log('Dragging progress bar to: $newPosition');
-          context.read<VideoPlayerBloc>().add(SeekVideoEvent(newPosition));
-        }
-      },
-      onTapDown: (details) {
-        final box = context.findRenderObject() as RenderBox?;
-        if (box != null) {
-          final localOffset = box.globalToLocal(details.globalPosition);
-          final progress = (localOffset.dx / box.size.width).clamp(0.0, 1.0);
-          final newPosition = state.duration * progress;
-          log('Tapped progress bar at: $newPosition');
-          context.read<VideoPlayerBloc>().add(SeekVideoEvent(newPosition));
-        }
-      },
-      child: Container(
-        height: 6,
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(3),
+    return SizedBox(
+      height: 40, // Increased height for better touch target
+      child: SliderTheme(
+        data: SliderTheme.of(context).copyWith(
+          trackHeight: 6,
+          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+          activeTrackColor: AppColors.primaryOrange,
+          inactiveTrackColor: Colors.white.withOpacity(0.3),
+          thumbColor: AppColors.primaryOrange,
+          overlayColor: AppColors.primaryOrange.withOpacity(0.3),
         ),
-        child: Stack(
-          children: [
-            FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: state.completionProgress.clamp(0.0, 1.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255).withOpacity(0.4),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-            FractionallySizedBox(
-              alignment: Alignment.centerLeft,
-              widthFactor: state.progress.clamp(0.0, 1.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            ),
-          ],
+        child: Slider(
+          value: state.progress.clamp(0.0, 1.0),
+          onChanged: (value) {
+            final newPosition = state.duration * value;
+            log('Seeking to: $newPosition');
+            context.read<VideoPlayerBloc>().add(SeekVideoEvent(newPosition));
+          },
+          onChangeStart: (value) {
+            // Pause auto-hide when user starts seeking
+            context.read<VideoPlayerBloc>().add(ShowControlsEvent());
+          },
+          onChangeEnd: (value) {
+            // Resume auto-hide after seeking
+            context.read<VideoPlayerBloc>().add(ShowControlsEvent());
+          },
         ),
       ),
     );
   }
 
-  Widget _buildControlButton({
+  Widget _buildModernControlButton({
     required IconData icon,
     required VoidCallback onPressed,
   }) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.6),
           shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.white.withOpacity(0.2),
+            width: 1,
+          ),
         ),
         child: Icon(
           icon,
           color: Colors.white,
-          size: 22,
+          size: 20,
         ),
       ),
     );
@@ -265,18 +259,24 @@ class VideoControls extends StatelessWidget {
   Widget _buildSpeedButton(BuildContext context, VideoPlayerReady state) {
     return Row(
       children: [
-        !state.isFullscreen?
-        IconButton(
-          onPressed: (){
-            context.pop();
-          },
-          icon:  Icon(Icons.arrow_back_ios,color: Colors.white,)): SizedBox.shrink(),
+        if (!state.isFullscreen)
+          _buildModernControlButton(
+            icon: Icons.arrow_back_ios,
+            onPressed: () {
+              context.pop();
+            },
+          ),
+        const SizedBox(width: 12),
         PopupMenuButton<double>(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+                width: 1,
+              ),
             ),
             child: Text(
               '${state.playbackSpeed}x',
@@ -287,17 +287,22 @@ class VideoControls extends StatelessWidget {
               ),
             ),
           ),
-          itemBuilder: (context) => [
-            0.5,
-            0.75,
-            1.0,
-            1.25,
-            1.5,
-            2.0,
-          ].map((speed) {
+          itemBuilder: (context) => [0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((speed) {
             return PopupMenuItem<double>(
               value: speed,
-              child: Text('${speed}x'),
+              child: Row(
+                children: [
+                  Text('${speed}x'),
+                  if (speed == state.playbackSpeed) ...[
+                    const Spacer(),
+                    const Icon(
+                      Icons.check,
+                      color: AppColors.primaryOrange,
+                      size: 16,
+                    ),
+                  ],
+                ],
+              ),
             );
           }).toList(),
           onSelected: (speed) {
@@ -311,10 +316,14 @@ class VideoControls extends StatelessWidget {
 
   Widget _buildTimeDisplay(VideoPlayerReady state) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.black.withOpacity(0.6),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Text(
         '${_formatDuration(state.position)} / ${_formatDuration(state.duration)}',
@@ -332,6 +341,7 @@ class VideoControls extends StatelessWidget {
     final hours = duration.inHours;
     final minutes = duration.inMinutes.remainder(60);
     final seconds = duration.inSeconds.remainder(60);
+
     if (hours > 0) {
       return '$hours:${twoDigits(minutes)}:${twoDigits(seconds)}';
     }

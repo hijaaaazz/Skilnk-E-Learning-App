@@ -1,4 +1,3 @@
-
 part of 'video_player_bloc.dart';
 
 @immutable
@@ -10,6 +9,7 @@ class InitializeVideoEvent extends VideoPlayerEvent {
   final String? lectureId;
   final String? courseId;
   final String? userId;
+  final bool? wasCompleted; // Add this to track if lecture was previously completed
 
   InitializeVideoEvent({
     required this.videoUrl,
@@ -17,6 +17,7 @@ class InitializeVideoEvent extends VideoPlayerEvent {
     required this.lectureId,
     required this.courseId,
     required this.userId,
+    this.wasCompleted = false,
   });
 }
 
@@ -28,7 +29,6 @@ class TogglePlayPauseEvent extends VideoPlayerEvent {}
 
 class SeekVideoEvent extends VideoPlayerEvent {
   final Duration position;
-
   SeekVideoEvent(this.position);
 }
 
@@ -41,13 +41,15 @@ class HideControlsEvent extends VideoPlayerEvent {}
 class UpdateProgressEvent extends VideoPlayerEvent {
   final Duration position;
   final Duration duration;
-
-  UpdateProgressEvent({required this.position, required this.duration});
+  
+  UpdateProgressEvent({
+    required this.position, 
+    required this.duration
+  });
 }
 
 class ChangePlaybackSpeedEvent extends VideoPlayerEvent {
   final double speed;
-
   ChangePlaybackSpeedEvent(this.speed);
 }
 
@@ -58,16 +60,11 @@ class VideoCompletedEvent extends VideoPlayerEvent {
   final String courseId;
   final String userId;
 
-
-
   VideoCompletedEvent({
     required this.lectureId,
     required this.courseId,
     required this.userId,
   });
 }
-// Add this to your video_player_event.dart
-class ReplayVideoEvent extends VideoPlayerEvent {
-   ReplayVideoEvent();
-  
-}
+
+class ReplayVideoEvent extends VideoPlayerEvent {}

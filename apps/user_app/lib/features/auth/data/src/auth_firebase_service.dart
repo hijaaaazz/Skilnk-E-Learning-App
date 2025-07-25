@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +20,7 @@ abstract class AuthFirebaseService {
   Future<Either<String, List<String>>> fetchSignInMethodsForEmail(String email);
   Future<Either<String, bool>> checkInRestrictedCollections(String email);
   Future<Either<String, String>> updateDisplayName(String uid, String name);
+  Future<Either<String, bool>> deleteUserData(String id,String userPassword);
 }
 
 class AuthFirebaseServiceImp extends AuthFirebaseService {
@@ -236,4 +239,55 @@ Future<Either<String, Map<String, dynamic>?>> getUserData(String uid) async {
       return Left('Failed to update display name');
     }
   }
+
+  
+  @override
+Future<Either<String, bool>> deleteUserData(String id, String userPassword) async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      log("No user is currently signed in.");
+      return Left("No user is signed in.");
+    }
+
+    log("Current user UID: ${user.uid}, target ID: $id");
+
+    if (user.uid != id) {
+      log("UID mismatch. Aborting delete.");
+      return Left("User ID mismatch.");
+    }
+
+    final email = user.email;
+    if (email == null) {
+      log("User email is null.");
+      return Left("User email is null. Cannot reauthenticate.");
+    }
+
+    // Always use email/password credential for reauthentication
+    final credential = EmailAuthProvider.credential(email: email, password: userPassword);
+
+    try {
+      await user.reauthenticateWithCredential(credential);
+      log("✅ Reauthentication with password successful.");
+    } on FirebaseAuthException catch (e) {
+      log("❌ Reauthentication failed: ${e.message}");
+      return Left("Wrong password or reauthentication failed: ${e.message}");
+    }
+
+    // Proceed to delete only if reauth was successful
+    await user.delete();
+    log("✅ Firebase Auth user deleted.");
+
+    await FirebaseFirestore.instance.collection('users').doc(id).delete();
+    log("✅ Firestore document deleted.");
+
+    return Right(true);
+  } catch (e) {
+    log("❌ General error: $e");
+    return Left("Failed to delete user data: $e");
+  }
+}
+ 
+
 }

@@ -7,7 +7,6 @@ import 'package:meta/meta.dart';
 import  'package:user_app/core/usecase/usecase.dart';
 import  'package:user_app/features/home/data/models/banner_model.dart';
 import  'package:user_app/features/home/domain/entity/category_entity.dart';
-import  'package:user_app/features/home/domain/entity/course-entity.dart';
 import  'package:user_app/features/home/domain/entity/course_privew.dart';
 import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import  'package:user_app/features/home/domain/usecases/get_banner_info.dart';

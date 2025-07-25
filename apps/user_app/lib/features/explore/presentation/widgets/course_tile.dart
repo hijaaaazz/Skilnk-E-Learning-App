@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import  'package:user_app/core/routes/app_route_constants.dart';
-import  'package:user_app/features/home/domain/entity/course-entity.dart';
 import  'package:user_app/features/home/domain/entity/course_privew.dart';
 
 // ignore: must_be_immutable

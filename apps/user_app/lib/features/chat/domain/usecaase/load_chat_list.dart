@@ -1,4 +1,6 @@
 // lib/features/chat/domain/usecaase/loadchat_usecase.dart
+// ignore_for_file: unused_import
+
 import 'package:dartz/dartz.dart';
 import  'package:user_app/core/usecase/usecase.dart';
 import  'package:user_app/features/chat/data/models/chat_model.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import  'package:user_app/features/chat/data/models/chat_model.dart';

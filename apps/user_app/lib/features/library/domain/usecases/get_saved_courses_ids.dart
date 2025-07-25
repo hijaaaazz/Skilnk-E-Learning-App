@@ -2,7 +2,6 @@
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import  'package:user_app/core/usecase/usecase.dart';
-import  'package:user_app/features/home/domain/entity/course_privew.dart';
 import  'package:user_app/features/library/domain/repo/library_repo.dart';
 import  'package:user_app/service_locator.dart';
 

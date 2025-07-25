@@ -50,6 +50,7 @@ class CoursesSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
                     color: const Color(0xFFFF6B35).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
-import  'package:user_app/features/account/presentation/blocs/cubit/profile_cubit.dart';
-import  'package:user_app/features/account/presentation/blocs/cubit/profile_state.dart';
-import  'package:user_app/features/account/presentation/widgets/profile_header.dart';
-import  'package:user_app/features/account/presentation/widgets/profile_infosection.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../blocs/auth_cubit/auth_cubit.dart';
+import '../blocs/cubit/profile_cubit.dart';
+import '../blocs/cubit/profile_state.dart';
+import '../widgets/profile_header.dart';
+import '../widgets/profile_infosection.dart';
 import 'dart:developer' as developer;
 
 class ProfilePage extends StatelessWidget {
@@ -39,55 +41,47 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: const Text('Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.deepOrange.shade800,
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        backgroundColor: AppColors.primaryOrange,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: AppColors.primaryGradient,
+          ),
+        ),
       ),
       body: MultiBlocListener(
         listeners: [
           BlocListener<ProfileCubit, ProfileState>(
             listener: (context, state) {
               if (state is ProfileError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                    duration: const Duration(seconds: 3),
-                  ),
-                );
-                // Pop only the bottom sheet
+                SnackBarUtils.showMinimalSnackBar(context,state.message);
                 if (ModalRoute.of(context)?.isCurrent == false) {
                   developer.log('Popping bottom sheet for ProfileError');
                   Navigator.of(context).pop();
                 }
               } else if (state is ProfileImageUpdated) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Profile image updated successfully!'),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-                // Pop only the bottom sheet
+                SnackBarUtils.showMinimalSnackBar(context,'Profile image updated successfully!');
                 if (ModalRoute.of(context)?.isCurrent == false) {
                   developer.log('Popping bottom sheet for ProfileImageUpdated');
                   Navigator.of(context).pop();
                 }
               } else if (state is ProfileImageUpdateFailed) {
-                // Pop only the bottom sheet
                 if (ModalRoute.of(context)?.isCurrent == false) {
                   developer.log('Popping bottom sheet for ProfileImageUpdateFailed');
                   Navigator.of(context).pop();
                 }
               } else if (state is ProfileNameUpdated) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Name updated successfully!'),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 2),
-                  ),
-                );
+                SnackBarUtils.showMinimalSnackBar(context,'Name updated successfully!');
               }
             },
           ),
@@ -103,9 +97,9 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                       profileState.currentImageUrl != state.user!.image) {
                     developer.log('Reinitializing ProfileCubit with name: ${state.user!.name}, image: ${state.user!.image}');
                     context.read<ProfileCubit>().initializeWithUserData(
-                          name: state.user!.name,
-                          imageUrl: state.user!.image,
-                        );
+                      name: state.user!.name,
+                      imageUrl: state.user!.image,
+                    );
                   }
                 }
               }
@@ -116,11 +110,14 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
           builder: (context, state) {
             if (state.status == AuthStatus.loading) {
               return const Center(
-                child: CircularProgressIndicator(color: Colors.deepOrange),
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryOrange,
+                ),
               );
             } else if (state.status == AuthStatus.emailVerified) {
               final user = state.user!;
               return RefreshIndicator(
+                color: AppColors.primaryOrange,
                 onRefresh: () async {
                   final userId = user.userId;
                   context.read<AuthStatusCubit>().getCurrentUser();
@@ -141,13 +138,18 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, size: 60, color: Colors.deepOrange.shade300),
+                    Icon(
+                      Icons.error_outline,
+                      size: 60,
+                      // ignore: deprecated_member_use
+                      color: AppColors.primaryOrange.withOpacity(0.6),
+                    ),
                     const SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
                         'Failed to load profile: ${state.message}',
-                        style: TextStyle(color: Colors.grey.shade700),
+                        style: TextStyle(color: AppColors.textSecondary),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -157,9 +159,11 @@ class _ProfilePageContentState extends State<ProfilePageContent> {
                         context.read<AuthStatusCubit>().getCurrentUser();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepOrange.shade700,
+                        backgroundColor: AppColors.primaryOrange,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: const Text('Retry'),
                     ),

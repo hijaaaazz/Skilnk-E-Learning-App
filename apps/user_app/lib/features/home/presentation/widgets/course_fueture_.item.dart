@@ -6,10 +6,10 @@ class CourseFeatureItem extends StatelessWidget {
   final String text;
 
   const CourseFeatureItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.text,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

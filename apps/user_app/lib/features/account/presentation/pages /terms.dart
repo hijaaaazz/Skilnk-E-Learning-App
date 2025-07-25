@@ -1,7 +1,8 @@
+// ignore_for_file: use_key_in_widget_constructors, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import  'package:user_app/presentation/account/widgets/app_bar.dart';
 
 // Model for document items
 class DocumentItem {
@@ -235,9 +236,10 @@ class LegalDocumentsPage extends StatelessWidget {
 class MarkdownViewerPage extends StatefulWidget {
   final DocumentItem document;
 
-  const MarkdownViewerPage({Key? key, required this.document}) : super(key: key);
+  const MarkdownViewerPage({super.key, required this.document});
 
   @override
+  // ignore: library_private_types_in_public_api
   _MarkdownViewerPageState createState() => _MarkdownViewerPageState();
 }
 

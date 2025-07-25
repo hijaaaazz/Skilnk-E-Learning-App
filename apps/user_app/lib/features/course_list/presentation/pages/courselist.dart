@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/features/course_list/data/models/list_page_arg.dart';
 import  'package:user_app/features/course_list/presentation/bloc/course_list_bloc.dart';
 import  'package:user_app/features/course_list/presentation/bloc/course_list_event.dart';
@@ -72,9 +73,7 @@ class _CourseListState extends State<CourseList> {
               _isLoadingMore = false;
             } else if (state is CourseListError) {
               _isLoadingMore = false;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${state.message}')),
-              );
+              SnackBarUtils.showMinimalSnackBar(context,state.message);
             }
           },
           builder: (context, state) {

@@ -1,6 +1,5 @@
 // course_progress_event.dart
 
-import  'package:user_app/features/home/data/models/course_progress.dart';
 import  'package:user_app/features/home/data/models/update_progress_params.dart';
 
 abstract class CourseProgressEvent {

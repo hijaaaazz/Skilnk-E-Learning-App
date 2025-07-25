@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import  'package:user_app/features/account/data/models/activity_model.dart';
 import  'package:user_app/features/account/data/models/update_dp_params.dart';
 import  'package:user_app/features/account/data/models/update_name_params.dart';
 import  'package:user_app/features/account/domain/usecase/get_recent_activities.dart';

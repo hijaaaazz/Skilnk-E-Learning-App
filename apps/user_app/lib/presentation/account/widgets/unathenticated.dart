@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import  'package:user_app/core/routes/app_route_constants.dart';
-import  'package:user_app/features/account/presentation/pages%20/terms.dart';
 import  'package:user_app/features/account/presentation/widgets/login_suggession.dart';
 import  'package:user_app/features/account/presentation/widgets/option_tile.dart';
 
@@ -45,6 +44,7 @@ Widget buildUnauthenticatedUI(BuildContext context) {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: Colors.grey.withOpacity(0.1),
                   spreadRadius: 1,
                   blurRadius: 4,

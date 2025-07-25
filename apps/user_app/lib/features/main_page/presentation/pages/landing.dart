@@ -35,6 +35,7 @@ class _LandingPageState extends State<LandingPage> {
     final data = docSnapshot.data() as Map<String, dynamic>?;
 
     if (data != null && data['isBlocked'] == true) {
+      // ignore: use_build_context_synchronously
       _showBlockedDialog(context);
     }
   }

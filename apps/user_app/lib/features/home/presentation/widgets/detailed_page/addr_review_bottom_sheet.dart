@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import  'package:user_app/features/home/data/models/review_model.dart';
 import  'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
-import  'package:user_app/features/home/presentation/bloc/cubit/course_state.dart';
 
 class AddReviewBottomSheet extends StatefulWidget {
   final String courseId;
@@ -51,13 +51,7 @@ class _AddReviewBottomSheetState extends State<AddReviewBottomSheet> {
 
   void _submitReview(BuildContext context) {
     if (_rating == 0 || _reviewController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please provide a rating and review'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      SnackBarUtils.showMinimalSnackBar(context,'Please provide a rating and review');
       return;
     }
 

@@ -10,7 +10,7 @@ class ExplorePage extends StatelessWidget {
       
 
       backgroundColor:Colors.blue,
-      body: Container(
+      body: SizedBox(
         height: 100,
         width: 100,
       

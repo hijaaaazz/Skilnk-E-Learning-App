@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import  'package:user_app/features/account/data/models/activity_model.dart';
 import  'package:user_app/features/account/data/models/update_dp_params.dart';
 import  'package:user_app/features/account/data/models/update_name_params.dart';
@@ -10,6 +9,7 @@ import  'package:user_app/features/account/data/service/profile_cloudinary_servi
 import  'package:user_app/features/account/data/service/profile_firebase_service.dart';
 
 import  'package:user_app/features/account/domain/repo/profile_repo.dart';
+import 'package:user_app/features/auth/data/src/auth_firebase_service.dart';
 import  'package:user_app/service_locator.dart';
 
 class ProfileRepoImp extends ProfileRepository {
@@ -67,6 +67,22 @@ Future<Either<String, String>> updateProfilePic(UpdateDpParams params) async {
     try {
     // Step 1: Upload image to Cloudinary
     final uploadResult = await serviceLocator<FirebaseProfileService>().getRecentEnrollments(userId);
+    return await uploadResult.fold(
+      (failure) => Left(failure),
+      (newName)  {
+        return Right(newName);
+      },
+    );
+  } catch (e) {
+    return Left("Profile update failed: $e");
+  }
+  }
+  
+  @override
+  Future<Either<String, bool>> deleteUserData(String userId,String password)async{
+   try {
+    // Step 1: Upload image to Cloudinary
+    final uploadResult = await serviceLocator<AuthFirebaseService>().deleteUserData(userId,password);
     return await uploadResult.fold(
       (failure) => Left(failure),
       (newName)  {

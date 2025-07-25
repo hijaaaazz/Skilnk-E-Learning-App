@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/features/account/presentation/pages%20/account.dart';
 import  'package:user_app/presentation/account/widgets/app_bar.dart';
 
@@ -7,6 +8,7 @@ class HelpSupportPage extends StatefulWidget {
   const HelpSupportPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HelpSupportPageState createState() => _HelpSupportPageState();
 }
 
@@ -22,24 +24,16 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
       if (await canLaunchUrl(emailUri)) {
         await launchUrl(emailUri);
       } else {
-        _showErrorSnackBar('Could not launch email app');
+        // ignore: use_build_context_synchronously
+        SnackBarUtils.showErrorSnackBar(context,'Could not launch email app');
       }
     } catch (e) {
-      _showErrorSnackBar('Error launching email: $e');
+      // ignore: use_build_context_synchronously
+      SnackBarUtils.showErrorSnackBar(context,'Error launching email: $e');
     }
   }
 
-  void _showErrorSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
-
+ 
   void _showEmailConfirmation(BuildContext context) {
     showDialog(
       context: context,
@@ -101,6 +95,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
     return Container(
       padding: const EdgeInsets.all(30),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: Colors.deepOrange.withOpacity(0.1),
         borderRadius: BorderRadius.circular(25),
       ),
@@ -143,6 +138,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, 10),

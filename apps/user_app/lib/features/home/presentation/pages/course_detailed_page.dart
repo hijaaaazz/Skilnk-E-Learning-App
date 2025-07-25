@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/core/routes/app_route_constants.dart';
 import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import  'package:user_app/features/home/data/models/getcourse_details_params.dart';
@@ -27,7 +28,7 @@ class CourseDetailPage extends StatefulWidget {
 class _CourseDetailPageState extends State<CourseDetailPage> {
   int _selectedTabIndex = 0;
   final ScrollController _scrollController = ScrollController();
-  bool _isAppBarExpanded = true;
+  final bool _isAppBarExpanded = true;
   bool _hasLoadedReviews = false; // Flag to prevent multiple review loads
 
   @override
@@ -51,9 +52,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       _hasLoadedReviews = false; // Reset flag when reinitializing
     } catch (e) {
       log('Error initializing page: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load course: $e'), backgroundColor: Colors.red),
-      );
+      SnackBarUtils.showMinimalSnackBar(context,'Failed to load course: $e');
     }
   }
 
@@ -72,9 +71,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   void _handleBookmarkTap(CourseEntity course) {
     final userId = context.read<AuthStatusCubit>().state.user?.userId;
     if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to save course'), backgroundColor: Colors.orange),
-      );
+      SnackBarUtils.showMinimalSnackBar(context,'Please login to save course');
       return;
     }
     context.read<CourseCubit>().toggleSaveCourse(

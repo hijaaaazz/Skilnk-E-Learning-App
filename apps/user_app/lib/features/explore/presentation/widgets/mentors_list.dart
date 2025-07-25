@@ -145,6 +145,7 @@ class MentorsListWidget extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 32,
+                              // ignore: deprecated_member_use
                               backgroundColor: ExploreTheme.secondaryColor.withOpacity(0.1),
                               child: Text(
                                 mentor.name.substring(0, 1),

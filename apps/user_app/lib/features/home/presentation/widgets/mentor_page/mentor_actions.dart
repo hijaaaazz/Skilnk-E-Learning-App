@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import  'package:user_app/core/routes/app_route_constants.dart';
 import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
-import  'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_bloc.dart';
-import  'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_event.dart';
 
 class MentorActions extends StatelessWidget {
   final MentorEntity mentor;
@@ -28,6 +25,7 @@ class MentorActions extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: const Color(0xFFFF6B35).withOpacity(0.4),
                   blurRadius: 12,
                   offset: const Offset(0, 6),

@@ -1,5 +1,7 @@
-// ignore: file_names
 
+
+
+// ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
 
@@ -9,11 +11,11 @@ class TabSelector extends StatelessWidget {
   final Function(int) onTabSelected;
 
   const TabSelector({
-    Key? key,
+    super.key,
     required this.tabs,
     required this.selectedIndex,
     required this.onTabSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

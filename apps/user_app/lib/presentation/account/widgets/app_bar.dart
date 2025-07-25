@@ -16,7 +16,7 @@ class SkilnkAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
       child: AppBar(
-        
+        automaticallyImplyLeading: false,
         foregroundColor: Colors.black,
         title: Text(
           title, // Use the provided title here

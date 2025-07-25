@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
 import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 
 class TutorChat extends Equatable {
@@ -28,7 +27,7 @@ class TutorChat extends Equatable {
       chatId: chatId ?? this.chatId,
       user: user ?? this.user,
       lastMessage: lastMessage ?? this.lastMessage,
-      lastmessagedAt: lastmessagedAt ?? this.lastmessagedAt,
+      lastmessagedAt: lastmessagedAt ?? lastmessagedAt,
     );
   }
 }

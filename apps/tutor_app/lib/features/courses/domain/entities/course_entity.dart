@@ -12,7 +12,6 @@ class CourseEntity {
   final String tutorId;
   final String language;
   final int duration;
-  final bool isActive;
   final int enrolledCount;
   final double averageRating;
   final Map<String, int> ratingBreakdown;
@@ -38,7 +37,6 @@ class CourseEntity {
     required this.tutorId,
     required this.categoryName,
     required this.duration,
-    required this.isActive,
     required this.enrolledCount,
     required this.averageRating,
     required this.ratingBreakdown,
@@ -91,7 +89,6 @@ class CourseEntity {
     tutorId: tutorId ?? this.tutorId,
     categoryName: categoryName ?? this.categoryName,
     duration: duration ?? this.duration,
-    isActive: isActive ?? this.isActive,
     enrolledCount: enrolledCount ?? this.enrolledCount,
     averageRating: averageRating ?? this.averageRating,
     ratingBreakdown: ratingBreakdown ?? this.ratingBreakdown,
@@ -141,7 +138,6 @@ extension CourseEntityCopyWith on CourseEntity {
       courseThumbnail: courseThumbnail ?? this.courseThumbnail,
       // Keep other values unchanged
       tutorId: tutorId,
-      isActive: isActive,
       enrolledCount: enrolledCount,
       averageRating: averageRating,
       ratingBreakdown: ratingBreakdown,
@@ -160,7 +156,7 @@ extension CourseEntityToPreview on CourseEntity {
   CoursePreview toPreview() {
     return CoursePreview(
       id: id,
-      isActive: isActive,
+      listed: listed,
       title: title,
       thumbnailUrl: courseThumbnail,
       rating: averageRating,

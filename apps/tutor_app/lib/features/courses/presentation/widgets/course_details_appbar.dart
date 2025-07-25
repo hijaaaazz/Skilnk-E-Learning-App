@@ -73,7 +73,7 @@ class CourseDetailAppBar extends StatelessWidget {
               context.read<CoursesBloc>().add(
                     ToggleCourseStatus(
                       courseId: course.id,
-                      isActive: !course.isActive,
+                      isActive: !course.listed,
                     ),
                   );
             }
@@ -82,7 +82,7 @@ class CourseDetailAppBar extends StatelessWidget {
             PopupMenuItem<String>(
               value: 'toggle',
               child: Text(
-                course.isActive ? 'Deactivate Course' : 'Activate Course',
+                course.listed ? 'Deactivate Course' : 'Activate Course',
               ),
             ),
           ],

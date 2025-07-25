@@ -7,4 +7,5 @@ abstract class ProfileRepository {
   Future<Either<String, String>> updateProfilePic(UpdateDpParams params);
   Future<Either<String, String>> updateName(UpdateNameParams params);
   Future<Either<String,List<Activity>>> getRecentEnrollments(String userId);
+  Future<Either<String,bool>> deleteUserData(String userId,String password);
 }

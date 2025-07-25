@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/features/home/data/models/getcourse_details_params.dart';
 import  'package:user_app/features/home/data/models/review_model.dart';
 import  'package:user_app/features/home/data/models/save_course_params.dart';
@@ -93,13 +94,7 @@ class CourseCubit extends Cubit<CourseState> {
       context.read<LibraryBloc>().add(EnrollCourseEvent(course: updatedCourse.toPreview()));
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${course.title} enrolled successfully!'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        SnackBarUtils.showMinimalSnackBar(context,'${course.title} enrolled successfully!');
       }
     } catch (e) {
       log('Error in onPurchase: $e');
@@ -107,13 +102,7 @@ class CourseCubit extends Cubit<CourseState> {
         emit(CourseDetailsErrorState(errorMessage: 'Failed to complete enrollment'));
       }
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to complete enrollment: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+        SnackBarUtils.showMinimalSnackBar(context,'Failed to complete enrollment: $e');
       }
     }
   }
@@ -270,9 +259,7 @@ Future<void> loadMoreReviews(BuildContext context, CourseEntity course) async {
             reviews: currentReviews,
           ));
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed to add review: $error'), backgroundColor: Colors.red),
-            );
+            SnackBarUtils.showMinimalSnackBar(context,'Failed to add review: $error');
           }
         },
         (addedReview) async {
@@ -297,9 +284,7 @@ Future<void> loadMoreReviews(BuildContext context, CourseEntity course) async {
                 hasMoreReviews: reviews.length > 2,
               ));
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Review added successfully'), backgroundColor: Colors.green),
-                );
+                SnackBarUtils.showMinimalSnackBar(context,'Review added successfully');
               }
             },
           );

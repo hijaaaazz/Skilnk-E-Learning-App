@@ -55,6 +55,7 @@ class MainChipsWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? ExploreTheme.secondaryColor
+                      // ignore: deprecated_member_use
                       : Colors.grey.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),

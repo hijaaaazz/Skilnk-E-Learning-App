@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import  'package:user_app/features/home/domain/entity/course-entity.dart';
 import  'package:user_app/features/home/presentation/bloc/cubit/course_cubit.dart';
@@ -12,9 +13,7 @@ class EnrollmentHandler {
   static void handleAction(BuildContext context, CourseEntity course, VoidCallback onNavigate) {
     final userId = context.read<AuthStatusCubit>().state.user?.userId;
     if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to enroll'), backgroundColor: Colors.orange),
-      );
+      SnackBarUtils.showMinimalSnackBar(context,'Please login to enroll');
       return;
     }
     if (course.isEnrolled) {
@@ -40,9 +39,7 @@ class EnrollmentHandler {
                     courseCubit.onPurchase(context, enrolledCourse);
                   } catch (e) {
                     log('Error in onPurchase: $e');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to update course: $e'), backgroundColor: Colors.red),
-                    );
+                    SnackBarUtils.showMinimalSnackBar(context,'Failed to update course: $e');
                   }
                 },
               ),
@@ -53,13 +50,9 @@ class EnrollmentHandler {
             listener: (context, state) {
               if (state is EnrollmentSuccess) {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Successfully enrolled!'), backgroundColor: Colors.green),
-                );
+                SnackBarUtils.showMinimalSnackBar(context,'Successfully enrolled!');
               } else if (state is EnrollmentError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-                );
+                SnackBarUtils.showMinimalSnackBar(context,state.message);
               }
             },
             child: EnrollmentBottomSheet(
@@ -72,9 +65,7 @@ class EnrollmentHandler {
       );
     } catch (e) {
       log('Error showing enrollment sheet: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to open enrollment: $e'), backgroundColor: Colors.red),
-      );
+      SnackBarUtils.showMinimalSnackBar(context,'Failed to open enrollment: $e');
     }
   }
 }

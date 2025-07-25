@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/core/routes/app_route_constants.dart';
 import  'package:user_app/features/account/presentation/blocs/auth_cubit/auth_cubit.dart';
 import  'package:user_app/features/auth/domain/entity/user.dart';
@@ -19,20 +20,15 @@ class VerifyPage extends StatelessWidget {
     return BlocConsumer<AuthStatusCubit, AuthStatusState>(
       listener: (context, state) {
         if (state.status == AuthStatus.loading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("please wait")),
-          );
+          SnackBarUtils.showMinimalSnackBar(context,"please wait");
         }if (state.status == AuthStatus.emailVerified) {
           context.go(AppRouteConstants.personalInfoSubmitingPageName);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('successfully')),
-          );
+          SnackBarUtils.showMinimalSnackBar(context,'verification success');
+          
         }
         
          else if (state.status == AuthStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message!)),
-          );
+          SnackBarUtils.showMinimalSnackBar(context,state.message!);
         }
       },
       builder: (context, state) {

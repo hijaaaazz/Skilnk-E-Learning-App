@@ -54,6 +54,7 @@ void showProfileImageBottomSheet(BuildContext context) {
 void selectImage(BuildContext context, ImageSource source) async {
   final ImagePicker picker = ImagePicker();
   final XFile? image = await picker.pickImage(source: source, maxWidth: 800, maxHeight: 800, imageQuality: 80);
+  // ignore: use_build_context_synchronously
   Navigator.pop(context);
   if (image != null) {
     // Implement upload logic

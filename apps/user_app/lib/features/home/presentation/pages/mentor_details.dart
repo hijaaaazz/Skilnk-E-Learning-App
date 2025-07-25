@@ -1,10 +1,8 @@
+// ignore_for_file: deprecated_member_use, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import  'package:user_app/core/routes/app_route_constants.dart';
-import  'package:user_app/features/course_list/data/models/list_page_arg.dart';
-import  'package:user_app/features/explore/presentation/widgets/course_tile.dart';
-import  'package:user_app/features/home/domain/entity/course_privew.dart';
+import 'package:user_app/common/widgets/snackbar.dart';
 import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import  'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_bloc.dart';
 import  'package:user_app/features/home/presentation/bloc/mentor_bloc/mentor_event.dart';
@@ -35,16 +33,8 @@ class MentorDetailsPage extends StatelessWidget {
         body: BlocConsumer<MentorDetailsBloc, MentorDetailsState>(
           listener: (context, state) {
             if (state is ChatInitiated) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Chat with ${mentor.name} initiated'),
-                  backgroundColor: const Color(0xFFFF6B35),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              );
+              SnackBarUtils.showMinimalSnackBar(context,'Chat with ${mentor.name} initiated');
+              
             }
           },
           builder: (context, state) {
@@ -113,6 +103,7 @@ class MentorDetailsPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.04),
                 blurRadius: 20,
                 offset: const Offset(0, 4),

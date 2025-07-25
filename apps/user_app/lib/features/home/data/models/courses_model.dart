@@ -237,7 +237,7 @@ class CourseModel {
       ratingBreakdown: ratingBreakdown ?? this.ratingBreakdown,
       totalReviews: totalReviews ?? this.totalReviews,
       reviews: reviews ?? this.reviews,
-      categoryName: categoryname ?? this.categoryName,
+      categoryName: categoryname ?? categoryName,
       lessons: lessons ?? this.lessons,
       courseThumbnail: courseThumbnail ?? this.courseThumbnail,
       level: level ?? this.level,

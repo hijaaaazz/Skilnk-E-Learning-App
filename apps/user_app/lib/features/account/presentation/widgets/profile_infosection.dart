@@ -192,6 +192,7 @@ class ProfileInfoSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
+              // ignore: deprecated_member_use
               color: _getActivityColor(activity.type).withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),

@@ -1,8 +1,11 @@
+// ignore_for_file: deprecated_member_use, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import '../../../../../core/theme/app_colors.dart';
 
 class PDFViewerWidget extends StatefulWidget {
   final String pdfUrl;
@@ -55,32 +58,42 @@ class _PDFViewerWidgetState extends State<PDFViewerWidget> {
         return;
       }
 
-      // Download PDF file
-      final response = await http.get(Uri.parse(widget.pdfUrl));
-      
+      // Download PDF file with timeout
+      final response = await http.get(Uri.parse(widget.pdfUrl)).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw Exception('Download timeout');
+        },
+      );
+
       if (response.statusCode == 200) {
         final bytes = response.bodyBytes;
         final dir = await getApplicationDocumentsDirectory();
         final fileName = 'lecture_notes_${widget.pdfUrl.hashCode}.pdf';
         final file = File('${dir.path}/$fileName');
-        
         await file.writeAsBytes(bytes);
-        
-        setState(() {
-          localPath = file.path;
-          isLoading = false;
-        });
+
+        if (mounted) {
+          setState(() {
+            localPath = file.path;
+            isLoading = false;
+          });
+        }
       } else {
-        setState(() {
-          isLoading = false;
-          errorMessage = 'Failed to load PDF: ${response.statusCode}';
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            errorMessage = 'Failed to load PDF: ${response.statusCode}';
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-        errorMessage = 'Error loading PDF: $e';
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          errorMessage = 'Error loading PDF: $e';
+        });
+      }
     }
   }
 
@@ -103,21 +116,21 @@ class _PDFViewerWidgetState extends State<PDFViewerWidget> {
 
   Widget _buildLoadingState() {
     return Container(
-      color: Colors.grey[50],
+      color: const Color(0xFFFAFAFA),
       child: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircularProgressIndicator(
-              color: Colors.deepOrange,
+              color: AppColors.primaryOrange,
               strokeWidth: 3,
             ),
             SizedBox(height: 16),
             Text(
               'Loading PDF...',
               style: TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
+                fontSize: 16,
+                color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -129,45 +142,68 @@ class _PDFViewerWidgetState extends State<PDFViewerWidget> {
 
   Widget _buildErrorState() {
     return Container(
-      color: Colors.grey[50],
+      color: const Color(0xFFFAFAFA),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                color: Colors.deepOrange,
-                size: 40,
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  // ignore: duplicate_ignore
+                  // ignore: deprecated_member_use
+                  color: AppColors.primaryOrange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.error_outline,
+                  color: AppColors.primaryOrange,
+                  size: 40,
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 24),
               const Text(
                 'Error loading PDF',
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 8),
               Text(
                 errorMessage ?? 'Unknown error',
                 style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.black54,
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _loadPDF,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepOrange,
+                  backgroundColor: AppColors.primaryOrange,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  elevation: 0,
                 ),
-                child: const Text('Retry', style: TextStyle(fontSize: 14)),
+                child: const Text(
+                  'Try Again',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
@@ -178,22 +214,32 @@ class _PDFViewerWidgetState extends State<PDFViewerWidget> {
 
   Widget _buildEmptyState() {
     return Container(
-      color: Colors.grey[50],
-      child: const Center(
+      color: const Color(0xFFFAFAFA),
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.description_outlined,
-              color: Colors.grey,
-              size: 40,
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                // ignore: deprecated_member_use
+                color: AppColors.textLight.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.description_outlined,
+                color: AppColors.textLight,
+                size: 40,
+              ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 24),
             Text(
               'No notes available',
               style: TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
               ),
             ),
           ],
@@ -205,56 +251,55 @@ class _PDFViewerWidgetState extends State<PDFViewerWidget> {
   Widget _buildPDFViewer() {
     return Column(
       children: [
-        // PDF Navigation Bar
+        // Modern PDF Navigation Bar
         if (totalPages > 0)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border(
-                bottom: BorderSide(color: Colors.grey[200]!),
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Page ${currentPage + 1} of $totalPages',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.deepOrange[700],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
+                    _buildNavButton(
+                      icon: Icons.keyboard_arrow_up,
                       onPressed: currentPage > 0 ? () => _goToPage(currentPage - 1) : null,
-                      icon: const Icon(Icons.keyboard_arrow_up),
-                      color: currentPage > 0 ? Colors.deepOrange : Colors.grey,
-                      iconSize: 20,
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      isEnabled: currentPage > 0,
                     ),
-                    IconButton(
+                    const SizedBox(width: 8),
+                    _buildNavButton(
+                      icon: Icons.keyboard_arrow_down,
                       onPressed: currentPage < totalPages - 1 ? () => _goToPage(currentPage + 1) : null,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      color: currentPage < totalPages - 1 ? Colors.deepOrange : Colors.grey,
-                      iconSize: 20,
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                      isEnabled: currentPage < totalPages - 1,
                     ),
                   ],
                 ),
               ],
             ),
           ),
-        
+
         // PDF Viewer
         Expanded(
           child: Container(
-            color: Colors.grey[100],
+            color: const Color(0xFFFAFAFA),
             child: PDFView(
               filePath: localPath!,
               enableSwipe: true,
@@ -265,35 +310,72 @@ class _PDFViewerWidgetState extends State<PDFViewerWidget> {
               defaultPage: currentPage,
               fitPolicy: FitPolicy.WIDTH,
               preventLinkNavigation: false,
-              backgroundColor: Colors.grey[100]!,
+              backgroundColor: const Color(0xFFFAFAFA),
               onRender: (pages) {
-                setState(() {
-                  totalPages = pages ?? 0;
-                });
+                if (mounted) {
+                  setState(() {
+                    totalPages = pages ?? 0;
+                  });
+                }
               },
               onError: (error) {
-                setState(() {
-                  errorMessage = error.toString();
-                });
+                if (mounted) {
+                  setState(() {
+                    errorMessage = error.toString();
+                  });
+                }
               },
               onPageError: (page, error) {
-                setState(() {
-                  errorMessage = 'Page $page: $error';
-                });
+                if (mounted) {
+                  setState(() {
+                    errorMessage = 'Page $page: $error';
+                  });
+                }
               },
               onViewCreated: (PDFViewController controller) {
                 pdfController = controller;
               },
               onPageChanged: (int? page, int? total) {
-                setState(() {
-                  currentPage = page ?? 0;
-                  totalPages = total ?? 0;
-                });
+                if (mounted) {
+                  setState(() {
+                    currentPage = page ?? 0;
+                    totalPages = total ?? 0;
+                  });
+                }
               },
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildNavButton({
+    required IconData icon,
+    required VoidCallback? onPressed,
+    required bool isEnabled,
+  }) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: isEnabled 
+            ? AppColors.primaryOrange.withOpacity(0.1)
+            : Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          child: Icon(
+            icon,
+            color: isEnabled ? AppColors.primaryOrange : Colors.grey,
+            size: 20,
+          ),
+        ),
+      ),
     );
   }
 

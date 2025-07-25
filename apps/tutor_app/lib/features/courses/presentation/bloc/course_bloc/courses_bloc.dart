@@ -135,7 +135,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
           // Update the course in the list as well
           final index = _courses.indexWhere((c) => c.id == event.courseId);
           if (index != -1) {
-            _courses[index] = _courses[index].copyWith(isActive: event.isActive);
+            _courses[index] = _courses[index].copyWith(listed: event.isActive);
           }
         },
       );
@@ -162,7 +162,7 @@ class CoursesBloc extends Bloc<CoursesEvent, CoursesState> {
             title: course.title,
             
             thumbnailUrl: course.courseThumbnail,
-            isActive: course.isActive,
+            listed: course.listed,
             offerPercentage: course.offerPercentage
           );
         }

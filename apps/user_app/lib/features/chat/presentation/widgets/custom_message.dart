@@ -79,7 +79,9 @@ class ModernMessageWidget extends StatelessWidget {
                 boxShadow: [
                   BoxShadow(
                     color: isCurrentUser
+                        // ignore: deprecated_member_use
                         ? const Color(0xFFFF6B35).withOpacity(0.2)
+                        // ignore: deprecated_member_use
                         : Colors.black.withOpacity(0.06),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
@@ -106,6 +108,7 @@ class ModernMessageWidget extends StatelessWidget {
                         _formatTime(textMessage.createdAt),
                         style: TextStyle(
                           color: isCurrentUser
+                              // ignore: deprecated_member_use
                               ? Colors.white.withOpacity(0.8)
                               : Colors.grey[500],
                           fontSize: 11,

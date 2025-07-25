@@ -10,14 +10,14 @@ class CourseReviewCard extends StatelessWidget {
   final String imageUrl;
 
   const CourseReviewCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.rating,
     required this.review,
     required this.likes,
     required this.timeAgo,
     required this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

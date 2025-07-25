@@ -96,7 +96,7 @@ class CourseCard extends StatelessWidget {
           ),
         ),
       
-      if (!course.isActive)
+      if (!course.listed)
         Positioned.fill(
           child: ClipRRect(
             borderRadius: const BorderRadius.only(

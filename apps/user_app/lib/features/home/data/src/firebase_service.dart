@@ -70,6 +70,7 @@ class CoursesFirebaseServicesImp extends CoursesFirebaseService {
 
   @override
   Future<Either<String, Map<String, dynamic>>> getCourseDetails(
+      // ignore: avoid_renaming_method_parameters
       String courseId) async {
     try {
       log("getCourseDetails call started");

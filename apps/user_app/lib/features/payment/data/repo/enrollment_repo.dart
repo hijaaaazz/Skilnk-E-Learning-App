@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import  'package:user_app/features/home/data/models/course_progress.dart';
 import  'package:user_app/features/home/data/models/getcourse_details_params.dart';
-import  'package:user_app/features/home/data/models/lecture_model.dart';
 import  'package:user_app/features/home/data/models/lecture_progress_model.dart';
 import  'package:user_app/features/home/data/src/course_progress_service.dart';
 import  'package:user_app/features/home/domain/entity/course-entity.dart';

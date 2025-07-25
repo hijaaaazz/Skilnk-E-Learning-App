@@ -11,9 +11,9 @@ class SearchBarWidget extends StatefulWidget {
   final TextEditingController controller;
   
   const SearchBarWidget({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   State<SearchBarWidget> createState() => _SearchBarWidgetState();
@@ -33,6 +33,7 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.03),
                 blurRadius: 8,
                 offset: const Offset(0, 2),

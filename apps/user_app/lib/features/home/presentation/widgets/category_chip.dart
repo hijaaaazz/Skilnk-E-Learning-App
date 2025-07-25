@@ -11,10 +11,10 @@ class CategoryChip extends StatelessWidget {
   
 
   const CategoryChip({
-    Key? key,
+    super.key,
     required this.category,
     
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

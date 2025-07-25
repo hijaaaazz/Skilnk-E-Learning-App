@@ -1,5 +1,6 @@
 part of 'video_player_bloc.dart';
 
+@immutable
 abstract class VideoPlayerState extends Equatable {
   const VideoPlayerState();
 
@@ -38,9 +39,13 @@ class VideoPlayerReady extends VideoPlayerState {
     this.isCompleted = false,
   });
 
-  double get progress => duration.inMilliseconds > 0 ? position.inMilliseconds / duration.inMilliseconds : 0.0;
-  
-  double get completionProgress => duration.inMilliseconds > 0 ? watchedDuration.inMilliseconds / duration.inMilliseconds : 0.0;
+  double get progress => duration.inMilliseconds > 0 
+      ? position.inMilliseconds / duration.inMilliseconds 
+      : 0.0;
+
+  double get completionProgress => duration.inMilliseconds > 0 
+      ? watchedDuration.inMilliseconds / duration.inMilliseconds 
+      : 0.0;
 
   VideoPlayerReady copyWith({
     VideoPlayerController? controller,
@@ -72,18 +77,18 @@ class VideoPlayerReady extends VideoPlayerState {
 
   @override
   List<Object?> get props => [
-        controller,
-        duration,
-        position,
-        isPlaying,
-        isFullscreen,
-        showControls,
-        isBuffering,
-        playbackSpeed,
-        videoUrl,
-        watchedDuration,
-        isCompleted,
-      ];
+    controller,
+    duration,
+    position,
+    isPlaying,
+    isFullscreen,
+    showControls,
+    isBuffering,
+    playbackSpeed,
+    videoUrl,
+    watchedDuration,
+    isCompleted,
+  ];
 }
 
 class VideoPlayerError extends VideoPlayerState {

@@ -1,6 +1,6 @@
 class CoursePreview {
   final String id;
-  final bool isActive;
+  final bool listed;
   final String title;
   final String thumbnailUrl;
   final double rating;
@@ -11,7 +11,7 @@ class CoursePreview {
     required this.offerPercentage,
     required this.level,
     required this.id,
-    required this.isActive,
+    required this.listed,
     required this.title,
     required this.thumbnailUrl,
     required this.rating,
@@ -19,7 +19,7 @@ class CoursePreview {
 
   CoursePreview copyWith({
     String? id,
-    bool? isActive,
+    bool? listed,
     String? title,
     String? thumbnailUrl,
     double? rating,
@@ -28,7 +28,7 @@ class CoursePreview {
   }) {
     return CoursePreview(
       id: id ?? this.id,
-      isActive: isActive ?? this.isActive,
+      listed: listed ?? this.listed,
       title: title ?? this.title,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       rating: rating ?? this.rating,

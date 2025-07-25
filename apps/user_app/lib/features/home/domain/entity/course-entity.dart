@@ -1,4 +1,5 @@
-import  'package:user_app/features/home/data/models/lecture_progress_model.dart';
+// ignore_for_file: file_names
+
 import  'package:user_app/features/home/domain/entity/course_privew.dart';
 import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import  'package:user_app/features/home/domain/entity/lecture_entity.dart';

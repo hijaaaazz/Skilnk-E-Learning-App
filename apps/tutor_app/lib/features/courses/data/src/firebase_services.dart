@@ -125,7 +125,6 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
         tutorId: req.tutorId ?? '',
         duration: req.duration!.inSeconds,
         categoryName: req.categoryName,
-        isActive: false,
         enrolledCount: 0,
         averageRating: 0.0,
         ratingBreakdown: {
@@ -208,7 +207,7 @@ Future<Either<String, List<CoursePreview>>> getCourses({
 
       return CoursePreview(
         id: doc.id,
-        isActive: data['isActive'],
+        listed: data['listed'],
         title: data['title'] ?? '',
         thumbnailUrl: data['course_thumbnail'] ?? '',
         offerPercentage: data['offer_percentage'] ?? 0,
@@ -514,7 +513,7 @@ Future<Either<String, bool>> activateToggleCourse(courseToggleParams req) async 
 
     // Update only the isActive field
     await docRef.update({
-      'isActive': req.isActive,
+      'listed': req.isActive,
       'updatedAt': DateTime.now(),
     });
     

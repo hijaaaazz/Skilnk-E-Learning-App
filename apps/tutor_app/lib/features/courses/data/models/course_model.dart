@@ -12,7 +12,6 @@ class CourseModel {
   final String tutorId;
   final String categoryName;
   final int duration;
-  final bool isActive;
   final int enrolledCount;
   final double averageRating;
   final Map<String, int> ratingBreakdown;
@@ -37,7 +36,6 @@ class CourseModel {
     required this.offerPercentage,
     required this.tutorId,
     required this.duration,
-    required this.isActive,
     required this.enrolledCount,
     required this.categoryName,
     required this.averageRating,
@@ -66,7 +64,6 @@ class CourseModel {
       offerPercentage: json['offer_percentage'] ?? 0,
       tutorId: json['tutor'] is Map ? json['tutor']['_id'] ?? '' : json['tutor'] ?? '',
       duration: json['duration'] ?? 0,
-      isActive: json['isActive'] ?? false,
       enrolledCount: json['enrolled_count'] ?? 0,
       averageRating: (json['average_rating'] ?? 0).toDouble(),
       ratingBreakdown: _parseRatingBreakdown(json['rating_breakdown']),
@@ -159,7 +156,6 @@ class CourseModel {
     'tutor': tutorId,
     'title_lower': lowerCaseCourse,
     'duration': duration,
-    'isActive': isActive,
     "category_name": categoryName,
     'enrolled_count': enrolledCount,
     'average_rating': averageRating,
@@ -187,7 +183,6 @@ Map<String, dynamic> toUpdateJson() {
     'offer_percentage': offerPercentage,
     'tutor': tutorId,
     'duration': duration,
-    'isActive': isActive,
     "category_name": categoryName,
     'enrolled_count': enrolledCount,
     'average_rating': averageRating,
@@ -241,7 +236,6 @@ Map<String, dynamic> toUpdateJson() {
       offerPercentage: offerPercentage ?? this.offerPercentage,
       tutorId: tutorId ?? this.tutorId,
       duration: duration ?? this.duration,
-      isActive: isActive ?? this.isActive,
       enrolledCount: enrolledCount ?? this.enrolledCount,
       averageRating: averageRating ?? this.averageRating,
       ratingBreakdown: ratingBreakdown ?? this.ratingBreakdown,
@@ -270,7 +264,6 @@ Map<String, dynamic> toUpdateJson() {
       offerPercentage: offerPercentage,
       tutorId: tutorId,
       duration: duration,
-      isActive: isActive,
       categoryName: categoryName,
       language: language ?? '',
       enrolledCount: enrolledCount,
@@ -300,7 +293,6 @@ factory CourseModel.fromEntity(CourseEntity entity) {
     tutorId: entity.tutorId,
 
     duration: entity.duration,
-    isActive: entity.isActive,
     categoryName: entity.categoryName,
     enrolledCount: entity.enrolledCount,
     averageRating: entity.averageRating,

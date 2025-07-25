@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import  'package:user_app/core/routes/app_route_constants.dart';
 import  'package:user_app/features/explore/data/models/search_args.dart';
 import  'package:user_app/features/explore/data/models/search_params_model.dart';
-import  'package:user_app/features/home/domain/entity/instructor_entity.dart';
 import  'package:user_app/features/home/presentation/bloc/courses/course_bloc_bloc.dart';
 import  'package:user_app/features/home/presentation/bloc/courses/course_bloc_state.dart';
 import  'package:user_app/features/home/presentation/widgets/course_card.dart';

@@ -67,6 +67,7 @@ class CourseTileSkeleton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),
@@ -171,6 +172,8 @@ class CourseTileSkeleton extends StatelessWidget {
 
 // Alternative version with individual shimmer effects for each element
 class CourseTileSkeletonIndividual extends StatelessWidget {
+  const CourseTileSkeletonIndividual({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -181,6 +184,7 @@ class CourseTileSkeletonIndividual extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 5),

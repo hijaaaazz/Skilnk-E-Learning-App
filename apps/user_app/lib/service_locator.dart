@@ -3,6 +3,7 @@ import  'package:user_app/features/account/data/repo/profile_repo.dart';
 import  'package:user_app/features/account/data/service/profile_cloudinary_service.dart';
 import  'package:user_app/features/account/data/service/profile_firebase_service.dart';
 import  'package:user_app/features/account/domain/repo/profile_repo.dart';
+import 'package:user_app/features/account/domain/usecase/delete_account.dart';
 import  'package:user_app/features/account/domain/usecase/get_recent_activities.dart';
 import  'package:user_app/features/account/domain/usecase/update_user_profile_pic.dart';
 import  'package:user_app/features/account/domain/usecase/update_username.dart';
@@ -284,6 +285,10 @@ Future<void> initializeDependencies() async {
 
   serviceLocator.registerLazySingleton<LoadChatListUseCase>(
     () => LoadChatListUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<DeleteUserdataUserUseCase>(
+    () => DeleteUserdataUserUseCase()
   );
   
 }

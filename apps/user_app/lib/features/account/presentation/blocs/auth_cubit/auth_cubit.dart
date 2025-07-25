@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import  'package:user_app/core/usecase/usecase.dart';
+import 'package:user_app/features/account/domain/usecase/delete_account.dart';
 import  'package:user_app/features/auth/data/models/user_creation_req.dart';
 import  'package:user_app/features/auth/data/models/user_model.dart';
 import  'package:user_app/features/auth/data/models/user_signin_model.dart';
@@ -55,6 +56,28 @@ class ResetPasswordFailedState extends ResetPasswordState {
     required super.status,
     required this.message,
   });
+}
+
+class DeleteUserDataState extends AuthStatusState{
+  DeleteUserDataState({required super.status});
+}
+
+class DeleteUserDtataLoadingState extends DeleteUserDataState{
+  DeleteUserDtataLoadingState({required super.status});
+
+}
+
+class DeleteUserDataErrorState extends DeleteUserDataState{
+  @override
+  // ignore: overridden_fields
+  final String message;
+  DeleteUserDataErrorState({required super.status,required this.message});
+
+}
+
+class DeleteUserDataSuccessState extends DeleteUserDataState{
+  DeleteUserDataSuccessState({required super.status});
+  
 }
 
 class AuthStatusCubit extends Cubit<AuthStatusState> {
@@ -177,6 +200,16 @@ class AuthStatusCubit extends Cubit<AuthStatusState> {
     result.fold(
       (l) => emit(ResetPasswordFailedState(status: AuthStatus.unauthenticated, message: l)),
       (r) => emit(ResetPasswordSentState(status: AuthStatus.unauthenticated)),
+    );
+  }
+
+  // Reset Password
+  Future<void> deleteAccount(String id,String password) async {
+    emit(DeleteUserDtataLoadingState(status: AuthStatus.loading)); // Add loading state
+    final result = await serviceLocator<DeleteUserdataUserUseCase>().call(params: DeleteUserParams(id: id, password: password));
+    result.fold(
+      (l) => emit(DeleteUserDataErrorState(status: AuthStatus.emailVerified, message: l)),
+      (r) => emit(DeleteUserDataSuccessState(status: AuthStatus.unauthenticated)),
     );
   }
 

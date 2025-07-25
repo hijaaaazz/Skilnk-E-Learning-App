@@ -15,6 +15,7 @@ class PromotionCardShimmer extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.grey.withOpacity(0.2),
               blurRadius: 8,
               offset: const Offset(0, 4),
@@ -35,6 +36,7 @@ class PromotionCardShimmer extends StatelessWidget {
                   height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
+                    // ignore: deprecated_member_use
                     color: Colors.white.withOpacity(0.3),
                   ),
                 ),
@@ -47,6 +49,7 @@ class PromotionCardShimmer extends StatelessWidget {
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
+                    // ignore: deprecated_member_use
                     color: Colors.white.withOpacity(0.2),
                   ),
                 ),
