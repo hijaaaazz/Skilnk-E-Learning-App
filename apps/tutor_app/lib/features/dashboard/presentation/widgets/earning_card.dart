@@ -1,12 +1,11 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:tutor_app/features/dashboard/data/models/toime_period_dart';
 import 'package:tutor_app/features/dashboard/presentation/bloc/dash_board_bloc.dart';
 import 'package:tutor_app/features/dashboard/presentation/bloc/dash_board_state.dart';
-import '../../data/models/dashboard_data.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../data/models/dashboard_data.dart';
 
 class ModernEarningsCard extends StatelessWidget {
@@ -203,7 +202,7 @@ class ModernEarningsCard extends StatelessWidget {
   }
 
   Widget _buildModernChart(chartData, bool isMobile, bool isTablet) {
-    return Container(
+    return SizedBox(
       height: isMobile ? 100 : (isTablet ? 110 : 120),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -231,7 +230,7 @@ class ModernEarningsCard extends StatelessWidget {
                           ),
                           child: FittedBox(
                             child: Text(
-                              '\#${point.value.toStringAsFixed(0)}',
+                              '#${point.value.toStringAsFixed(0)}',
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.8),
                                 fontSize: isMobile ? 8 : 10,
@@ -305,7 +304,7 @@ class ModernEarningsCard extends StatelessWidget {
   }
 
   Widget _buildNoDataState(bool isMobile) {
-    return Container(
+    return SizedBox(
       height: isMobile ? 100 : 120,
       child: Center(
         child: Column(

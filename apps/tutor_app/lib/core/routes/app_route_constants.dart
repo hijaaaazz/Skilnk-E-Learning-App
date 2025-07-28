@@ -25,4 +25,6 @@ class AppRouteConstants {
   static const String lectureDetails = "lecture_screen";
   static const String chatListScreen = "chat_list_screen";
   static const String chatscreen = "chat_screen";
+
+  static const String termsandconditions = "terms_and_conditions";
 }

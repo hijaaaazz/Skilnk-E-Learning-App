@@ -1,7 +1,6 @@
 
 // lib/features/chat/presentation/bloc/tutor_chat_list/tutor_chat_list_event.dart
 import 'package:equatable/equatable.dart';
-import 'package:tutor_app/features/chat/data/models/student_model.dart';
 import 'package:tutor_app/features/chat/data/models/stuent_chat_model.dart';
 
 abstract class TutorChatListEvent extends Equatable {

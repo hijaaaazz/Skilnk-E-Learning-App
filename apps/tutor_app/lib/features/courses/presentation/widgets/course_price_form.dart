@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_toggle_tab/flutter_toggle_tab.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_cubit.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_state.dart';
@@ -19,6 +18,7 @@ class CoursePriceForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final isWide = screenWidth > 600;
 
     return BlocBuilder<AddCourseCubit, AddCourseState>(
       builder: (context, state) {
@@ -33,30 +33,23 @@ class CoursePriceForm extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            ToggleButtons(
+              borderRadius: BorderRadius.circular(8),
+              isSelected: [!state.isPaid, state.isPaid],
+              onPressed: (index) {
+                context.read<AddCourseCubit>().updateIsPaid(index == 1);
+              },
+              selectedColor: Colors.white,
+              fillColor: Colors.deepOrange,
+              color: Colors.grey,
               children: [
-                
-                FlutterToggleTab(
-                  width: screenWidth * 0.2,
-                  height: 40,
-                  selectedTextStyle: GoogleFonts.outfit(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  unSelectedTextStyle: GoogleFonts.outfit(
-                    color: const Color.fromARGB(104, 80, 80, 80),
-                    fontWeight: FontWeight.w300,
-                  ),
-                  selectedBackgroundColors: [Colors.deepOrange],
-                  dataTabs:  [
-                    DataTab(title: "Free"),
-                    DataTab(title: "Paid"),
-                  ],
-                  selectedIndex: state.isPaid ? 1 : 0,
-                  selectedLabelIndex: (index) {
-                    context.read<AddCourseCubit>().updateIsPaid(index == 1);
-                  },
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text("Free", style: GoogleFonts.outfit()),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text("Paid", style: GoogleFonts.outfit()),
                 ),
               ],
             ),
@@ -76,13 +69,11 @@ class CoursePriceForm extends StatelessWidget {
                         hintText: state.offer.toString(),
                         controller: discountController,
                         errorText: state.offerError ?? "",
-                        
                         keyboardType: TextInputType.number,
                         suffixIcon: Icons.percent_rounded,
-                        onChanged: (value){
+                        onChanged: (value) {
                           context.read<AddCourseCubit>().updateDiscount(value);
                         },
-                      
                       ),
                     ),
                     const SizedBox(width: 10),

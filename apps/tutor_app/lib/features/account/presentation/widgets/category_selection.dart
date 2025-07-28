@@ -4,6 +4,7 @@ import 'package:tutor_app/features/account/presentation/bloc/cubit/profile_cubit
 import 'package:tutor_app/features/account/presentation/bloc/cubit/profile_state.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 
+
 class CategorySelectionBottomSheet extends StatefulWidget {
   final List<String> selectedCategories;
 
@@ -27,27 +28,18 @@ class CategorySelectionBottomSheet extends StatefulWidget {
   State<CategorySelectionBottomSheet> createState() => _CategorySelectionBottomSheetState();
 }
 
-
-
 class _CategorySelectionBottomSheetState extends State<CategorySelectionBottomSheet> {
-
-
   late Set<String> _selectedCategories;
-  
 
   @override
-void initState() {
-  super.initState();
-
-  // Initialize selected categories if passed
-  _selectedCategories = widget.selectedCategories.toSet();
-
-  // Call getCategories from the bloc
-  Future.microtask(() {
-    // ignore: use_build_context_synchronously
-    context.read<ProfileCubit>().loadCategories();
-  });
-}
+  void initState() {
+    super.initState();
+    _selectedCategories = widget.selectedCategories.toSet();
+    Future.microtask(() {
+      // ignore: use_build_context_synchronously
+      context.read<ProfileCubit>().loadCategories();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,87 +93,122 @@ void initState() {
           // Content
           BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
-              if (state is ProfileCategoriesLoading){
+              final availableCategories = state is ProfileCategoriesUpdated
+                  ? state.categories
+                  : (state.userCategories ?? []);
+
+              if (state is ProfileCategoriesLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFFF5722),
+                  ),
+                );
+              } else if (state is ProfileError) {
                 return Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFFFF5722),
-                              ),
-                            );
-              }else if (state is ProfileCategoriesUpdated){
-                return Expanded(
-                       child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Choose categories that match your expertise (${_selectedCategories.length} selected)',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Expanded(
-                                    child: GridView.builder(
-                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        childAspectRatio: 3,
-                                        crossAxisSpacing: 12,
-                                        mainAxisSpacing: 12,
-                                      ),
-                                      itemCount: state.categoriesLoaded.length,
-                                      itemBuilder: (context, index) {
-                                        final category = state.categoriesLoaded[index];
-                                        final isSelected = _selectedCategories.contains(category);
-                                        
-                                        return GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              if (isSelected) {
-                                                _selectedCategories.remove(category);
-                                              } else {
-                                                _selectedCategories.add(category);
-                                              }
-                                            });
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                            decoration: BoxDecoration(
-                                              color: isSelected 
-                                                  ? const Color(0xFFFF5722) 
-                                                  : Colors.white,
-                                              borderRadius: BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: isSelected 
-                                                    ? const Color(0xFFFF5722) 
-                                                    : Colors.grey[300]!,
-                                              ),
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                category,
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
-                                                  color: isSelected ? Colors.white : Colors.black87,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                    );
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Error: ${state.message}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<ProfileCubit>().loadCategories();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF5722),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
               }
 
-              return SizedBox.shrink();
-              
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Choose categories that match your expertise (${_selectedCategories.length} selected)',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 3,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                          ),
+                          itemCount: availableCategories.length,
+                          itemBuilder: (context, index) {
+                            final category = availableCategories[index];
+                            final isSelected = _selectedCategories.contains(category);
+                            
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (isSelected) {
+                                    _selectedCategories.remove(category);
+                                    // final categoryModel = CategoryModel(title: category);
+                                    // context.read<ProfileCubit>().deleteCategory(
+                                    //       tutorId: context.read<AuthBloc>().state.user!.tutorId,
+                                    //       category: categoryModel,
+                                    //       context: context,
+                                    //     );
+                                  } else {
+                                    _selectedCategories.add(category);
+                                  }
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: isSelected 
+                                      ? const Color(0xFFFF5722) 
+                                      : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected 
+                                        ? const Color(0xFFFF5722) 
+                                        : Colors.grey[300]!,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    category,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: isSelected ? Colors.white : Colors.black87,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
           ),
 
@@ -192,6 +219,7 @@ void initState() {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: Colors.black.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
@@ -201,11 +229,17 @@ void initState() {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-              onPressed: () {
-  final tutorId = context.read<AuthBloc>().state.user!.tutorId;
-  
-    _saveCategories(tutorId, _selectedCategories.toList());
-},
+                onPressed: () {
+                  final tutorId = context.read<AuthBloc>().state.user!.tutorId;
+                  final originalCategories = context.read<ProfileCubit>().state.userCategories ?? [];
+                  context.read<ProfileCubit>().updateCategoriesOptimistic(
+                        tutorId: tutorId,
+                        newCategories: _selectedCategories.toList(),
+                        originalCategories: originalCategories,
+                        context: context,
+                      );
+                  Navigator.pop(context);
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF5722),
                   foregroundColor: Colors.white,
@@ -228,11 +262,5 @@ void initState() {
         ],
       ),
     );
-  }
-
-  void _saveCategories(String userId,List<String> categoryName) {
-    context.read<ProfileCubit>().addCategory(
-        tutorId:  userId,categories:  categoryName);
-    Navigator.pop(context);
   }
 }

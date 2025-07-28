@@ -1,5 +1,4 @@
-import 'dart:developer';
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,56 +14,74 @@ import 'package:tutor_app/features/account/domain/usecase/get_categories.dart';
 import 'package:tutor_app/features/account/domain/usecase/update_bio.dart';
 import 'package:tutor_app/features/account/domain/usecase/update_user_profile_pic.dart';
 import 'package:tutor_app/features/account/domain/usecase/update_username.dart';
-
-import 'dart:developer' as developer;
-
 import 'package:tutor_app/features/account/presentation/bloc/cubit/profile_state.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_event.dart';
 import 'package:tutor_app/features/courses/data/models/category_model.dart';
 import 'package:tutor_app/service_locator.dart';
+import 'dart:developer' as developer;
 
 class ProfileCubit extends Cubit<ProfileState> {
   final ImagePicker _imagePicker = ImagePicker();
+  final _addCategoryUseCase = serviceLocator<AddCategoryUseCase>();
+  final _getCategoriesUseCase = serviceLocator<GetCategoriesUseCase>();
+  final _deleteCategoryUseCase = serviceLocator<DeleteCategoryUseCase>();
+  final _updateBioUseCase = serviceLocator<UpdateBioUseCase>();
+  final _updateNameUseCase = serviceLocator<UpdateNameUserUseCase>();
+  final _updateDpUseCase = serviceLocator<UpdateDpUserUseCase>();
 
   ProfileCubit() : super(const ProfileInitial());
 
+  void loadUserData({
+    required String currentName,
+    required String currentBio,
+    required String currentImageUrl,
+    required List<String> userCategories,
+  }) {
+    developer.log('Loading user data: name=$currentName, bio=$currentBio, image=$currentImageUrl, categories=$userCategories');
+    emit(ProfileInitial(
+      currentName: currentName,
+      currentBio: currentBio,
+      currentImageUrl: currentImageUrl,
+      userCategories: userCategories,
+    ));
+  }
 
-
-void loadUserData({
-  required String currentName,
-  required String currentBio,
-  required String currentImageUrl,
-  required List<String> userCategories,
-}) {
-  log('loadUserData called with: '
-      'Name: $currentName, '
-      'Bio: $currentBio, '
-      'ImageURL: $currentImageUrl, '
-      'Categories: $userCategories');
-
-  emit(ProfileInitial(
-    userCategories: userCategories,
-    currentName: currentName,
-    currentBio: currentBio,
-    currentImageUrl: currentImageUrl,
-  ));
-}
-
-
+  void initializeWithUserData({required String name, required String? imageUrl}) {
+    final currentState = state;
+    final newImageUrl = currentState is ProfileImageOptimisticUpdate ||
+            currentState is ProfileImagePickerLoading ||
+            currentState is ProfileImageUpdated ||
+            currentState is ProfileImageShowMode
+        ? currentState.currentImageUrl
+        : imageUrl;
+    
+    developer.log('Initializing with name: $name, imageUrl: $newImageUrl');
+    emit(ProfileInitial(
+      currentName: name,
+      currentImageUrl: newImageUrl,
+      currentBio: currentState.currentBio,
+      userCategories: currentState.userCategories,
+    ));
+  }
 
   Future<void> loadCategories() async {
     emit(ProfileCategoriesLoading(
       currentName: state.currentName,
       currentImageUrl: state.currentImageUrl,
       currentBio: state.currentBio,
+      userCategories: state.userCategories,
     ));
+
     final result = await _getCategoriesUseCase.call(params: NoParams());
     result.fold(
-      (error) => emit(ProfileError(error,
-          currentName: state.currentName,
-          currentImageUrl: state.currentImageUrl,
-          currentBio: state.currentBio)),
+      (error) => emit(ProfileError(
+        error,
+        currentName: state.currentName,
+        currentImageUrl: state.currentImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
+      )),
       (categories) => emit(ProfileCategoriesUpdated(
         categories.map((e) => e.title).toList(),
         currentName: state.currentName,
@@ -74,26 +91,54 @@ void loadUserData({
     );
   }
 
-  /// Add a new category
-  Future<void> addCategory({
+  Future<void> updateCategoriesOptimistic({
     required String tutorId,
-    required List<String> categories,
+    required List<String> newCategories,
+    required List<String> originalCategories,
+    required BuildContext context,
   }) async {
+    emit(ProfileCategoriesOptimisticUpdate(
+      newCategories,
+      currentName: state.currentName,
+      currentImageUrl: state.currentImageUrl,
+      currentBio: state.currentBio,
+    ));
 
-    log("uiwehdweyhduyergfyucgryfgwerygfbyrgbfyrfgbyvbft");
+    emit(ProfileCategoriesLoading(
+      currentName: state.currentName,
+      currentImageUrl: state.currentImageUrl,
+      currentBio: state.currentBio,
+      userCategories: newCategories,
+    ));
+
     final result = await _addCategoryUseCase.call(
-      params: UpdateCategoryParams(userId: tutorId, category: categories),
+      params: UpdateCategoryParams(userId: tutorId, category: newCategories),
     );
 
     result.fold(
-      (error) => emit(ProfileError(error,
+      (error) {
+        developer.log('Category update failed: $error');
+        emit(ProfileCategoriesUpdateFailed(
           currentName: state.currentName,
           currentImageUrl: state.currentImageUrl,
           currentBio: state.currentBio,
-          userCategories: state.userCategories)),
-      (category) {
-        final List<String> updatedList = [...?state.userCategories,...category];
-        emit(ProfileCategoriesUpdated(updatedList,
+          userCategories: originalCategories,
+        ));
+        emit(ProfileError(
+          'Failed to update categories: $error',
+          currentName: state.currentName,
+          currentImageUrl: state.currentImageUrl,
+          currentBio: state.currentBio,
+          userCategories: originalCategories,
+        ));
+      },
+      (categories) {
+        developer.log('Category update success: $categories');
+        if (context.mounted) {
+          context.read<AuthBloc>().add(GetCurrentUserEvent());
+        }
+        emit(ProfileCategoriesUpdated(
+          categories,
           currentName: state.currentName,
           currentImageUrl: state.currentImageUrl,
           currentBio: state.currentBio,
@@ -102,24 +147,56 @@ void loadUserData({
     );
   }
 
-  /// Delete a category
   Future<void> deleteCategory({
     required String tutorId,
     required CategoryModel category,
+    required BuildContext context,
   }) async {
+    final originalCategories = state.userCategories ?? [];
+    final newCategories = [...originalCategories]..remove(category.title);
+
+    emit(ProfileCategoriesOptimisticUpdate(
+      newCategories,
+      currentName: state.currentName,
+      currentImageUrl: state.currentImageUrl,
+      currentBio: state.currentBio,
+    ));
+
+    emit(ProfileCategoriesLoading(
+      currentName: state.currentName,
+      currentImageUrl: state.currentImageUrl,
+      currentBio: state.currentBio,
+      userCategories: newCategories,
+    ));
+
     final result = await _deleteCategoryUseCase.call(
       params: DeleteCategoryParams(userId: tutorId, category: category),
     );
 
     result.fold(
-      (error) => emit(ProfileError(error,
+      (error) {
+        developer.log('Category deletion failed: $error');
+        emit(ProfileCategoriesUpdateFailed(
           currentName: state.currentName,
           currentImageUrl: state.currentImageUrl,
           currentBio: state.currentBio,
-          userCategories: state.userCategories)),
+          userCategories: originalCategories,
+        ));
+        emit(ProfileError(
+          'Failed to delete category: $error',
+          currentName: state.currentName,
+          currentImageUrl: state.currentImageUrl,
+          currentBio: state.currentBio,
+          userCategories: originalCategories,
+        ));
+      },
       (success) {
-        final updatedList = [...?state.userCategories]..remove(category.title);
-        emit(ProfileCategoriesUpdated(updatedList,
+        developer.log('Category deletion success');
+        if (context.mounted) {
+          context.read<AuthBloc>().add(GetCurrentUserEvent());
+        }
+        emit(ProfileCategoriesUpdated(
+          newCategories,
           currentName: state.currentName,
           currentImageUrl: state.currentImageUrl,
           currentBio: state.currentBio,
@@ -128,50 +205,91 @@ void loadUserData({
     );
   }
 
-  /// Update bio
-  Future<void> updateBio({
+  Future<void> updateBioOptimistic({
     required String userId,
     required String newBio,
+    required String originalBio,
+    required BuildContext context,
   }) async {
+    if (newBio.trim().isEmpty) {
+      emit(ProfileError(
+        'Bio cannot be empty',
+        currentName: state.currentName,
+        currentImageUrl: state.currentImageUrl,
+        currentBio: originalBio,
+        userCategories: state.userCategories,
+      ));
+      return;
+    }
+
+    emit(ProfileBioOptimisticUpdate(
+      newBio.trim(),
+      currentName: state.currentName,
+      currentImageUrl: state.currentImageUrl,
+      userCategories: state.userCategories,
+    ));
+
+    emit(ProfileBioLoading(
+      optimisticBio: newBio.trim(),
+      currentName: state.currentName,
+      currentImageUrl: state.currentImageUrl,
+      userCategories: state.userCategories,
+    ));
+
     final result = await _updateBioUseCase.call(
-      params: UpdateBioParams(userId: userId, bio: newBio),
+      params: UpdateBioParams(userId: userId, bio: newBio.trim()),
     );
 
     result.fold(
-      (error) => emit(ProfileError(error,
+      (error) {
+        developer.log('Bio update failed: $error');
+        emit(ProfileBioUpdateFailed(
+          currentName: state.currentName,
+          currentImageUrl: state.currentImageUrl,
+          currentBio: originalBio,
+          userCategories: state.userCategories,
+        ));
+        emit(ProfileError(
+          'Failed to update bio: $error',
+          currentName: state.currentName,
+          currentImageUrl: state.currentImageUrl,
+          currentBio: originalBio,
+          userCategories: state.userCategories,
+        ));
+      },
+      (bio) {
+        developer.log('Bio update success: $bio');
+        if (context.mounted) {
+          context.read<AuthBloc>().add(GetCurrentUserEvent());
+        }
+        emit(ProfileBioUpdated(
+          bio,
           currentName: state.currentName,
           currentImageUrl: state.currentImageUrl,
           userCategories: state.userCategories,
-          currentBio: state.currentBio)),
-      (bio) => emit(ProfileBioUpdated(bio,
-          currentName: state.currentName,
-          currentImageUrl: state.currentImageUrl,
-          userCategories: state.userCategories)),
+        ));
+      },
     );
   }
 
-  final _addCategoryUseCase = serviceLocator<AddCategoryUseCase>();
-  final _getCategoriesUseCase = serviceLocator<GetCategoriesUseCase>();
-  final _deleteCategoryUseCase = serviceLocator<DeleteCategoryUseCase>();
-  final _updateBioUseCase = serviceLocator<UpdateBioUseCase>();
-
-  /// Toggle between name show and edit modes
   Future<void> toggleNameEditingMode() async {
-    if (state is ProfileNameEditMode) {
-      emit(ProfileNameShowMode(
-        currentName: state.currentName,
-        currentImageUrl: state.currentImageUrl,
-      ));
-    } else {
-      emit(ProfileNameEditMode(
-        currentName: state.currentName,
-        currentImageUrl: state.currentImageUrl,
-      ));
-    }
+    final currentState = state;
+    emit(currentState is ProfileNameEditMode
+        ? ProfileNameShowMode(
+            currentName: currentState.currentName,
+            currentImageUrl: currentState.currentImageUrl,
+            currentBio: currentState.currentBio,
+            userCategories: currentState.userCategories,
+          )
+        : ProfileNameEditMode(
+            currentName: currentState.currentName,
+            currentImageUrl: currentState.currentImageUrl,
+            currentBio: currentState.currentBio,
+            userCategories: currentState.userCategories,
+          ));
   }
 
-  /// Update username with optimistic UI
-  void updateUserNameOptimistic({
+  Future<void> updateUserNameOptimistic({
     required String userId,
     required String newName,
     required String originalName,
@@ -182,25 +300,28 @@ void loadUserData({
         'Name cannot be empty',
         currentName: originalName,
         currentImageUrl: state.currentImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
       ));
       return;
     }
 
     try {
-      developer.log('Emitting ProfileNameOptimisticUpdate with name: $newName');
       emit(ProfileNameOptimisticUpdate(
-        newName,
+        newName.trim(),
         currentImageUrl: state.currentImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
       ));
 
-      developer.log('Emitting ProfileNameEditLoading with name: $newName');
       emit(ProfileNameEditLoading(
-        optimisticName: newName,
+        optimisticName: newName.trim(),
         currentImageUrl: state.currentImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
       ));
 
-      final updateName = serviceLocator<UpdateNameUserUseCase>();
-      final result = await updateName.call(
+      final result = await _updateNameUseCase.call(
         params: UpdateNameParams(userId: userId, newName: newName.trim()),
       );
 
@@ -210,15 +331,15 @@ void loadUserData({
           emit(ProfileNameUpdateFailed(
             currentName: originalName,
             currentImageUrl: state.currentImageUrl,
-          ));
-          emit(ProfileNameShowMode(
-            currentName: originalName,
-            currentImageUrl: state.currentImageUrl,
+            currentBio: state.currentBio,
+            userCategories: state.userCategories,
           ));
           emit(ProfileError(
             'Failed to update name: $error',
             currentName: originalName,
             currentImageUrl: state.currentImageUrl,
+            currentBio: state.currentBio,
+            userCategories: state.userCategories,
           ));
         },
         (successName) {
@@ -229,10 +350,8 @@ void loadUserData({
           emit(ProfileNameUpdated(
             successName,
             currentImageUrl: state.currentImageUrl,
-          ));
-          emit(ProfileNameShowMode(
-            currentName: successName,
-            currentImageUrl: state.currentImageUrl,
+            currentBio: state.currentBio,
+            userCategories: state.userCategories,
           ));
         },
       );
@@ -241,45 +360,51 @@ void loadUserData({
       emit(ProfileNameUpdateFailed(
         currentName: originalName,
         currentImageUrl: state.currentImageUrl,
-      ));
-      emit(ProfileNameShowMode(
-        currentName: originalName,
-        currentImageUrl: state.currentImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
       ));
       emit(ProfileError(
         'Error updating name: $e',
         currentName: originalName,
         currentImageUrl: state.currentImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
       ));
     }
   }
 
-  void showImagePickerOptimistic({
-  required BuildContext context,
-  required String userId,
-  required ImageSource source,
-  String? originalImageUrl,
-}) async {
-  try {
-    final XFile? pickedFile = await _imagePicker.pickImage(source: source);
+  Future<void> showImagePickerOptimistic({
+    required BuildContext context,
+    required String userId,
+    required ImageSource source,
+    String? originalImageUrl,
+  }) async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(source: source);
+      if (pickedFile == null) {
+        developer.log('No image selected');
+        return;
+      }
 
-    if (pickedFile != null) {
-      final localImagePath = pickedFile.path;
-      developer.log('Emitting ProfileImageOptimisticUpdate with path: $localImagePath');
+      developer.log('Picked image: name=${pickedFile.name}, path=${pickedFile.path}');
+
+      // Emit optimistic update with the file path (for UI preview)
       emit(ProfileImageOptimisticUpdate(
-        localImagePath,
+        kIsWeb ? pickedFile.path : pickedFile.path, // Blob URL on web, file path on mobile
         currentName: state.currentName,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
       ));
 
-      developer.log('Emitting ProfileImagePickerLoading with path: $localImagePath');
       emit(ProfileImagePickerLoading(
-        optimisticImageUrl: localImagePath,
+        optimisticImageUrl: kIsWeb ? pickedFile.path : pickedFile.path,
         currentName: state.currentName,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
       ));
 
-      final updateDp = serviceLocator<UpdateDpUserUseCase>();
-      final result = await updateDp.call(
-        params: UpdateDpParams(userId: userId, imagePath: pickedFile.path),
+      final result = await _updateDpUseCase.call(
+        params: UpdateDpParams(userId: userId, imagePath: pickedFile), // Pass XFile
       );
 
       result.fold(
@@ -288,59 +413,45 @@ void loadUserData({
           emit(ProfileImageUpdateFailed(
             currentName: state.currentName,
             currentImageUrl: originalImageUrl,
+            currentBio: state.currentBio,
+            userCategories: state.userCategories,
           ));
           emit(ProfileError(
             'Failed to upload image: $error',
             currentName: state.currentName,
             currentImageUrl: originalImageUrl,
+            currentBio: state.currentBio,
+            userCategories: state.userCategories,
           ));
         },
         (imageUrl) {
-          developer.log('Image upload success, emitting ProfileImageUpdated with URL: $imageUrl');
+          developer.log('Image upload success: $imageUrl');
           if (context.mounted) {
-            // context.read<AuthBloc>().updateUserDp(imageUrl);
-            // context.read<AuthBloc>().getCurrentUser();
+            context.read<AuthBloc>().add(GetCurrentUserEvent());
           }
           emit(ProfileImageUpdated(
             imageUrl,
             currentName: state.currentName,
-          ));
-          developer.log('Emitting ProfileImageShowMode with URL: $imageUrl');
-          emit(ProfileImageShowMode(
-            currentName: state.currentName,
-            currentImageUrl: imageUrl,
+            currentBio: state.currentBio,
+            userCategories: state.userCategories,
           ));
         },
       );
+    } catch (e) {
+      developer.log('Image picker error: $e');
+      emit(ProfileImageUpdateFailed(
+        currentName: state.currentName,
+        currentImageUrl: originalImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
+      ));
+      emit(ProfileError(
+        'Error selecting image: $e',
+        currentName: state.currentName,
+        currentImageUrl: originalImageUrl,
+        currentBio: state.currentBio,
+        userCategories: state.userCategories,
+      ));
     }
-  } catch (e) {
-    developer.log('Image picker error: $e');
-    emit(ProfileImageUpdateFailed(
-      currentName: state.currentName,
-      currentImageUrl: originalImageUrl,
-    ));
-    emit(ProfileError(
-      'Error selecting image: $e',
-      currentName: state.currentName,
-      currentImageUrl: originalImageUrl,
-    ));
-  }
-}
-
- 
-  /// Initialize cubit with user data
-  void initializeWithUserData({required String name, required String? imageUrl}) {
-    String? newImageUrl = imageUrl;
-    if (state is ProfileImageOptimisticUpdate ||
-        state is ProfileImagePickerLoading ||
-        state is ProfileImageUpdated ||
-        state is ProfileImageShowMode) {
-      newImageUrl = state.currentImageUrl;
-    }
-    developer.log('Initializing with name: $name, imageUrl: $newImageUrl');
-    emit(ProfileInitial(
-      currentName: name,
-      currentImageUrl: newImageUrl,
-    ));
   }
 }

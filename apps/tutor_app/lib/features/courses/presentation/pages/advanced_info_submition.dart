@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -73,69 +76,76 @@ class AdvancedInfoBody extends StatelessWidget {
                 children: [
                   AppText(text: "Course Thumbnail",),
                   InkWell(
-                    highlightColor: Colors.deepOrange,
-                    borderRadius: BorderRadius.circular(20),
-                    hoverDuration: Duration(seconds: 1),
-                    onTap: (){
-                      context.read<AddCourseCubit>().pickThumbnail();
-                    },
-                    child: Stack(
-   children: [
-  
-  Container(
-    width: double.infinity,
-    height: MediaQuery.of(context).size.height * 0.18,
-    padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.005),
-    clipBehavior: Clip.antiAlias,
-    decoration: BoxDecoration(
-      // ignore: deprecated_member_use
-      color: Colors.deepOrange.withOpacity(0.5),
-      borderRadius: BorderRadius.circular(20),
-      image: state.thumbnailPath.isNotEmpty
-          ? DecorationImage(
-              image: state.isEditing != null && state.isEditing == true
-                  ? (state.thumbnailPath.startsWith('http') // Check if it's a URL
-                      ? NetworkImage(state.thumbnailPath) 
-                      : FileImage(File(state.thumbnailPath))) as ImageProvider
-                  : FileImage(File(state.thumbnailPath)),
-              fit: BoxFit.cover,
-            )
-          : null,
-    ),
-    child: Visibility(
-      visible: state.thumbnailPath.isEmpty,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.image, color: Colors.white),
-            AppText(
-              text: state.thumbnailPath,
-              color: Colors.white,
-              weight: FontWeight.w500,
-              size: 15,
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-
-
-  if (state.thumbnailPath.isNotEmpty)
-    Container(
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.18,
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(83, 0, 0, 0),
-        borderRadius: BorderRadius.circular(20),
-      ),
-    ),
-],
-
-)
-
-                  ),
+                      highlightColor: Colors.deepOrange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                      hoverDuration: const Duration(milliseconds: 200),
+                      onTap: () {
+                        context.read<AddCourseCubit>().pickThumbnail();
+                      },
+                      child: Stack(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Container(
+                              width: double.infinity,
+                              height: MediaQuery.of(context).size.height * 0.18,
+                              padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.005),
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(
+                                color: Colors.deepOrange.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(20),
+                                image: state.thumbnailPath.isNotEmpty
+                                    ? DecorationImage(
+                                        image: _getThumbnailImage(state),
+                                        fit: BoxFit.cover,
+                                        onError: (exception, stackTrace) {
+                                          log('Error loading thumbnail: $exception');
+                                        },
+                                      )
+                                    : null,
+                              ),
+                              child: Visibility(
+                                visible: state.thumbnailPath.isEmpty,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.image,
+                                        color: Colors.white,
+                                      ),
+                                      AppText(
+                                        text: "Upload Thumbnail",
+                                        color: Colors.white,
+                                        weight: FontWeight.w500,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (state.thumbnailPath.isNotEmpty)
+                            AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(83, 0, 0, 0),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 32,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                 
                   AppTextField(
                     label: "Course Description",
@@ -159,6 +169,25 @@ class AdvancedInfoBody extends StatelessWidget {
         );
       },
     );
+  }
+  
+
+  ImageProvider _getThumbnailImage(AddCourseState state) {
+    if (kIsWeb) {
+      if (state.thumbnailPath.startsWith('data:image')) {
+        final base64String = state.thumbnailPath.split(',').last;
+        return MemoryImage(base64Decode(base64String));
+      } else if (state.thumbnailPath.startsWith('http')) {
+        return NetworkImage(state.thumbnailPath);
+      }
+    } else {
+      if (state.isEditing == true && state.thumbnailPath.startsWith('http')) {
+        return NetworkImage(state.thumbnailPath);
+      } else {
+        return FileImage(File(state.thumbnailPath));
+      }
+    }
+    return const AssetImage('assets/images/placeholder.png');
   }
 }
   

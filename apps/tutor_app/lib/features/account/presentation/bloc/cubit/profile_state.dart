@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 abstract class ProfileState {
   final String? currentName;
   final String? currentImageUrl;
@@ -54,7 +56,6 @@ class ProfileNameOptimisticUpdate extends ProfileState {
     super.userCategories,
     super.interests,
   }) : super(currentName: optimisticName);
-
 }
 
 class ProfileNameEditLoading extends ProfileState {
@@ -67,8 +68,6 @@ class ProfileNameEditLoading extends ProfileState {
     super.userCategories,
     super.interests,
   }) : super(currentName: optimisticName);
-
-  
 }
 
 class ProfileNameUpdated extends ProfileState {
@@ -81,7 +80,6 @@ class ProfileNameUpdated extends ProfileState {
     super.userCategories,
     super.interests,
   }) : super(currentName: name);
-
 }
 
 class ProfileNameUpdateFailed extends ProfileState {
@@ -104,7 +102,6 @@ class ProfileImageOptimisticUpdate extends ProfileState {
     super.userCategories,
     super.interests,
   }) : super(currentImageUrl: optimisticImageUrl);
-
 }
 
 class ProfileImagePickerLoading extends ProfileState {
@@ -117,21 +114,22 @@ class ProfileImagePickerLoading extends ProfileState {
     super.userCategories,
     super.interests,
   }) : super(currentImageUrl: optimisticImageUrl);
-
 }
 
 class ProfileImageUpdated extends ProfileState {
   final String imageUrl;
+  final Uint8List? imageBytes; // Only for web
 
   const ProfileImageUpdated(
     this.imageUrl, {
+    this.imageBytes,
     super.currentName,
     super.currentBio,
     super.userCategories,
     super.interests,
   }) : super(currentImageUrl: imageUrl);
-
 }
+
 
 class ProfileImageShowMode extends ProfileState {
   const ProfileImageShowMode({
@@ -153,6 +151,30 @@ class ProfileImageUpdateFailed extends ProfileState {
   });
 }
 
+class ProfileBioOptimisticUpdate extends ProfileState {
+  final String optimisticBio;
+
+  const ProfileBioOptimisticUpdate(
+    this.optimisticBio, {
+    super.currentName,
+    super.currentImageUrl,
+    super.userCategories,
+    super.interests,
+  }) : super(currentBio: optimisticBio);
+}
+
+class ProfileBioLoading extends ProfileState {
+  final String? optimisticBio;
+
+  const ProfileBioLoading({
+    this.optimisticBio,
+    super.currentName,
+    super.currentImageUrl,
+    super.userCategories,
+    super.interests,
+  }) : super(currentBio: optimisticBio);
+}
+
 class ProfileBioUpdated extends ProfileState {
   final String bio;
 
@@ -163,37 +185,54 @@ class ProfileBioUpdated extends ProfileState {
     super.userCategories,
     super.interests,
   }) : super(currentBio: bio);
-
 }
 
+class ProfileBioUpdateFailed extends ProfileState {
+  const ProfileBioUpdateFailed({
+    super.currentName,
+    super.currentImageUrl,
+    super.currentBio,
+    super.userCategories,
+    super.interests,
+  });
+}
 
-class ProfileCategoriesLoading extends ProfileState {
+class ProfileCategoriesOptimisticUpdate extends ProfileState {
+  final List<String> optimisticCategories;
 
-  const ProfileCategoriesLoading(
-     {
+  const ProfileCategoriesOptimisticUpdate(
+    this.optimisticCategories, {
     super.currentName,
     super.currentImageUrl,
     super.currentBio,
     super.interests,
-  }) : super();
+  }) : super(userCategories: optimisticCategories);
+}
 
+class ProfileCategoriesLoading extends ProfileState {
+  const ProfileCategoriesLoading({
+    super.currentName,
+    super.currentImageUrl,
+    super.currentBio,
+    super.userCategories,
+    super.interests,
+  });
 }
 
 class ProfileCategoriesUpdated extends ProfileState {
-    final List<String> categoriesLoaded;
+  final List<String> categories;
+
   const ProfileCategoriesUpdated(
-    this.categoriesLoaded, {
+    this.categories, {
     super.currentName,
     super.currentImageUrl,
     super.currentBio,
     super.interests,
-  }) : super();
-
+  }) : super(userCategories: categories);
 }
 
-
-class ProfileActivitiesLoading extends ProfileState {
-  const ProfileActivitiesLoading({
+class ProfileCategoriesUpdateFailed extends ProfileState {
+  const ProfileCategoriesUpdateFailed({
     super.currentName,
     super.currentImageUrl,
     super.currentBio,
@@ -213,5 +252,4 @@ class ProfileError extends ProfileState {
     super.userCategories,
     super.interests,
   });
-
 }

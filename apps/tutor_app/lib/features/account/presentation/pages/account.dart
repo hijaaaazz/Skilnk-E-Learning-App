@@ -1,6 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/account/presentation/widgets/dialog.dart';
 import 'package:tutor_app/features/account/presentation/widgets/option_tile.dart';
@@ -12,34 +16,41 @@ class AccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            title: const Text(
-              "Account",
-              style: TextStyle(
-                color: Colors.black87,
-              ),
-            ),
-            centerTitle: false,
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Container(
-                height: 1,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.grey.withOpacity(0.1),
-                      Colors.grey.withOpacity(0.3),
-                      Colors.grey.withOpacity(0.1),
-                    ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if(state.status == AuthStatus.unauthenticated){
+          context.goNamed(AppRouteConstants.authRouteName);
+        }
+      },
+      child: Scaffold(
+          appBar: AppBar(
+                backgroundColor: Colors.white,
+                elevation: 0,
+                title: const Text(
+                  "Account",
+                  style: TextStyle(
+                    color: Colors.black87,
+                  ),
+                ),
+                centerTitle: false,
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(1),
+                  child: Container(
+                    height: 1,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.grey.withOpacity(0.1),
+                          Colors.grey.withOpacity(0.3),
+                          Colors.grey.withOpacity(0.1),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-      body: _buildAuthenticatedUI(context)
+          body: _buildAuthenticatedUI(context)
+        ),
     );
   }
 
@@ -98,18 +109,26 @@ class AccountPage extends StatelessWidget {
                 "Legal & Policies",
                 Icons.gavel_outlined,
                 onTap: () {
-                  // Handle legal & policies
-                },
+            context.pushNamed(AppRouteConstants.termsandconditions);
+          },
               ),
-              buildDivider(),
-             
-              buildOptionTile(
-                context,
-                "Share this App",
-                Icons.share_outlined,
-                onTap: () {
-                  // Handle share app
-                },
+               if(!kIsWeb)
+               Column(
+                children: [
+                  buildDivider(),
+                               
+                  buildOptionTile(
+                    context,
+                    "Share this App",
+                    Icons.share_outlined,
+                    onTap: () {
+                      Share.share(
+                  'Check out the Skilnk App – a simple way to learn and grow! ',
+                  subject: 'Skilnk – Learn with ease',
+                              );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

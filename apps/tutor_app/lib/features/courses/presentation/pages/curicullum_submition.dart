@@ -1,8 +1,6 @@
-// curriculum.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-// ignore: depend_on_referenced_packages
 import 'package:tutor_app/common/widgets/app_text.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_cubit.dart';
@@ -11,20 +9,19 @@ import 'package:tutor_app/features/courses/presentation/widgets/reordarable_list
 import 'package:tutor_app/features/courses/presentation/widgets/step_page.dart';
 
 class StepCurriculum extends StatelessWidget {
-  const StepCurriculum({
-    super.key,
-  });
+  const StepCurriculum({super.key});
 
   @override
   Widget build(BuildContext context) {
     return CourseStepPage(
       title: "Curriculum",
       icon: Icons.play_circle_sharp,
-      bodyContent: CurriculumBody(),
+      bodyContent: const CurriculumBody(),
       onNext: () {
         // Validate curriculum before proceeding
         if (context.read<AddCourseCubit>().validateCurriculum(context)) {
-          context.pushNamed(AppRouteConstants.addCoursePublishRouteName,extra: context.read<AddCourseCubit>());
+          context.pushNamed(AppRouteConstants.addCoursePublishRouteName,
+              extra: context.read<AddCourseCubit>());
         }
       },
     );
@@ -46,40 +43,44 @@ class CurriculumBody extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AppText(
-                    text: 'Lectures : ${state.lessons.length}',
+                    text: 'Lectures: ${state.lessons.length}',
                   ),
-                  IconButton(onPressed: (){
-                     final cubit = context.read<AddCourseCubit>();
-                    context.pushNamed(AppRouteConstants.addCourseaddlectureName,extra: cubit);
-                  }, icon: Icon(Icons.add_circle_rounded)),
+                  IconButton(
+                    onPressed: () {
+                      final cubit = context.read<AddCourseCubit>();
+                      context.pushNamed(AppRouteConstants.addCourseaddlectureName,
+                          extra: cubit);
+                    },
+                    icon: const Icon(Icons.add_circle_rounded),
+                  ),
                 ],
               ),
-              
               // Lectures list
               SizedBox(
                 width: double.infinity,
                 height: MediaQuery.of(context).size.height * 0.6,
-                child: state.lessons.isEmpty 
-                  ? _EmptyLecturesList() 
-                  : ReorderableContentList(
-                      items: state.lessons,
-                      onReorder:(oldindex,newIndex){
-                        context.read<AddCourseCubit>().reorderLectures(oldindex, newIndex);
-                      } ,
-                      onDelete:(index){
-                        
-                        context.read<AddCourseCubit>().removeLecture(index);
-                      } ,
-                      onEdit:(index){
-                        final cubit = context.read<AddCourseCubit>();
-                        cubit.startEditingLecture(index); // index - 1 because UI index starts at 1
-                        context.pushNamed(
-                          AppRouteConstants.addCourseaddlectureName,
-                          extra: cubit,
-                        );
-                      } ,
-                    ),
-                ),
+                child: state.lessons.isEmpty
+                    ? const _EmptyLecturesList()
+                    : ReorderableContentList(
+                        items: state.lessons,
+                        onReorder: (oldIndex, newIndex) {
+                          context
+                              .read<AddCourseCubit>()
+                              .reorderLectures(oldIndex, newIndex);
+                        },
+                        onDelete: (index) {
+                          context.read<AddCourseCubit>().removeLecture(index);
+                        },
+                        onEdit: (index) {
+                          final cubit = context.read<AddCourseCubit>();
+                          cubit.startEditingLecture(index);
+                          context.pushNamed(
+                            AppRouteConstants.addCourseaddlectureName,
+                            extra: cubit,
+                          );
+                        },
+                      ),
+              ),
             ],
           ),
         );
@@ -89,6 +90,8 @@ class CurriculumBody extends StatelessWidget {
 }
 
 class _EmptyLecturesList extends StatelessWidget {
+  const _EmptyLecturesList();
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -100,7 +103,7 @@ class _EmptyLecturesList extends StatelessWidget {
             size: 64,
             color: Colors.grey[400],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'No lectures added yet',
             style: TextStyle(
@@ -108,7 +111,7 @@ class _EmptyLecturesList extends StatelessWidget {
               color: Colors.grey[600],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'Click "Add Lecture" to start building your course',
             style: TextStyle(

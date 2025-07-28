@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -68,6 +69,7 @@ class ImagePickerBottomSheet extends StatelessWidget {
                       );
                 },
               ),
+              if(!kIsWeb)
               _buildImagePickerOption(
                 context,
                 icon: Icons.camera_alt_outlined,

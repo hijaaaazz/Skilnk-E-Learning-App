@@ -2,7 +2,6 @@
 
 
 import 'package:equatable/equatable.dart';
-import 'package:tutor_app/features/chat/data/models/student_model.dart';
 import 'package:tutor_app/features/chat/data/models/stuent_chat_model.dart';
 
 abstract class TutorChatListState extends Equatable {

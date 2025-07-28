@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
 

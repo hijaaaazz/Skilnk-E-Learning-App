@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tutor_app/features/dashboard/data/models/toime_period_dart';
-import 'package:flutter/material.dart';
 import 'package:tutor_app/features/dashboard/presentation/widgets/skeltons/skelton_loader.dart';
 class DurationSelector extends StatelessWidget {
   final TimePeriod selectedPeriod;
   final Function(TimePeriod) onPeriodChanged;
   final bool isLoading;
 
+  // ignore: use_super_parameters
   const DurationSelector({
     Key? key,
     required this.selectedPeriod,
@@ -61,6 +61,7 @@ class DurationSelector extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: isSelected ? [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.08),
                 blurRadius: 8,
                 offset: Offset(0, 2),

@@ -1,8 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:tutor_app/features/account/data/models/delete_category.dart';
-import 'package:tutor_app/features/account/data/models/update_bio_params.dart';
-import 'package:tutor_app/features/account/data/models/update_category_params.dart';
-import 'package:tutor_app/features/account/data/models/update_dp_params.dart';
 import 'package:tutor_app/features/account/data/repo/profile_repo.dart';
 import 'package:tutor_app/features/account/data/service/profile_cloudinary_service.dart';
 import 'package:tutor_app/features/account/data/service/profile_firebase_service.dart';
@@ -32,7 +28,6 @@ import 'package:tutor_app/features/chat/domain/usecaase/check_chat_exist.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/load_chat_list.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/loadchat_usecase.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dart';
-import 'package:tutor_app/features/chat/presentation/bloc/chat_list/chat_list_event.dart';
 import 'package:tutor_app/features/courses/data/repo/courses_repo.dart';
 import 'package:tutor_app/features/courses/data/src/cloudinary_services.dart';
 import 'package:tutor_app/features/courses/data/src/firebase_services.dart';

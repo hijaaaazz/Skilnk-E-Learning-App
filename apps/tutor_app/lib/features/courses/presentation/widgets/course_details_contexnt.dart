@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tutor_app/features/courses/domain/entities/course_entity.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/build_stat_item.dart';
-import 'package:tutor_app/features/courses/presentation/widgets/rating_bar.dart';
 import 'package:tutor_app/features/courses/presentation/widgets/reviews_breakdown_section.dart';
 
 class CourseDetailContent extends StatelessWidget {

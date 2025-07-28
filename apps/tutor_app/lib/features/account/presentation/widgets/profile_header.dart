@@ -1,5 +1,9 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/features/account/presentation/bloc/cubit/profile_cubit.dart';
@@ -327,71 +331,78 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     );
   }
 
-  Widget _buildProfileImage(ProfileState profileState) {
-    String? imageUrl;
+Widget _buildProfileImage(ProfileState profileState) {
+  String? imageUrl;
+  Uint8List? webImageBytes;
 
-    if (profileState is ProfileImageOptimisticUpdate) {
-      imageUrl = profileState.optimisticImageUrl;
-    } else if (profileState is ProfileImagePickerLoading) {
-      imageUrl = profileState.optimisticImageUrl;
-    } else if (profileState is ProfileImageUpdated) {
-      imageUrl = profileState.imageUrl;
-    } else if (profileState is ProfileImageShowMode) {
-      imageUrl = profileState.currentImageUrl;
-    } else if (profileState is ProfileImageUpdateFailed) {
-      imageUrl = profileState.currentImageUrl ?? widget.user.image;
-    } else {
-      imageUrl = profileState.currentImageUrl ?? widget.user.image;
+  if (profileState is ProfileImageOptimisticUpdate) {
+    imageUrl = profileState.optimisticImageUrl;
+  } else if (profileState is ProfileImagePickerLoading) {
+    imageUrl = profileState.optimisticImageUrl;
+  } else if (profileState is ProfileImageUpdated) {
+    imageUrl = profileState.imageUrl;
+    if (kIsWeb && profileState is ProfileImageUpdated) {
+      webImageBytes = profileState.imageBytes;
     }
+  } else if (profileState is ProfileImageShowMode) {
+    imageUrl = profileState.currentImageUrl;
+  } else if (profileState is ProfileImageUpdateFailed) {
+    imageUrl = profileState.currentImageUrl ?? widget.user.image;
+  } else {
+    imageUrl = profileState.currentImageUrl ?? widget.user.image;
+  }
 
-    developer.log('Selected imageUrl: $imageUrl for state: ${profileState.runtimeType}');
-    
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      if (imageUrl.startsWith('http')) {
-        return CachedNetworkImage(
-          imageUrl: imageUrl,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => Container(
-            color: Colors.grey[100],
-            child: const Center(
-              child: CircularProgressIndicator(
-                color: Colors.black54,
-                strokeWidth: 2,
-              ),
+  developer.log('Selected imageUrl: $imageUrl for state: ${profileState.runtimeType}');
+
+  if (imageUrl != null && imageUrl.isNotEmpty) {
+    if (imageUrl.startsWith('http')) {
+      // For both mobile and web (http image)
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Container(
+          color: Colors.grey[100],
+          child: const Center(
+            child: CircularProgressIndicator(
+              color: Colors.black54,
+              strokeWidth: 2,
             ),
           ),
-          errorWidget: (context, url, error) => Container(
-            color: Colors.grey[100],
-            child: Icon(
-              Icons.person,
-              size: 40,
-              color: Colors.grey[400],
-            ),
-          ),
-        );
+        ),
+        errorWidget: (context, url, error) => _defaultPlaceholder(),
+      );
+    } else {
+      if (kIsWeb) {
+        // Web: Use memory image (you need to store bytes in state)
+        if (webImageBytes != null) {
+          return Image.memory(
+            webImageBytes,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => _defaultPlaceholder(),
+          );
+        }
       } else {
+        // Mobile/Desktop: Use File image
         return Image.file(
           File(imageUrl),
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => Container(
-            color: Colors.grey[100],
-            child: Icon(
-              Icons.person,
-              size: 40,
-              color: Colors.grey[400],
-            ),
-          ),
+          errorBuilder: (context, error, stackTrace) => _defaultPlaceholder(),
         );
       }
     }
-
-    return Container(
-      color: Colors.grey[100],
-      child: Icon(
-        Icons.person,
-        size: 40,
-        color: Colors.grey[400],
-      ),
-    );
   }
+
+  return _defaultPlaceholder();
+}
+
+Widget _defaultPlaceholder() {
+  return Container(
+    color: Colors.grey[100],
+    child: Icon(
+      Icons.person,
+      size: 40,
+      color: Colors.grey[400],
+    ),
+  );
+}
 }

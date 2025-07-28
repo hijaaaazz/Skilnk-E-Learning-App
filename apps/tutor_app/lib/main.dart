@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,23 +13,31 @@ import 'package:tutor_app/features/courses/presentation/bloc/course_bloc/courses
 import 'package:tutor_app/firebase_options.dart';
 import 'package:tutor_app/service_locator.dart';
 
-Future<void> main() async {
+void main() {
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-  initializeDependencies();
-  
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+    if (!kIsWeb) {
+      await dotenv.load(fileName: ".env");
+    }
 
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Color.fromARGB(255, 0, 0, 0),
-    systemNavigationBarIconBrightness: Brightness.dark,
-  ));
+    initializeDependencies();
 
-  runApp(const Skilnk());
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemNavigationBarColor: Color.fromARGB(255, 0, 0, 0),
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
+
+    runApp(const Skilnk());
+  }, (error, stackTrace) {
+    print('Uncaught error: $error');
+  });
 }
+
 
 class Skilnk extends StatelessWidget {
   const Skilnk({super.key});
@@ -43,7 +54,7 @@ class Skilnk extends StatelessWidget {
         theme: MyThemes.lightTheme,
         darkTheme: MyThemes.darkTheme,
         debugShowCheckedModeBanner: false,
-        routerConfig: AppRoutes().router,
+        routerConfig: AppRoutes(context).router,
       ),
     );
   }

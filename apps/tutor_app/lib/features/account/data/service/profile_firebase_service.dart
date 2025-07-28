@@ -62,7 +62,7 @@ class FirebaseProfileServiceImp extends FirebaseProfileService {
         'bio': bio,
         'updatedAt': DateTime.now(),
       });
-      return right("Bio updated successfully");
+      return right(bio);
     } catch (e, stack) {
       log("Update Bio Error: $e", stackTrace: stack);
       return left("Failed to update bio: $e");

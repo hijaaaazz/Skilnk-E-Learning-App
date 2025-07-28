@@ -94,88 +94,94 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
       return Left("Failed to fetch categories: ${e.toString()}");
     }
   }
-  
-  @override
   Future<Either<String, CourseModel>> createCourse(CourseCreationReq req) async {
-    try {
-      // First, validate the input
-      if (req.title == null || req.title!.isEmpty) {
-        return Left("Course title is required");
-      }
-      if (req.categoryId == null || req.categoryId!.isEmpty) {
-        return Left("Category is required");
-      }
-      if (req.tutorId == null || req.tutorId!.isEmpty) {
-        return Left("Tutor ID is required");
-      }
-      
-    
-      
-      // Calculate duration in minutes from seconds (rounded up)
-      
-      // Create course model
-      final courseModel = CourseModel(
-        id: '', // Will be set after Firestore creates document
-        title: req.title ?? '',
-        categoryId: req.categoryId ?? '',
-        description: req.description ?? '',
-        price: int.tryParse(req.price ?? "") ?? 0,
-        offerPercentage: req.offerPercentage ?? 0,
-        tutorId: req.tutorId ?? '',
-        duration: req.duration!.inSeconds,
-        categoryName: req.categoryName,
-        enrolledCount: 0,
-        averageRating: 0.0,
-        ratingBreakdown: {
-          "five_star": 0,
-          "four_star": 0,
-          "three_star": 0,
-          "two_star": 0,
-          "one_star": 0,
-        },
-        totalReviews: 0,
-        reviews: [],
-        lessons: req.lectures!.map((lecture) => LectureModel(
-          title: lecture.title ?? '',
-          description: lecture.description ?? '',
-          videoUrl: lecture.videoUrl ?? '',
-          notesUrl: lecture.notesUrl ?? '',
-          durationInSeconds: lecture.duration?.inSeconds ?? 0,
-        )).toList(),
-        courseThumbnail: req.courseThumbnail ?? '',
-        level: req.level ?? '',
-        language: req.language ?? '',
-        notificationSent: false,
-        listed: false,
-        isBanned: false,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
-      
-      // Convert to map for Firestore (using the toJson method)
-      final courseData = courseModel.toCreateJson();
-      
-      // Add course to Firestore
-      final courseRef = await _firestore.collection('courses').add(courseData);
-      
-      // Fetch the created course
-      final courseDoc = await courseRef.get();
-      final courseData2 = courseDoc.data();
-      
-      if (courseData2 == null) {
-        return Left("Failed to retrieve created course");
-      }
-      
-      // Use the fromJson method to create the CourseModel instance
-      final gotcourseModel = CourseModel.fromJson(courseData2, courseRef.id);
-      
-      return Right(gotcourseModel);
-    } catch (e) {
-      log("Error creating course: $e");
-      return Left("Failed to create course: ${e.toString()}");
+  try {
+    // Validate input
+    if (req.title == null || req.title!.isEmpty) {
+      log("Validation failed: Course title is required");
+      return Left("Course title is required");
     }
+    if (req.categoryId == null || req.categoryId!.isEmpty) {
+      log("Validation failed: Category is required");
+      return Left("Category is required");
+    }
+    if (req.tutorId == null || req.tutorId!.isEmpty) {
+      log("Validation failed: Tutor ID is required");
+      return Left("Tutor ID is required");
+    }
+    if (req.lectures == null || req.lectures!.isEmpty) {
+      log("Validation failed: At least one lecture is required");
+      return Left("At least one lecture is required");
+    }
+    if (req.duration == null) {
+      log("Validation failed: Course duration is required");
+      return Left("Course duration is required");
+    }
+    for (var lecture in req.lectures!) {
+      if (lecture.videoUrl == null || lecture.videoUrl!.isEmpty) {
+        log("Validation failed: Lecture '${lecture.title}' missing video URL");
+        return Left("Lecture '${lecture.title}' missing video URL");
+      }
+    }
+
+    // Create course model
+    final courseModel = CourseModel(
+      id: '', // Will be set by Firestore
+      title: req.title ?? '',
+      categoryId: req.categoryId ?? '',
+      description: req.description ?? '',
+      price: int.tryParse(req.price ?? "") ?? 0,
+      offerPercentage: req.offerPercentage ?? 0,
+      tutorId: req.tutorId ?? '',
+      duration: req.duration!.inSeconds,
+      categoryName: req.categoryName ?? '',
+      enrolledCount: 0,
+      averageRating: 0.0,
+      ratingBreakdown: {
+        "five_star": 0,
+        "four_star": 0,
+        "three_star": 0,
+        "two_star": 0,
+        "one_star": 0,
+      },
+      totalReviews: 0,
+      reviews: [],
+      lessons: req.lectures!.map((lecture) => LectureModel(
+        title: lecture.title ?? '',
+        description: lecture.description ?? '',
+        videoUrl: lecture.videoUrl ?? '',
+        notesUrl: lecture.notesUrl ?? '',
+        durationInSeconds: lecture.duration?.inSeconds ?? 0,
+      )).toList(),
+      courseThumbnail: req.courseThumbnail ?? '',
+      level: req.level ?? '',
+      language: req.language ?? '',
+      notificationSent: false,
+      listed: false,
+      isBanned: false,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    // Add course to Firestore
+    log("Adding course to Firestore: title=${req.title}");
+    final courseRef = await _firestore.collection('courses').add(courseModel.toCreateJson());
+    final courseDoc = await courseRef.get();
+    final courseData = courseDoc.data();
+
+    if (courseData == null) {
+      log("Failed to retrieve created course data");
+      return Left("Failed to retrieve created course");
+    }
+
+    final createdCourse = CourseModel.fromJson(courseData, courseRef.id);
+    log("Course created successfully: id=${createdCourse.id}");
+    return Right(createdCourse);
+  } catch (e) {
+    log("Error creating course: $e");
+    return Left("Failed to create course: $e");
   }
-  
+}
 @override
 Future<Either<String, List<CoursePreview>>> getCourses({
   required CourseParams params,

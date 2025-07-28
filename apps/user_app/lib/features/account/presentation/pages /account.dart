@@ -215,7 +215,7 @@ class _AccountPageState extends State<AccountPage> {
           Icons.share_outlined,
           onTap: () {
             Share.share(
-              'Check out the Skilnk App – a simple way to learn and grow! 🚀\nDownload now: https://apkpure.com/p/in.skilnk.user_app',
+              'Check out the Skilnk App – a simple way to learn and grow! ',
               subject: 'Skilnk – Learn with ease',
             );
           },

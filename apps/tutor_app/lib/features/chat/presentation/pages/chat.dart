@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
@@ -122,12 +124,10 @@ class ChatView extends StatelessWidget {
 
           List<chat_types.Message> messages = [];
           bool isTyping = false;
-          String chatId = "";
 
           if (state is ChatLoaded) {
             messages = state.chatUIMessages;
             isTyping = state.isTyping;
-            chatId = state.chatId;
           }
 
           return Column(

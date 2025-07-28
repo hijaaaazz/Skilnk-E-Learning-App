@@ -22,16 +22,6 @@ class AppTheme {
         ),
       ),
       
-      // Card Theme
-      cardTheme: CardTheme(
-        color: AppColors.cardBackground,
-        elevation: 4,
-        // ignore: deprecated_member_use
-        shadowColor: Colors.black.withOpacity(0.1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
       
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(

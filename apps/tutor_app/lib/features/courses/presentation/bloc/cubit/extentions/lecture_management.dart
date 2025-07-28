@@ -1,6 +1,6 @@
 import 'dart:developer';
-import 'dart:io';
-
+import 'dart:io' show File;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/core/utils/get_video_duration.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart';
@@ -26,10 +26,18 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
     required String videoPath,
     String? description,
     String? pdfPath,
+    Uint8List? videoBytes,
+    Uint8List? pdfBytes,
   }) async {
     try {
       log("Adding lecture with files: title=$title, video=$videoPath, pdf=$pdfPath");
-      if (title.isNotEmpty && videoPath.isNotEmpty) {
+      if (title.isEmpty || videoPath.isEmpty) {
+        log("Failed to add lecture: title or videoPath is empty");
+        return;
+      }
+
+      // Skip file existence check for web
+      if (!kIsWeb) {
         final videoFile = File(videoPath);
         if (!videoFile.existsSync()) {
           log("Warning: Video file does not exist: $videoPath");
@@ -42,27 +50,28 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
             pdfPath = null;
           }
         }
-        final duration = await getVideoDuration(videoPath);
-        final newLecture = LectureCreationReq(
-          title: title,
-          description: description ?? '',
-          videoUrl: videoPath,
-          notesUrl: pdfPath,
-          duration: duration,
-        );
-        final updatedLessons = List<LectureCreationReq>.from(state.lessons)..add(newLecture);
-        final totalDuration = calculateTotalDuration(updatedLessons);
-        emit(state.copyWith(
-          lessons: updatedLessons,
-          courseDuration: totalDuration,
-          selectedVideoPath: null,
-          selectedPdfPath: null,
-          editingLectureIndex: null,
-        ));
-        log("Added lecture: ${newLecture.title}, lessons count: ${updatedLessons.length}");
-      } else {
-        log("Failed to add lecture: title or videoPath is empty");
       }
+
+      final duration = await getVideoDuration(videoPath, bytes: videoBytes);
+      final newLecture = LectureCreationReq(
+        title: title,
+        description: description ?? '',
+        videoUrl: videoPath,
+        notesUrl: pdfPath,
+        duration: duration,
+      );
+      final updatedLessons = List<LectureCreationReq>.from(state.lessons)..add(newLecture);
+      final totalDuration = calculateTotalDuration(updatedLessons);
+      emit(state.copyWith(
+        lessons: updatedLessons,
+        courseDuration: totalDuration,
+        selectedVideoPath: null,
+        selectedVideoBytes: null,
+        selectedPdfPath: null,
+        selectedPdfBytes: null,
+        editingLectureIndex: null,
+      ));
+      log("Added lecture: ${newLecture.title}, lessons count: ${updatedLessons.length}");
     } catch (e) {
       log("Error adding lecture: $e");
     }
@@ -78,7 +87,9 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
           courseDuration: totalDuration,
           editingLectureIndex: state.editingLectureIndex == index ? null : state.editingLectureIndex,
           selectedVideoPath: state.editingLectureIndex == index ? null : state.selectedVideoPath,
+          selectedVideoBytes: state.editingLectureIndex == index ? null : state.selectedVideoBytes,
           selectedPdfPath: state.editingLectureIndex == index ? null : state.selectedPdfPath,
+          selectedPdfBytes: state.editingLectureIndex == index ? null : state.selectedPdfBytes,
         ));
         log("Removed lecture at index $index, lessons count: ${updatedLessons.length}");
       }
@@ -117,96 +128,108 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
   }
 
   void startEditingLecture(int index) {
-    final lecture = state.lessons[index];
-    emit(state.copyWith(
-      selectedVideoPath: lecture.videoUrl,
-      selectedPdfPath: lecture.notesUrl,
-      editingLectureIndex: index,
-    ));
-    log("Started editing lecture at index $index");
+    try {
+      if (index >= 0 && index < state.lessons.length) {
+        final lecture = state.lessons[index];
+        emit(state.copyWith(
+          selectedVideoPath: lecture.videoUrl,
+          selectedPdfPath: lecture.notesUrl,
+          editingLectureIndex: index,
+        ));
+        log("Started editing lecture at index $index");
+      }
+    } catch (e) {
+      log("Error starting lecture editing: $e");
+    }
   }
 
- Future<void> updateLecture({
-  required String title,
-  String? description,
-  required String videoPath,
-  String? pdfPath,
-}) async {
-  log('[updateLecture] Called with title: $title');
+  Future<void> updateLecture({
+    required String title,
+    String? description,
+    required String videoPath,
+    String? pdfPath,
+    Uint8List? videoBytes,
+    Uint8List? pdfBytes,
+  }) async {
+    log('[updateLecture] Called with title: $title');
 
-  try {
-    if (state.editingLectureIndex == null) {
-      log('[updateLecture] ❌ Cannot update lecture: No lecture is being edited');
-      return;
+    try {
+      if (state.editingLectureIndex == null) {
+        log('[updateLecture] ❌ Cannot update lecture: No lecture is being edited');
+        return;
+      }
+
+      final int lectureIndex = state.editingLectureIndex!;
+      log('[updateLecture] Updating lecture at index $lectureIndex');
+
+      // Get existing lecture to preserve data we're not changing
+      final existingLecture = state.lessons[lectureIndex];
+
+      // Only get new video duration if the video path has changed
+      Duration? duration = existingLecture.duration;
+      if (videoPath != existingLecture.videoUrl) {
+        log('[updateLecture] Fetching video duration for new video...');
+        duration = await getVideoDuration(videoPath, bytes: videoBytes);
+        log('[updateLecture] ✅ Video duration fetched: $duration');
+      } else {
+        log('[updateLecture] Using existing video duration: $duration');
+      }
+
+      log('[updateLecture] Cloning existing lectures...');
+      final updatedLectures = List<LectureCreationReq>.from(state.lessons);
+
+      updatedLectures[lectureIndex] = LectureCreationReq(
+        title: title,
+        description: description ?? existingLecture.description,
+        videoUrl: videoPath,
+        notesUrl: pdfPath,
+        duration: duration,
+      );
+
+      log('[updateLecture] Calculating total course duration...');
+      final totalDuration = calculateTotalDuration(updatedLectures);
+
+      log('[updateLecture] Emitting updated state with lecture at index $lectureIndex updated');
+      emit(state.copyWith(
+        lessons: updatedLectures,
+        courseDuration: totalDuration,
+        selectedVideoPath: null,
+        selectedVideoBytes: null,
+        selectedPdfPath: null,
+        selectedPdfBytes: null,
+        editingLectureIndex: null,
+      ));
+
+      log('[updateLecture] ✅ Lecture updated and editing state cleared');
+    } catch (e, stack) {
+      log('[updateLecture] ❌ Error updating lecture: $e\n$stack');
     }
-
-    final int lectureIndex = state.editingLectureIndex!;
-    log('[updateLecture] Updating lecture at index $lectureIndex');
-    
-    // Get existing lecture to preserve data we're not changing
-    final existingLecture = state.lessons[lectureIndex];
-    
-    // Only get new video duration if the video path has changed
-    Duration? duration = existingLecture.duration;
-    if (videoPath != existingLecture.videoUrl) {
-      log('[updateLecture] Fetching video duration for new video...');
-      duration = await getVideoDuration(videoPath);
-      log('[updateLecture] ✅ Video duration fetched: $duration');
-    } else {
-      log('[updateLecture] Using existing video duration: $duration');
-    }
-
-    log('[updateLecture] Cloning existing lectures...');
-    final updatedLectures = List<LectureCreationReq>.from(state.lessons);
-
-    updatedLectures[lectureIndex] = LectureCreationReq(
-      title: title,
-      description: description ?? existingLecture.description,
-      videoUrl: videoPath,
-      notesUrl: pdfPath,
-      duration: duration,
-    );
-
-    log('[updateLecture] Calculating total course duration...');
-    final totalDuration = calculateTotalDuration(updatedLectures);
-
-    log('[updateLecture] Emitting updated state with lecture at index $lectureIndex updated');
-    emit(state.copyWith(
-      lessons: updatedLectures,
-      courseDuration: totalDuration,
-      selectedVideoPath: null,
-      selectedPdfPath: null,
-      editingLectureIndex: null,
-    ));
-
-    log('[updateLecture] ✅ Lecture updated and editing state cleared');
-  } catch (e, stack) {
-    log('[updateLecture] ❌ Error updating lecture: $e\n$stack');
   }
-}
 
   void cancelEditing() {
     log("Canceling lecture editing");
     emit(state.copyWith(
       selectedVideoPath: null,
+      selectedVideoBytes: null,
       selectedPdfPath: null,
+      selectedPdfBytes: null,
       editingLectureIndex: null,
-      currentLessonTitle: ""
+      currentLessonTitle: "",
     ));
     log("Editing state cleared");
   }
 
-   Duration? calculateTotalDuration(List<LectureCreationReq> lectures) {
+  Duration? calculateTotalDuration(List<LectureCreationReq> lectures) {
     if (lectures.isEmpty) return null;
-    
+
     int totalSeconds = 0;
-    
+
     for (final lecture in lectures) {
       if (lecture.duration != null) {
         totalSeconds += lecture.duration!.inSeconds;
       }
     }
-    
+
     return totalSeconds > 0 ? Duration(seconds: totalSeconds) : null;
   }
 }

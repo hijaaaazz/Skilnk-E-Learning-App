@@ -3,9 +3,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as chat_types;
-import 'package:tutor_app/features/chat/data/models/messgae_class.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/check_chat_exist.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/loadchat_usecase.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dart';

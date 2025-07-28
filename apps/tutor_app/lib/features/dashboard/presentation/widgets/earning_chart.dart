@@ -1,5 +1,6 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:tutor_app/features/dashboard/data/models/toime_period_dart';
 import '../../data/models/dashboard_data.dart';
 
@@ -8,14 +9,14 @@ class EarningsChart extends StatelessWidget {
   final Function(TimePeriod)? onPeriodChanged;
 
   const EarningsChart({
-    Key? key,
+    super.key,
     required this.data,
     this.onPeriodChanged,
     // Backward compatibility parameters
     String? thisMonthEarning,
     List<double>? previousMonthEarnings,
     String? description,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +196,7 @@ class EarningsChart extends StatelessWidget {
   }
 
   Widget _buildChart(chartData, bool isMobile) {
-    return Container(
+    return SizedBox(
       height: isMobile ? 180 : 220,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -264,7 +265,7 @@ class EarningsChart extends StatelessWidget {
   }
 
   Widget _buildNoDataMessage(bool isMobile) {
-    return Container(
+    return SizedBox(
       height: isMobile ? 120 : 150,
       child: Center(
         child: Column(

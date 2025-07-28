@@ -1,15 +1,12 @@
 
 // lib/features/chat/data/repo/chat_repo_imp.dart
 import 'package:dartz/dartz.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:tutor_app/features/chat/data/models/messgae_class.dart';
-import 'package:tutor_app/features/chat/data/models/student_model.dart';
 import 'package:tutor_app/features/chat/data/models/stuent_chat_model.dart';
 import 'package:tutor_app/features/chat/data/service/firebase_chat.dart';
 import 'package:tutor_app/features/chat/domain/repo/chat_repo.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/check_chat_exist.dart';
 import 'package:tutor_app/features/chat/domain/usecaase/send_message_usecase.dart';
-import 'package:tutor_app/features/chat/presentation/bloc/chat_list/chat_list_state.dart';
 import 'package:tutor_app/service_locator.dart';
 import 'dart:developer';
 

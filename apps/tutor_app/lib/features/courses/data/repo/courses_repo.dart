@@ -42,7 +42,7 @@ class CoursesRepoImplementation extends CoursesRepository {
     );
   }
 
-  @override
+
 Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(CourseCreationReq req) async* {
   try {
     final cloudinaryService = serviceLocator<CourseCloudinaryServices>();
@@ -50,24 +50,30 @@ Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(Course
     String? updatedThumbnailUrl = req.courseThumbnail;
     List<LectureCreationReq> updatedLectures = [];
 
+    log("Starting course creation: title=${req.title}, tutorId=${req.tutorId}");
+
     yield Right(Left(UploadProgress.started));
 
     // Upload thumbnail
     if (req.courseThumbnail != null && req.courseThumbnail!.isNotEmpty) {
-      final thumbnailResult = await cloudinaryService.uploadFile(req.courseThumbnail!,req.title!,req.tutorId!);
+      log("Uploading thumbnail: ${req.courseThumbnail}");
+      final thumbnailResult = await cloudinaryService.uploadFile(req.courseThumbnail!, req.title!, req.tutorId!);
       if (thumbnailResult.isLeft()) {
-        yield Left("Failed to upload course thumbnail: ${thumbnailResult.fold((e) => e, (_) => "")}");
+        final error = thumbnailResult.fold((e) => e, (_) => "");
+        log("Thumbnail upload failed: $error");
+        yield Left("Failed to upload course thumbnail: $error");
         return;
       }
-      thumbnailResult.fold(
-        (_) => null,
-        (success) => updatedThumbnailUrl = success,
-      );
+      updatedThumbnailUrl = thumbnailResult.fold((_) => null, (success) => success);
+      log("Thumbnail uploaded: $updatedThumbnailUrl");
       yield Right(Left(UploadProgress.thumbnailUploaded));
+    } else {
+      log("No thumbnail provided");
     }
 
     // Upload lectures
     if (req.lectures != null && req.lectures!.isNotEmpty) {
+      log("Uploading ${req.lectures!.length} lectures");
       yield Right(Left(UploadProgress.lecturesUploading));
 
       for (final lecture in req.lectures!) {
@@ -75,21 +81,30 @@ Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(Course
         String? notesUrl = lecture.notesUrl;
 
         if (lecture.videoUrl != null && lecture.videoUrl!.isNotEmpty) {
-          final videoResult = await cloudinaryService.uploadFile(lecture.videoUrl!,req.title!,req.tutorId!);
+          log("Uploading video for lecture '${lecture.title}': ${lecture.videoUrl}");
+          final videoResult = await cloudinaryService.uploadFile(lecture.videoUrl!, req.title!, req.tutorId!);
           if (videoResult.isLeft()) {
-            yield Left("Failed to upload lecture video: ${videoResult.fold((e) => e, (_) => "")}");
+            final error = videoResult.fold((e) => e, (_) => "");
+            log("Video upload failed for '${lecture.title}': $error");
+            yield Left("Failed to upload lecture video for '${lecture.title}': $error");
             return;
           }
-          videoResult.fold((_) => null, (success) => videoUrl = success);
+          videoUrl = videoResult.fold((_) => null, (success) => success);
+          log("Video uploaded for '${lecture.title}': $videoUrl");
         }
 
         if (lecture.notesUrl != null && lecture.notesUrl!.isNotEmpty) {
-          final notesResult = await cloudinaryService.uploadFile(lecture.notesUrl!,req.title!,req.tutorId!);
+          log("Uploading notes for lecture '${lecture.title}': ${lecture.notesUrl}");
+          final notesResult = await cloudinaryService.uploadFile(lecture.notesUrl!, req.title!, req.tutorId!);
           if (notesResult.isLeft()) {
-            yield Left("Failed to upload lecture notes: ${notesResult.fold((e) => e, (_) => "")}");
-            return;
+            final error = notesResult.fold((e) => e, (_) => "");
+            log("Notes upload failed for '${lecture.title}': $error");
+            // Don't fail for notes, just log
+            notesUrl = null;
+          } else {
+            notesUrl = notesResult.fold((_) => null, (success) => success);
+            log("Notes uploaded for '${lecture.title}': $notesUrl");
           }
-          notesResult.fold((_) => null, (success) => notesUrl = success);
         }
 
         updatedLectures.add(lecture.copyWith(
@@ -99,9 +114,14 @@ Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(Course
       }
 
       yield Right(Left(UploadProgress.lecturesUploaded));
+    } else {
+      log("No lectures provided");
+      yield Left("At least one lecture is required");
+      return;
     }
 
     // Final Firebase creation
+    log("Creating course in Firebase with thumbnail: $updatedThumbnailUrl, lectures: ${updatedLectures.length}");
     var updatedReq = req.copyWith(
       lectures: updatedLectures,
       courseThumbnail: updatedThumbnailUrl,
@@ -109,39 +129,37 @@ Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(Course
 
     final result = await firebaseService.createCourse(updatedReq);
 
-    // Update category and tutor course list if successful
     if (result.isRight()) {
       final courseModel = result.fold((_) => null, (r) => r);
       if (courseModel != null && courseModel.categoryId.isNotEmpty) {
-        // Add the course ID to the category's courses list
+        log("Updating category and tutor course list");
         await firebaseService.updateCategoryWithCourse(
           categoryId: courseModel.categoryId,
           courseId: courseModel.id,
         );
 
-        // ✅ Add the course to the tutor's course list
         final saveResult = await firebaseService.saveCourseForUser(
           userId: req.tutorId!,
           courseId: courseModel.id,
         );
 
         if (saveResult.isLeft()) {
-          log("⚠️ Failed to save course for tutor: ${saveResult.fold((l) => l, (_) => "")}");
+          log("Failed to save course for tutor: ${saveResult.fold((l) => l, (_) => "")}");
         } else {
-          log("✅ Course saved for tutor: ${req.tutorId}");
+          log("Course saved for tutor: ${req.tutorId}");
         }
       }
+      yield Right(Right(courseModel!.toEntity()));
+    } else {
+      final error = result.fold((l) => l, (_) => "");
+      log("Firebase course creation failed: $error");
+      yield Left(error);
     }
-
-    yield result.fold(
-      (l) => Left(l),
-      (r) => Right(Right(r.toEntity())),
-    );
 
     yield Right(Left(UploadProgress.courseUploaded));
   } catch (e) {
-    log("Repository error: ${e.toString()}");
-    yield Left("Repository error: ${e.toString()}");
+    log("Repository error: $e");
+    yield Left("Repository error: $e");
   }
 }
 
@@ -195,6 +213,7 @@ Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(Course
   @override
   Stream<Either<String, Either<UploadProgress, CourseEntity>>> updateCourse({required CourseEntity course}) async* {
     try {
+      log("updateion happening hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
       log(course.lessons.map((e) => e.notesUrl).toList().toString());
 
       final cloudinaryService = serviceLocator<CourseCloudinaryServices>();

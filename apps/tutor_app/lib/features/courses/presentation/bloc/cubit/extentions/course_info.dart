@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tutor_app/core/utils/image_cropper.dart';
@@ -22,22 +22,19 @@ mixin CourseInfoHandlers on Cubit<AddCourseState> {
   }
 
   void updatePrice(String price) {
+    emit(state.copyWith(
+      price: price,
+      priceError: _validatePrice(price),
+    ));
+  }
 
-  emit(state.copyWith(
-    price: price,
-    priceError: _validatePrice(price),
-  ));
-}
-
-void updateDiscount(String offer) {
-  final parsedPrice = int.tryParse(offer);
-
-  emit(state.copyWith(
-    offer: parsedPrice,
-    offerError: _validateDiscount(offer),
-  ));
-}
-
+  void updateDiscount(String offer) {
+    final parsedPrice = int.tryParse(offer);
+    emit(state.copyWith(
+      offer: parsedPrice,
+      offerError: _validateDiscount(offer),
+    ));
+  }
 
   void updateCategory(CategoryEntity? category) {
     emit(state.copyWith(
@@ -78,14 +75,18 @@ void updateDiscount(String offer) {
       );
 
       if (pickedFile != null) {
-        try {
-          final croppedFile = await croppedImage(pickedFile);
-          if (croppedFile != null) {
-            updateThumbnailPath(croppedFile.path);
+        if (kIsWeb) {
+          final bytes = await pickedFile.readAsBytes();
+          final base64Image = "data:image/png;base64,${base64Encode(bytes)}";
+          updateThumbnailPath(base64Image);
+        } else {
+          try {
+            final croppedFile = await croppedImage(pickedFile);
+            updateThumbnailPath(croppedFile?.path ?? pickedFile.path);
+          } catch (cropError) {
+            log("Error cropping image: $cropError");
+            updateThumbnailPath(pickedFile.path);
           }
-        } catch (cropError) {
-          log("Error cropping image: $cropError");
-          updateThumbnailPath(pickedFile.path);
         }
       }
     } catch (e) {
@@ -95,10 +96,6 @@ void updateDiscount(String offer) {
 
   void updateThumbnailPath(String path) {
     try {
-      final file = File(path);
-      if (!file.existsSync()) {
-        log("Warning: Thumbnail file does not exist: $path");
-      }
       emit(state.copyWith(thumbnailPath: path));
     } catch (e) {
       log("Error updating thumbnail path: $e");
@@ -111,23 +108,19 @@ void updateDiscount(String offer) {
     } else if (title.length < 5) {
       return "Title must be at least 5 characters";
     }
-    return '';
+    return null;
   }
 
   String? _validateDiscount(String discount) {
-  if (!state.isPaid) return "";
-
-  if (discount.isEmpty) return ''; // Will be treated as 0 later
-
-  final offer = int.tryParse(discount);
-  if (offer == null) return "Invalid number";
-
-  if (offer < 0 || offer > 100) {
-    return "Discount must be between 0 and 100";
+    if (!state.isPaid) return null;
+    if (discount.isEmpty) return null;
+    final offer = int.tryParse(discount);
+    if (offer == null) return "Invalid number";
+    if (offer < 0 || offer > 100) {
+      return "Discount must be between 0 and 100";
+    }
+    return null;
   }
-
-  return '';
-}
 
   String? _validateCategory(CategoryEntity? category) {
     return category == null ? "Please select a category" : null;
@@ -150,34 +143,31 @@ void updateDiscount(String offer) {
   }
 
   void courseToEditLoad(CourseEntity courseToEdit) {
-    log(courseToEdit.offerPercentage.toString());
-  emit(state.copyWith(
-    title: courseToEdit.title,
-    description: courseToEdit.description,
-    price: courseToEdit.price.toString(),
-    offer: courseToEdit.offerPercentage,
-    isPaid: courseToEdit.price > 0,
-    
-    
-    categoryName: courseToEdit.categoryName,
-    courseDuration: Duration(seconds: courseToEdit.duration),
-    level: courseToEdit.level,
-    thumbnailPath: courseToEdit.courseThumbnail,
-    lessons: courseToEdit.lessons.map((e) {
-      return LectureCreationReq(
-        title: e.title,
-        videoUrl: e.videoUrl,
-        notesUrl: e.notesUrl,
-        duration: e.duration,
-      );
-    }).toList(),
-    // You'll need to convert `categoryId` to a `CategoryEntity` if necessary.
-    // For now, setting category as `null` until mapping is available.
-    category: null,
-    language: courseToEdit.language, // Only set if you have this info from somewhere
-    isEditing: true,
-    editingCourse: courseToEdit
-  ));
-}
+    log('Loading course to edit: ${courseToEdit.title}, offer: ${courseToEdit.offerPercentage}');
+    emit(state.copyWith(
+      title: courseToEdit.title,
+      description: courseToEdit.description,
+      price: courseToEdit.price.toString(),
+      offer: courseToEdit.offerPercentage,
+      isPaid: courseToEdit.price > 0,
+      categoryName: courseToEdit.categoryName,
+      courseDuration: Duration(seconds: courseToEdit.duration),
+      level: courseToEdit.level,
+      thumbnailPath: courseToEdit.courseThumbnail,
+      lessons: courseToEdit.lessons.map((e) {
+        return LectureCreationReq(
+          title: e.title,
+          videoUrl: e.videoUrl,
+          notesUrl: e.notesUrl,
+          duration: e.duration,
+        );
+      }).toList(),
+      category: null,
+      language: courseToEdit.language,
+      isEditing: true,
+      editingCourse: courseToEdit,
+    ));
 
+    log("edit started");
+  }
 }

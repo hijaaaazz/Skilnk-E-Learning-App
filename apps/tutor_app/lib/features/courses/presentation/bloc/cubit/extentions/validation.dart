@@ -1,144 +1,25 @@
 import 'dart:developer';
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tutor_app/common/widgets/snack_bar.dart';
 import 'package:tutor_app/features/courses/domain/entities/category_entity.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_state.dart';
 
-/// A mixin that handles all validation for course creation
 mixin ValidationHandlers on Cubit<AddCourseState> {
-  /// Helper function to check if a path is a network URL
-  bool _isNetworkUrl(String? path) {
-  if (path == null || path.trim().isEmpty) return false;
-  final cleaned = path.trim();
-  log("Checking path: '$cleaned'");
-  return cleaned.startsWith('http://') || cleaned.startsWith('https://');
-}
-
-
-  /// Clears all validation errors
-  void clearValidationErrors() {
-    emit(state.copyWith(
-      titleError: null,
-      categoryError: null,
-      languageError: null,
-      levelError: null,
-      descriptionError: null,
-      thumbnailError: null,
-      priceError: null,
-      offerError: null,
-    ));
-  }
-
-  /// Validates title input
-  String? validateTitle(String title) {
-    if (title.isEmpty) {
-      return "Title is required";
-    } else if (title.length < 5) {
-      return "Title must be at least 5 characters";
-    }
-    return null;
-  }
-
-  /// Validates category selection
-  String? validateCategory(CategoryEntity? category) {
-    return category == null ? "Please select a category" : null;
-  }
-
-  /// Validates language selection
-  String? validateLanguage(String? language) {
-    return language == null || language.isEmpty 
-        ? "Please select a language" 
-        : null;
-  }
-
-  /// Validates level selection
-  String? validateLevel(String? level) {
-    return level == null || level.isEmpty 
-        ? "Please select a level" 
-        : null;
-  }
-
-  /// Validates price for paid courses
-  String? validatePrice(String price) {
-    if (!state.isPaid) return null;
-    
-    if (price.isEmpty) {
-      return 'Price is required for paid courses';
-    }
-
-    final parsedPrice = int.tryParse(price);
-    if (parsedPrice == null) {
-      return 'Invalid price format';
-    }
-
-    if (parsedPrice <= 1) {
-      return 'Price must be more than 1';
-    }
-    
-    return null;
-  }
-  
-  /// Validates discount percentage
-  String? validateDiscount(String discount) {
-    if (!state.isPaid) return null;
-
-    // Allow empty discount (will be treated as 0)
-    if (discount.isEmpty) return null;
-
-    final offer = int.tryParse(discount);
-    if (offer == null) return "Invalid number";
-
-    if (offer < 0 || offer > 100) {
-      return "Discount must be between 0 and 100";
-    }
-
-    return null;
-  }
-
-  /// Validates course description
-  String? validateDescription(String description) {
-    return description.trim().isEmpty 
-        ? "Description is required" 
-        : null;
-  }
-
-  /// Validates thumbnail selection with URL support
-  String? validateThumbnail(String thumbnailPath) {
-    // In edit mode, if it's a network URL, consider it valid
-    if (state.isEditing == true && _isNetworkUrl(thumbnailPath)) {
-      return "";
-    }
-    
-    if (thumbnailPath.isEmpty) {
-      return "Please select a thumbnail";
-    }
-    
+  bool validateBasicInfo(BuildContext context) {
+    // ... (Your provided validateBasicInfo is correct and unchanged)
     try {
-      final file = File(thumbnailPath);
-      if (!file.existsSync()) {
-        log("${file.path} ${state.isEditing}");
-        return "Thumbnail file not found";
-      }
-    } catch (e) {
-      log("Error validating thumbnail: $e");
-      return "Invalid thumbnail path";
-    }
-    
-    return "";
-  }
+      log("Validating basic info: title=${state.title}, category=${state.category?.title}, "
+          "language=${state.language}, level=${state.level}, isPaid=${state.isPaid}, "
+          "price=${state.price}, offer=${state.offer}");
 
-  /// Validates the basic course information
-  bool validateBasicInfo() {
-    try {
       final titleError = validateTitle(state.title);
       final categoryError = validateCategory(state.category);
       final languageError = validateLanguage(state.language);
       final levelError = validateLevel(state.level);
-      final priceError = validatePrice(state.price.toString());
-      final discountError = validateDiscount(state.offer?.toString() ?? "");
+      final priceError = state.isPaid ? validatePrice(state.price ?? '') : null;
+      final discountError = state.isPaid ? validateDiscount(state.offer?.toString() ?? '') : null;
 
       emit(state.copyWith(
         titleError: titleError,
@@ -149,99 +30,211 @@ mixin ValidationHandlers on Cubit<AddCourseState> {
         offerError: discountError,
       ));
 
-      return titleError == null && 
-             categoryError == null && 
-             languageError == null && 
-             levelError == null && 
-             priceError == null && 
-             discountError == null;
+      if (titleError != null) {
+        log("Title validation error: $titleError");
+        showAppSnackbar(context, titleError);
+      } else if (categoryError != null) {
+        log("Category validation error: $categoryError");
+        showAppSnackbar(context, categoryError);
+      } else if (languageError != null) {
+        log("Language validation error: $languageError");
+        showAppSnackbar(context, languageError);
+      } else if (levelError != null) {
+        log("Level validation error: $levelError");
+        showAppSnackbar(context, levelError);
+      } else if (priceError != null) {
+        log("Price validation error: $priceError");
+        showAppSnackbar(context, priceError);
+      } else if (discountError != null) {
+        log("Discount validation error: $discountError");
+        showAppSnackbar(context, discountError);
+      }
+
+      final isValid = titleError == null &&
+          categoryError == null &&
+          languageError == null &&
+          levelError == null &&
+          priceError == null &&
+          discountError == null;
+
+      log("Basic info validation result: $isValid");
+      return isValid;
     } catch (e, stack) {
       log("Error validating basic info: $e\n$stack");
+      showAppSnackbar(context, "Validation error: $e");
       return false;
     }
   }
 
-  /// Validates advanced course information including thumbnail and description
+  String? validateTitle(String? title) {
+    if (title == null || title.isEmpty) {
+      return "Please enter a course title";
+    }
+    if (title.length < 3) {
+      return "Title must be at least 3 characters long";
+    }
+    if (title.length > 100) {
+      return "Title must be less than 100 characters";
+    }
+    return null;
+  }
+
+  String? validateCategory(CategoryEntity? category) {
+    if (category == null || category.id.isEmpty) {
+      return "Please select a category";
+    }
+    return null;
+  }
+
+  String? validateLanguage(String? language) {
+    if (language == null || language.isEmpty) {
+      return "Please select a language";
+    }
+    return null;
+  }
+
+  String? validateLevel(String? level) {
+    if (level == null || level.isEmpty) {
+      return "Please select a level";
+    }
+    return null;
+  }
+
+  String? validatePrice(String? price) {
+    if (price == null || price.isEmpty) {
+      return "Please enter a price";
+    }
+    final priceValue = double.tryParse(price);
+    if (priceValue == null || priceValue <= 0) {
+      return "Please enter a valid price";
+    }
+    return null;
+  }
+
+  String? validateDiscount(String? discount) {
+    if (discount == null || discount.isEmpty) {
+      return null; // Discount is optional
+    }
+    final discountValue = int.tryParse(discount);
+    if (discountValue == null || discountValue < 0 || discountValue > 100) {
+      return "Discount must be between 0 and 100";
+    }
+    return null;
+  }
+
   bool validateAdvancedInfo(BuildContext context) {
-    try {
-      final thumbnailError = validateThumbnail(state.thumbnailPath);
-      final descriptionError = validateDescription(state.description);
+    final descriptionError = validateDescription(state.description);
+    final thumbnailError = validateThumbnail(state.thumbnailPath);
 
-      emit(state.copyWith(
-        thumbnailError: thumbnailError,
-        descriptionError: descriptionError,
-      ));
+    emit(state.copyWith(
+      descriptionError: descriptionError,
+      thumbnailError: thumbnailError,
+    ));
 
-      if (thumbnailError != null && thumbnailError.isNotEmpty) {
-        showAppSnackbar(context, thumbnailError);
-        return false;
-      }
-
-      if (descriptionError != null && descriptionError.isNotEmpty) {
-        showAppSnackbar(context, descriptionError);
-        return false;
-      }
-
-      return true;
-    } catch (e) {
-      log("Error validating advanced info: $e");
-      showAppSnackbar(context, "An error occurred during validation");
-      return false;
+    if (descriptionError != null) {
+      log("Description validation error: $descriptionError");
+      showAppSnackbar(context, descriptionError);
     }
+    if (thumbnailError != null) {
+      log("Thumbnail validation error: $thumbnailError");
+      showAppSnackbar(context, thumbnailError);
+    }
+
+    return descriptionError == null && thumbnailError == null;
   }
 
-  /// Validates course curriculum (lectures) - with URL support for edit mode
+  String? validateDescription(String? description) {
+    if (description == null || description.isEmpty) {
+      return "Please enter a course description";
+    }
+    if (description.length < 10) {
+      return "Description must be at least 10 characters long";
+    }
+    return null;
+  }
+
+  String? validateThumbnail(String thumbnailPath) {
+    if (state.isEditing == true && _isNetworkUrl(thumbnailPath)) return null;
+    if (kIsWeb) {
+      if (thumbnailPath.isEmpty) return "Please select a thumbnail";
+      if (!_isBase64Url(thumbnailPath)) return "Invalid thumbnail format";
+      return null;
+    }
+    if (thumbnailPath.isEmpty) return "Please select a thumbnail";
+    return null;
+  }
+
   bool validateCurriculum(BuildContext context) {
-    try {
-      log(state.lessons.map((e)=> e.notesUrl).toList().toString());
-      log(state.lessons.map((e)=> e.videoUrl).toList().toString());
-      if (state.lessons.isEmpty) {
-        showAppSnackbar(context, "Please add at least one lecture to your course");
-        return false;
-      }
-      
-      for (int i = 0; i < state.lessons.length; i++) {
-        final lecture = state.lessons[i];
-        
-        // Check if video exists
-        if (lecture.videoUrl == null || lecture.videoUrl!.isEmpty) {
-          showAppSnackbar(context, "Lecture '${lecture.title}' has no video. Please add it again.");
-          return false;
-        }
-        
-        // If in edit mode and it's a network URL, consider it valid
-        if (state.isEditing == true && _isNetworkUrl(lecture.videoUrl)) {
-          // Skip file existence check for network URLs
-          continue;
-        }
-        
-        // Validate video file exists for local files
-        final videoFile = File(lecture.videoUrl!);
-        if (!videoFile.existsSync()) {
-          showAppSnackbar(context, "Video for lecture '${lecture.title}' not found. Please add it again.");
-          return false;
-        }
-        
-        // Validate PDF notes if provided
-        if (lecture.notesUrl != null && lecture.notesUrl!.isNotEmpty) {
-          // If in edit mode and it's a network URL, consider it valid
-          if (state.isEditing == true && _isNetworkUrl(lecture.notesUrl)) {
-            continue;
-          }
-          
-          final pdfFile = File(lecture.notesUrl!);
-          if (!pdfFile.existsSync()) {
-            showAppSnackbar(context, "PDF notes for lecture '${lecture.title}' not found.");
-            // We don't return false here as missing notes shouldn't block submission
-          }
-        }
-      }
-      
-      return true;
-    } catch (e) {
-      log("Error validating curriculum: $e");
-      showAppSnackbar(context, "An error occurred while checking your lectures");
+    log("Validating curriculum: lessons count = ${state.lessons.length}, isEditing = ${state.isEditing}");
+    
+    if (state.lessons.isEmpty) {
+      log("Validation failed: No lectures added");
+      showAppSnackbar(context, "Please add at least one lecture to your course");
       return false;
     }
+
+    for (var lecture in state.lessons) {
+      if (lecture.title == null || lecture.title!.isEmpty) {
+        log("Validation failed: Lecture has no title");
+        showAppSnackbar(context, "Lecture has no title");
+        return false;
+      }
+      if (lecture.videoUrl == null || lecture.videoUrl!.isEmpty) {
+        log("Validation failed: Lecture '${lecture.title}' has no video URL");
+        showAppSnackbar(context, "Lecture '${lecture.title}' has no video");
+        return false;
+      }
+      if (kIsWeb) {
+        // Allow network URLs during editing, Base64 for new courses
+        if (state.isEditing == true && _isNetworkUrl(lecture.videoUrl)) {
+          log("Valid network video URL for lecture '${lecture.title}': ${lecture.videoUrl}");
+        } else if (!_isBase64Url(lecture.videoUrl)) {
+          log("Invalid video format for lecture '${lecture.title}': ${lecture.videoUrl}");
+          showAppSnackbar(context, "Lecture '${lecture.title}' has invalid video format");
+          return false;
+        }
+        // Validate notesUrl if present
+        if (lecture.notesUrl != null && lecture.notesUrl!.isNotEmpty) {
+          if (state.isEditing == true && _isNetworkUrl(lecture.notesUrl)) {
+            log("Valid network notes URL for lecture '${lecture.title}': ${lecture.notesUrl}");
+          } else if (!_isBase64Url(lecture.notesUrl)) {
+            log("Invalid notes format for lecture '${lecture.title}': ${lecture.notesUrl}");
+            showAppSnackbar(context, "PDF notes for '${lecture.title}' have invalid format");
+            // Warn but don't fail for notes
+          }
+        }
+      } else {
+        // Non-web: Ensure videoUrl is a valid file path
+        if (!_isFilePath(lecture.videoUrl)) {
+          log("Invalid video file path for lecture '${lecture.title}': ${lecture.videoUrl}");
+          showAppSnackbar(context, "Lecture '${lecture.title}' has invalid video file path");
+          return false;
+        }
+        if (lecture.notesUrl != null && lecture.notesUrl!.isNotEmpty && !_isFilePath(lecture.notesUrl)) {
+          log("Invalid notes file path for lecture '${lecture.title}': ${lecture.notesUrl}");
+          showAppSnackbar(context, "PDF notes for '${lecture.title}' have invalid file path");
+          // Warn but don't fail
+        }
+      }
+    }
+    log("Curriculum validation passed");
+    return true;
+  }
+
+  bool _isBase64Url(String? url) {
+    if (url == null) return false;
+    return url.startsWith('data:image/') || 
+           url.startsWith('data:video/') || 
+           url.startsWith('data:application/pdf');
+  }
+
+  bool _isNetworkUrl(String? url) {
+    if (url == null) return false;
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
+
+  bool _isFilePath(String? path) {
+    if (path == null || path.isEmpty) return false;
+    return !path.startsWith('data:') && !path.startsWith('http');
   }
 }

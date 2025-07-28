@@ -39,9 +39,8 @@ class StepBasicInfo extends StatelessWidget {
             final addCourseCubit = context.read<AddCourseCubit>();
             
             // Clear validation state before validating to ensure we get fresh results
-            addCourseCubit.clearValidationErrors();
             
-            if (addCourseCubit.validateBasicInfo()) {
+            if (addCourseCubit.validateBasicInfo(context)) {
               addCourseCubit.getCourseCreationReq();
               
               // Navigate to next screen with course creation request
@@ -189,10 +188,13 @@ class CourseBasicInfoForm extends StatelessWidget {
                               ),
                               
                               // Course Pricing Section
-                              CoursePriceForm(
-                                priceController: _priceController,
-                                discountController: _discountController,
-                                
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width,
+                                child: CoursePriceForm(
+                                  priceController: _priceController,
+                                  discountController: _discountController,
+                                  
+                                ),
                               )
                               
                               // Price TextField - Only visible if isPaid is true
