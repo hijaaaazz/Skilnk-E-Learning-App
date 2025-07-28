@@ -1,0 +1,68 @@
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{0}: checkout: moving from main to 768425c
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{1}: checkout: moving from web-supporting-temp to main
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{2}: checkout: moving from main to web-supporting-temp
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{3}: checkout: moving from fix-web-supporting to main
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{4}: checkout: moving from 768425cfbd5041fa46d198cb5ec96cff86d80627 to fix-web-supporting
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{5}: checkout: moving from main to 768425c
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{6}: reset: moving to 2f11eea
+[33m8541232[m HEAD@{7}: checkout: moving from web-supporting-branch to main
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{8}: checkout: moving from main to web-supporting-branch
+[33m8541232[m HEAD@{9}: pull origin main: Fast-forward
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{10}: checkout: moving from 1c6d565505b7c831b3e6fc22d640a849749e6887 to main
+[33m1c6d565[m HEAD@{11}: commit (merge): web supporting
+[33m2e9ce94[m HEAD@{12}: commit: modified
+[33m786eda5[m HEAD@{13}: commit: ready to build
+[33mad4cfea[m HEAD@{14}: commit: admin side ok on user management
+[33m67908e3[m HEAD@{15}: commit: almost completed all sides
+[33m04f8b86[m HEAD@{16}: commit: userside full completed 98%
+[33m26ffa12[m HEAD@{17}: commit: small works
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{18}: checkout: moving from 2f11eeae0dd05c61dbb7fe972a45ddc2932dd253 to 768425c
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{19}: checkout: moving from 768425cfbd5041fa46d198cb5ec96cff86d80627 to 2f11eeae0dd
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{20}: checkout: moving from main to 768425c
+[33m2f11eea[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mweb-supporting-temp[m[33m, [m[1;32mweb-supporting-branch[m[33m, [m[1;32mmain[m[33m)[m HEAD@{21}: commit: web supporting
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{22}: checkout: moving from main to main
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{23}: reset: moving to HEAD
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{24}: reset: moving to HEAD
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{25}: reset: moving to HEAD
+[33m768425c[m[33m ([m[1;36mHEAD[m[33m, [m[1;32mfix-web-supporting[m[33m)[m HEAD@{26}: commit: tutor and user completed
+[33m49fe89a[m HEAD@{27}: commit: review section added
+[33m90aff75[m HEAD@{28}: commit: chat userside completed
+[33mf92dee3[m HEAD@{29}: reset: moving to f92dee3cb96c9465a43bed567a017062851092d8
+[33mf92dee3[m HEAD@{30}: commit: user side progress on work
+[33m1ee61b9[m HEAD@{31}: commit: userside 85 % completed
+[33m1cb781c[m HEAD@{32}: commit: course_enrollment_done_in_use_side
+[33m9e00ec0[m HEAD@{33}: commit: user side course serach and filter on going
+[33mfe765fe[m HEAD@{34}: commit: user side detailes page on work
+[33mb422fb5[m HEAD@{35}: commit: tutor side course add activate update alls done
+[33m122f78e[m HEAD@{36}: commit: detailed page added in tutor side
+[33md0642c5[m HEAD@{37}: commit: ADD COURSE COMPLETED IN TUTOR APP
+[33m9ea1666[m HEAD@{38}: commit: ADD COURSE COMPLETED IN TUTOR APP
+[33m1ae6d82[m HEAD@{39}: commit: updated tutor managment (verification from admin0
+[33m1a17986[m HEAD@{40}: commit: updated
+[33m902b373[m HEAD@{41}: commit: add new course tutor side started
+[33m63c2490[m HEAD@{42}: commit: admin verification done
+[33m1dcb608[m HEAD@{43}: commit: auth and validations are set
+[33m2cf337a[m HEAD@{44}: commit: authentication almost completed
+[33m9c1ef3a[m HEAD@{45}: commit: Email Verification On Going
+[33me365183[m HEAD@{46}: reset: moving to HEAD
+[33me365183[m HEAD@{47}: reset: moving to HEAD
+[33me365183[m HEAD@{48}: commit: Authentication Completed for tutor and user
+[33mad5511b[m HEAD@{49}: commit: user managment and mentor managment initial setup updated
+[33m97031f1[m HEAD@{50}: commit: user auth set up ready
+[33m54ff5e3[m HEAD@{51}: checkout: moving from main to main
+[33m54ff5e3[m HEAD@{52}: rebase (abort): returning to refs/heads/main
+[33maf01b11[m HEAD@{53}: pull origin main --rebase (start): checkout af01b11316eccb65410ef5638f7238f29b88e33b
+[33m54ff5e3[m HEAD@{54}: commit: updated firebase auth & clean structure
+[33m2539ef8[m HEAD@{55}: commit: firebase auth upated
+[33m675dad1[m HEAD@{56}: commit: firebase connected with all panels user side, tutor side and admin side
+[33mb351fb6[m HEAD@{57}: commit: admin side authentication page updated
+[33m9be1133[m HEAD@{58}: commit: tutor side auth ui confirm password field updated in sign up
+[33m66ab45d[m HEAD@{59}: commit: tutor side auth ui updated
+[33mc1be53d[m HEAD@{60}: commit: user app ui updated- authentication page animation added
+[33mf35c3c7[m HEAD@{61}: commit: updated
+[33m1ecddaf[m HEAD@{62}: Branch: renamed refs/heads/main to refs/heads/main
+[33m1ecddaf[m HEAD@{64}: commit: updated user app
+[33m609efad[m HEAD@{65}: Branch: renamed refs/heads/main to refs/heads/main
+[33m609efad[m HEAD@{67}: commit: landing screen added
+[33mdc2f9f2[m HEAD@{68}: Branch: renamed refs/heads/master to refs/heads/main
+[33mdc2f9f2[m HEAD@{70}: commit (initial): first commit

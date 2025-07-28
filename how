@@ -1,0 +1,209 @@
+[33mcommit 854123268e13bb6fd767e65859c29a208e71466f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Hijaz C <mhcnkd4@gmail.com>
+Date:   Fri Jul 25 17:31:43 2025 +0530
+
+    Create privacy_policy.m
+
+[33mcommit 2f11eeae0dd05c61dbb7fe972a45ddc2932dd253[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Thu Jul 3 16:29:56 2025 +0530
+
+    web supporting
+
+[33mcommit 768425cfbd5041fa46d198cb5ec96cff86d80627[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Wed Jun 25 09:37:02 2025 +0530
+
+    tutor and user completed
+
+[33mcommit 49fe89a110b39653ed91ce919c13377d5972821f[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Tue Jun 24 15:00:53 2025 +0530
+
+    review section added
+
+[33mcommit 90aff75855e126f55f1567096eb609b4ad958232[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Mon Jun 23 18:34:19 2025 +0530
+
+    chat userside completed
+
+[33mcommit f92dee3cb96c9465a43bed567a017062851092d8[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sat Jun 21 14:33:44 2025 +0530
+
+    user side progress on work
+
+[33mcommit 1ee61b9d6b75d17be0cd81c7c9828d73bf59b89e[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Tue Jun 17 18:56:29 2025 +0530
+
+    userside 85 % completed
+
+[33mcommit 1cb781c5cc3c33b46990bf86b739e9a8424301d0[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Tue Jun 3 10:24:03 2025 +0530
+
+    course_enrollment_done_in_use_side
+
+[33mcommit 9e00ec0d9bd0b173f3937aa67809d6b759fc437c[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sun May 18 15:38:24 2025 +0530
+
+    user side course serach and filter on going
+
+[33mcommit fe765fe738a09b4766706de4b7967a38334cff0c[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Fri May 16 19:54:59 2025 +0530
+
+    user side detailes page on work
+
+[33mcommit b422fb519c5f42ebce9c2edb5b30b1743631716c[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Fri May 16 17:13:34 2025 +0530
+
+    tutor side course add activate update alls done
+
+[33mcommit 122f78e2d6d0d2ddc237df46d7b6c6ef8fdeb495[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Mon May 12 03:41:08 2025 +0530
+
+    detailed page added in tutor side
+
+[33mcommit d0642c567a9909035a45a40a1ab0a07a81a38254[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sun May 11 19:10:39 2025 +0530
+
+    ADD COURSE COMPLETED IN TUTOR APP
+
+[33mcommit 9ea1666f77889e3f8cb39947ac926d3290223e61[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sun May 11 18:06:27 2025 +0530
+
+    ADD COURSE COMPLETED IN TUTOR APP
+
+[33mcommit 1ae6d82191df04fa28aa21c0742e9c9650266ece[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sun May 4 14:56:33 2025 +0530
+
+    updated tutor managment (verification from admin0
+
+[33mcommit 1a17986c58423a217f8c635adab9f9db8bab29f0[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sat May 3 17:44:02 2025 +0530
+
+    updated
+
+[33mcommit 902b3738b2437601138f7fa32c50984de7ca4372[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Wed Apr 30 18:05:44 2025 +0530
+
+    add new course tutor side started
+
+[33mcommit 63c249086fe477f604ef3b514859000908c635a1[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Wed Apr 30 16:49:41 2025 +0530
+
+    admin verification done
+
+[33mcommit 1dcb6089567c25235d9b32f9cca98370cb5e777b[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Mon Apr 21 11:54:38 2025 +0530
+
+    auth and validations are set
+
+[33mcommit 2cf337a7a6cd049541c91ab110bd2de8a1b1a567[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sat Apr 12 07:55:16 2025 +0530
+
+    authentication almost completed
+
+[33mcommit 9c1ef3a3883c8aae6124ae41289f99b2cb940e90[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Thu Apr 10 18:30:15 2025 +0530
+
+    Email Verification On Going
+
+[33mcommit e36518362b4ef71c4f5242bff97836759ccebc9d[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Thu Apr 10 11:56:44 2025 +0530
+
+    Authentication Completed for tutor and user
+
+[33mcommit ad5511baf9f0d1b54d8f45d0e8807a0ef566e8b1[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Fri Apr 4 20:09:48 2025 +0530
+
+    user managment and mentor managment initial setup updated
+
+[33mcommit 97031f1d88b308391632fccb8b59e1604d1b147a[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Thu Apr 3 18:57:28 2025 +0530
+
+    user auth set up ready
+
+[33mcommit 54ff5e32f65c09cb8ad76f56098dbaf9be21a10e[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Wed Apr 2 18:46:43 2025 +0530
+
+    updated firebase auth & clean structure
+
+[33mcommit 2539ef88ba23b2ba3e0ec9e6b28af2ae3eaa1e8b[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Wed Apr 2 18:30:49 2025 +0530
+
+    firebase auth upated
+
+[33mcommit 675dad17a985bfc8a29031c51220ecd1f64bf042[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Fri Mar 28 20:22:56 2025 +0530
+
+    firebase connected with all panels user side, tutor side and admin side
+
+[33mcommit b351fb661a763c2a16a9441bf3523809f9c84e77[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Fri Mar 28 14:09:11 2025 +0530
+
+    admin side authentication page updated
+
+[33mcommit 9be11336614daad5fe46f73ccd1cc5b51e26b47a[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Fri Mar 28 11:22:08 2025 +0530
+
+    tutor side auth ui confirm password field updated in sign up
+
+[33mcommit 66ab45d85d4791780ebc7bc878c827f84a83b3af[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Fri Mar 28 11:07:56 2025 +0530
+
+    tutor side auth ui updated
+
+[33mcommit c1be53d29397ba66d81751f097a74a15c023a593[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Thu Mar 27 21:29:49 2025 +0530
+
+    user app ui updated- authentication page animation added
+
+[33mcommit f35c3c711d15561baeb1dcb0d287015e9c6e48d1[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Wed Mar 26 22:03:41 2025 +0530
+
+    updated
+
+[33mcommit 1ecddafab5d9b12a5d08afbdc568bc6e0f6d1840[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Wed Mar 26 21:53:02 2025 +0530
+
+    updated user app
+
+[33mcommit 609efad9ccf2101f46184a16726c73656fa32e51[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Tue Mar 25 17:19:17 2025 +0530
+
+    landing screen added
+
+[33mcommit dc2f9f20e2cd3ec007ced78af15d376177334f34[m
+Author: hijaz <mhcnkd4@gmail.com>
+Date:   Sat Mar 22 10:41:41 2025 +0530
+
+    first commit

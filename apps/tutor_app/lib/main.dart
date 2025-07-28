@@ -54,7 +54,7 @@ class Skilnk extends StatelessWidget {
         theme: MyThemes.lightTheme,
         darkTheme: MyThemes.darkTheme,
         debugShowCheckedModeBanner: false,
-        routerConfig: AppRoutes(context).router,
+        routerConfig: AppRoutes().router,
       ),
     );
   }
