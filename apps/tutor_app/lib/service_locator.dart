@@ -1,9 +1,16 @@
 import 'package:get_it/get_it.dart';
+import 'package:tutor_app/features/account/data/models/delete_category.dart';
+import 'package:tutor_app/features/account/data/models/update_bio_params.dart';
+import 'package:tutor_app/features/account/data/models/update_category_params.dart';
 import 'package:tutor_app/features/account/data/models/update_dp_params.dart';
 import 'package:tutor_app/features/account/data/repo/profile_repo.dart';
 import 'package:tutor_app/features/account/data/service/profile_cloudinary_service.dart';
 import 'package:tutor_app/features/account/data/service/profile_firebase_service.dart';
 import 'package:tutor_app/features/account/domain/repo/profile_repo.dart';
+import 'package:tutor_app/features/account/domain/usecase/add_category.dart';
+import 'package:tutor_app/features/account/domain/usecase/delete_category.dart';
+import 'package:tutor_app/features/account/domain/usecase/get_categories.dart';
+import 'package:tutor_app/features/account/domain/usecase/update_bio.dart';
 import 'package:tutor_app/features/account/domain/usecase/update_user_profile_pic.dart';
 import 'package:tutor_app/features/account/domain/usecase/update_username.dart';
 import 'package:tutor_app/features/auth/data/repository/auth_repo_imp.dart';
@@ -192,6 +199,22 @@ Future<void> initializeDependencies() async {
 
    serviceLocator.registerLazySingleton<GetReviewsUseCase>(
     () => GetReviewsUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<GetCategoriesUseCase>(
+    () => GetCategoriesUseCase()
+  );
+
+   serviceLocator.registerLazySingleton<DeleteCategoryUseCase>(
+    () => DeleteCategoryUseCase()
+  );
+
+   serviceLocator.registerLazySingleton<AddCategoryUseCase>(
+    () => AddCategoryUseCase()
+  );
+
+   serviceLocator.registerLazySingleton<UpdateBioUseCase>(
+    () => UpdateBioUseCase()
   );
 
 

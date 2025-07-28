@@ -1,1 +1,34 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"skilnk","appId":"1:288935584617:android:a67991de5be286d45993f8","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"skilnk","configurations":{"android":"1:288935584617:android:a67991de5be286d45993f8","ios":"1:288935584617:ios:1a6896c1af98210e5993f8","macos":"1:288935584617:ios:1a6896c1af98210e5993f8","web":"1:288935584617:web:4694dcb16bbfe27c5993f8","windows":"1:288935584617:web:2b94e81d440272eb5993f8"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "skilnk",
+          "appId": "1:288935584617:android:a67991de5be286d45993f8",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "skilnk",
+          "configurations": {
+            "android": "1:288935584617:android:a67991de5be286d45993f8",
+            "ios": "1:288935584617:ios:1a6896c1af98210e5993f8",
+            "macos": "1:288935584617:ios:1a6896c1af98210e5993f8",
+            "web": "1:288935584617:web:4694dcb16bbfe27c5993f8",
+            "windows": "1:288935584617:web:2b94e81d440272eb5993f8"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "site": "delete-account-skilnk",
+    "public": "web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

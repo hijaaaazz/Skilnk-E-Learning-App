@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -15,7 +17,6 @@ abstract class AuthFirebaseService {
   Future<List<String>> getSignInMethodsForEmail(String email);
   Future<void> updateUserDisplayName(String name);
   
-  // Firestore operations
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserDocById(String uid);
 
   Future<void> saveUserToFirestore(UserModel user);
@@ -110,14 +111,17 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
     );
   }
 
-  @override
-  Future<UserModel?> getUserFromFirestore(String uid) async {
-    final doc = await _firestore.collection('mentors').doc(uid).get();
-    if (doc.exists && doc.data() != null) {
-      return UserModel.fromJson(doc.data()!);
-    }
-    return null;
+ @override
+Future<UserModel?> getUserFromFirestore(String uid) async {
+  final doc = await _firestore.collection('mentors').doc(uid).get();
+  if (doc.exists && doc.data() != null) {
+    final user = UserModel.fromJson(doc.data()!);
+    log(user.toString()); // Log the entire object
+    return user;
   }
+  return null;
+}
+
 
   @override
   Future<bool> checkUserCollectionForEmail(String email, String collectionName) async {

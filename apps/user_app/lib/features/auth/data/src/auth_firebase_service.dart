@@ -147,6 +147,8 @@ Future<Either<String, Map<String, dynamic>?>> getUserData(String uid) async {
   @override
   Future<Either<String, String>> sendEmailVerification() async {
     try {
+
+      log("email sending....");
       final currentUser = _auth.currentUser;
       if (currentUser == null) return Left('No user signed in');
       await currentUser.sendEmailVerification();

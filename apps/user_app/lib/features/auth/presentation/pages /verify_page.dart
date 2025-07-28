@@ -22,7 +22,7 @@ class VerifyPage extends StatelessWidget {
         if (state.status == AuthStatus.loading) {
           SnackBarUtils.showMinimalSnackBar(context,"please wait");
         }if (state.status == AuthStatus.emailVerified) {
-          context.go(AppRouteConstants.personalInfoSubmitingPageName);
+          context.go(AppRouteConstants.homeRouteName);
           SnackBarUtils.showMinimalSnackBar(context,'verification success');
           
         }

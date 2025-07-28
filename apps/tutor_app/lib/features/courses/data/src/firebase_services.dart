@@ -23,7 +23,6 @@ abstract class CourseFirebaseService {
   Future<Either<String, bool>> activateToggleCourse(courseToggleParams req);
   Future<Either<String, List<ReviewModel>>> getReviews(List<String> ids);
   
-  // New methods for category management
   Future<Either<String, bool>> updateCategoryWithCourse({
     required String categoryId,
     required String courseId,

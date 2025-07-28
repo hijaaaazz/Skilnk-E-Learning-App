@@ -8,15 +8,29 @@ import 'dart:developer' as developer;
 
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';
-
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const ProfilePageContent();
+    final authState = context.read<AuthBloc>().state;
+
+
+    final user = authState.user!;
+
+    return BlocProvider(
+      create: (context) => ProfileCubit()
+        ..loadUserData(
+          currentName: user.name,
+          currentBio: user.bio ?? "",
+          currentImageUrl: user.image ?? "",         // assuming this exists
+          userCategories: user.categories ?? [],  // assuming it's a List<String>
+        ),
+      child: const ProfilePageContent(),
+    );
   }
 }
+
 
 class ProfilePageContent extends StatefulWidget {
   const ProfilePageContent({super.key});
@@ -27,6 +41,8 @@ class ProfilePageContent extends StatefulWidget {
 
 class _ProfilePageContentState extends State<ProfilePageContent> {
  // Fixed ProfilePageContent build method
+
+
 @override
 Widget build(BuildContext context) {
   return Scaffold(

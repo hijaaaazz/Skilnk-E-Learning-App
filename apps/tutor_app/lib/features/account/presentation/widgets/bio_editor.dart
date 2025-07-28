@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tutor_app/features/account/presentation/bloc/cubit/profile_cubit.dart';
 
 class BioEditBottomSheet extends StatefulWidget {
   final String currentBio;
@@ -29,13 +27,6 @@ class _BioEditBottomSheetState extends State<BioEditBottomSheet> {
   late TextEditingController _bioController;
   static const int maxBioLength = 500;
 
-  final List<String> _bioSuggestions = [
-    "I'm passionate about helping students discover their potential and achieve their academic goals.",
-    "With years of teaching experience, I believe in making learning fun and engaging for every student.",
-    "I specialize in breaking down complex concepts into simple, understandable parts.",
-    "My teaching philosophy centers around patience, encouragement, and personalized learning approaches.",
-    "I love seeing the 'aha!' moment when students finally grasp a challenging concept.",
-  ];
 
   @override
   void initState() {
@@ -59,7 +50,6 @@ class _BioEditBottomSheetState extends State<BioEditBottomSheet> {
       ),
       child: Column(
         children: [
-          // Handle bar
           Container(
             margin: const EdgeInsets.only(top: 12),
             width: 40,
@@ -70,7 +60,6 @@ class _BioEditBottomSheetState extends State<BioEditBottomSheet> {
             ),
           ),
           
-          // Header
           Padding(
             padding: const EdgeInsets.all(20),
             child: Row(
@@ -140,68 +129,7 @@ class _BioEditBottomSheetState extends State<BioEditBottomSheet> {
                   
                   const SizedBox(height: 20),
                   
-                  if (widget.currentBio.isEmpty) ...[
-                    const Text(
-                      'Need inspiration? Try one of these:',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _bioSuggestions.length,
-                        itemBuilder: (context, index) {
-                          final suggestion = _bioSuggestions[index];
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: GestureDetector(
-                              onTap: () => _useSuggestion(suggestion),
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[50],
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.grey[200]!),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        suggestion,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.black87,
-                                          height: 1.4,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFFF5722).withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: const Icon(
-                                        Icons.add,
-                                        size: 16,
-                                        color: Color(0xFFFF5722),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ] else
-                    const Spacer(),
+                 
                 ],
               ),
             ),
@@ -248,11 +176,6 @@ class _BioEditBottomSheetState extends State<BioEditBottomSheet> {
     );
   }
 
-  void _useSuggestion(String suggestion) {
-    setState(() {
-      _bioController.text = suggestion;
-    });
-  }
 
   void _saveBio() {
     // context.read<ProfileCubit>().updateBio(_bioController.text.trim());

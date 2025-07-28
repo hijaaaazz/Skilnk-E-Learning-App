@@ -45,10 +45,7 @@ class AppRoutes {
                 path: "/profile",
                 name: AppRouteConstants.profileRoutename,
                 builder: (context, state) {
-                  return BlocProvider(
-                    create: (context) => ProfileCubit(),
-                    child: ProfilePage(),
-                  );
+                  return ProfilePage();
                 } ,
                 routes: [
 
