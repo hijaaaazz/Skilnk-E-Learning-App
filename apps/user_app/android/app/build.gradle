@@ -35,7 +35,7 @@ android {
         applicationId = "in.skilnk.user_app"
         minSdkVersion 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = 
+        versionCode = 4
         versionName = "1.1.2"
     }
 

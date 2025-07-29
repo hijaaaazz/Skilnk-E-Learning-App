@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:tutor_app/core/usecase/usecase.dart';
 import 'package:tutor_app/features/auth/domain/usecases/admin_verification_check.dart';
 import 'package:tutor_app/features/auth/domain/usecases/check_verification.dart';
+import 'package:tutor_app/features/auth/domain/usecases/delete_account_usecase.dart';
 import 'package:tutor_app/features/auth/domain/usecases/get_user.dart';
 import 'package:tutor_app/features/auth/domain/usecases/logout.dart';
 import 'package:tutor_app/features/auth/domain/usecases/register.dart';
@@ -33,6 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<ResetPasswordEvent>(_onResetPassword);
     on<RegisterUserEvent>(_onRegisterUser);
     on<CheckIfUserVerifiedByAdminEvent>(_checkUserVerifiedByAdmin);
+    on<DeleteAccountEvent>(_deleteAccount);
   }
 
   Future<void> _onSignUp(SignUpEvent event, Emitter<AuthState> emit) async {
@@ -218,6 +220,19 @@ Future<void> _checkUserVerifiedByAdmin(
       return AuthFailure(message: error.toString());
     },
   );
+}
+
+Future<void> _deleteAccount(
+  DeleteAccountEvent event,
+  Emitter<AuthState> emit,
+) async {
+   final result = await serviceLocator<DeleteAccounttUseCase>()
+        .call(params: event.params);
+    
+    result.fold(
+      (failure) => emit(AuthFailure(message: failure)),
+      (_) => emit(AuthInitial()), // Keep current state
+    );
 }
 
 

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tutor_app/features/auth/data/models/delete_data_params.dart';
 import 'package:tutor_app/features/auth/data/models/user_creation_req.dart';
 import 'package:tutor_app/features/auth/data/models/user_model.dart';
 import 'package:tutor_app/features/auth/data/models/user_signin_model.dart';
@@ -368,6 +369,16 @@ Future<Either<String, bool>> isEmailVerified(UserEntity user) async {
     return Left('Failed to check isEmailVerified');
   }
 }
+@override
+  Future<Either<String, bool>> deleteAccount(DeleteUserParams params) async {
+    try {
+      
+      return await _firebaseService.deleteUserData(params);
+    
+    } catch (e) {
+      return Left("Failed to delete account: ${e.toString()}");
+    }
+  }
 
 
 }

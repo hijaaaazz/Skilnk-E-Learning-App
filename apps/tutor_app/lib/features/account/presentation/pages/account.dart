@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/account/presentation/widgets/dialog.dart';
 import 'package:tutor_app/features/account/presentation/widgets/option_tile.dart';
+import 'package:tutor_app/features/auth/data/models/delete_data_params.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_bloc.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_event.dart';
 import 'package:tutor_app/features/auth/presentation/blocs/auth_cubit/bloc/auth_status_state.dart';
@@ -170,6 +171,40 @@ Padding(
     ),
   ),
 ),
+ const SizedBox(height: 15),
+Padding(
+  padding: const EdgeInsets.symmetric(horizontal: 16),
+  child: SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      onPressed: () => _showDeleteDialog(context),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.deepOrange.shade50,
+        foregroundColor: Colors.deepOrange.shade700,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.red.shade200),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.logout, size: 20, color: Colors.deepOrange),
+          const SizedBox(width: 8),
+          Text(
+            "Delete Account",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
 
           
           const SizedBox(height: 30),
@@ -218,6 +253,7 @@ Padding(
       ],
     );
   }
+
  void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -246,6 +282,92 @@ Padding(
       },
     );
   }
+void _showDeleteDialog(BuildContext context) {
+  final passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext dialogContext) {
+      return BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
+
+          return CustomConfirmationDialog(
+            title: 'Delete Account',
+            description: '',
+            icon: Icons.delete_forever,
+            iconColor: Colors.red.shade400,
+            iconBackgroundColor: Colors.red.shade50,
+            confirmText: 'Delete',
+            confirmColor: Colors.red,
+            isLoading: isLoading,
+            onCancel: () => Navigator.of(dialogContext).pop(),
+            onConfirm: () {
+              if (formKey.currentState!.validate()) {
+                final password = passwordController.text;
+                final user = context.read<AuthBloc>().state.user!;
+                context.read<AuthBloc>().add(
+                  DeleteAccountEvent(
+                    params: DeleteUserParams(
+                      userId: user.tutorId,
+                      email: user.email,
+                      password: password,
+                    ),
+                  ),
+                );
+                Navigator.of(dialogContext).pop();
+              }
+            },
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Are you sure you want to delete your account? Please confirm your password to continue.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(dialogContext).pop();
+                        _showChangePasswordDialog(context);
+                      },
+                      child: const Text('Forgot password?'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+  
+  
+
 
 
 void _showChangePasswordDialog(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:tutor_app/features/auth/data/models/delete_data_params.dart';
 import 'package:tutor_app/features/auth/data/models/user_creation_req.dart';
 import 'package:tutor_app/features/auth/data/models/user_model.dart';
 import 'package:tutor_app/features/auth/data/models/user_signin_model.dart';
@@ -33,6 +34,8 @@ abstract class AuthRepository {
   
   /// Checks if a user with the given email exists
   Future<Either<String, bool>> checkIfUserExists(String email);
+
+  Future<Either<String, bool>> deleteAccount(DeleteUserParams params);
 
    Future<Either<String, bool>> checkIfUserVerifiedByAdmin(UserEntity user);
 }

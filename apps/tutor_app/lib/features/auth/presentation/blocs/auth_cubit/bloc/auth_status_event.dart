@@ -1,4 +1,5 @@
 // auth_event.dart
+import 'package:tutor_app/features/auth/data/models/delete_data_params.dart';
 import 'package:tutor_app/features/auth/data/models/user_creation_req.dart';
 import 'package:tutor_app/features/auth/data/models/user_signin_model.dart';
 import 'package:tutor_app/features/auth/domain/entity/user.dart';
@@ -37,6 +38,11 @@ class GetCurrentUserEvent extends AuthEvent {}
 class SendVerificationEmailEvent extends AuthEvent {}
 
 class ResendVerificationEmailEvent extends AuthEvent {}
+
+class DeleteAccountEvent extends AuthEvent {
+  DeleteUserParams params;
+  DeleteAccountEvent({required this.params});
+}
 
 class CheckVerificationEvent extends AuthEvent {
   final dynamic user;

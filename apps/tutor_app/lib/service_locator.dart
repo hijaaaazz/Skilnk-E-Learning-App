@@ -14,6 +14,7 @@ import 'package:tutor_app/features/auth/data/src/auth_firebase_service.dart';
 import 'package:tutor_app/features/auth/domain/repository/auth.dart';
 import 'package:tutor_app/features/auth/domain/usecases/admin_verification_check.dart';
 import 'package:tutor_app/features/auth/domain/usecases/check_verification.dart';
+import 'package:tutor_app/features/auth/domain/usecases/delete_account_usecase.dart';
 import 'package:tutor_app/features/auth/domain/usecases/get_user.dart';
 import 'package:tutor_app/features/auth/domain/usecases/logout.dart';
 import 'package:tutor_app/features/auth/domain/usecases/resent_verification.dart';
@@ -210,6 +211,10 @@ Future<void> initializeDependencies() async {
 
    serviceLocator.registerLazySingleton<UpdateBioUseCase>(
     () => UpdateBioUseCase()
+  );
+
+  serviceLocator.registerLazySingleton<DeleteAccounttUseCase>(
+    () => DeleteAccounttUseCase()
   );
 
 

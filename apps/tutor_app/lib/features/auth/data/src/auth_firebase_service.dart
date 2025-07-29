@@ -1,8 +1,10 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:tutor_app/features/auth/data/models/delete_data_params.dart';
 import 'package:tutor_app/features/auth/data/models/user_model.dart';
 
 abstract class AuthFirebaseService {
@@ -22,6 +24,7 @@ abstract class AuthFirebaseService {
   Future<void> saveUserToFirestore(UserModel user);
   Future<UserModel?> getUserFromFirestore(String uid);
   Future<bool> checkUserCollectionForEmail(String email, String collectionName);
+  Future<Either<String,bool>> deleteUserData(DeleteUserParams params);
 }
 
 class AuthFirebaseServiceImpl extends AuthFirebaseService {
@@ -137,6 +140,58 @@ Future<UserModel?> getUserFromFirestore(String uid) async {
   @override
 Future<DocumentSnapshot<Map<String, dynamic>>> getUserDocById(String uid) async {
   return await FirebaseFirestore.instance.collection('mentors').doc(uid).get();
+}
+Future<Either<String, bool>> deleteUserData(DeleteUserParams params) async {
+  try {
+    final user = _auth.currentUser;
+
+    // Step 1: Reauthenticate
+    if (user != null && user.email == params.email) {
+      final credential = EmailAuthProvider.credential(
+        email: params.email,
+        password: params.password,
+      );
+
+      await user.reauthenticateWithCredential(credential);
+    } else {
+      return Left("User mismatch or not signed in.");
+    }
+
+    // Step 2: Replace Firestore data with placeholder
+    final placeholderUser = UserModel(
+      tutorId: params.userId,
+      name: "Deleted User",
+      username: null,
+      email: "deleted-${DateTime.now().millisecondsSinceEpoch}@example.com",
+      phone: null,
+      image: null,
+      bio: null,
+      emailVerified: false,
+      isVerified: false,
+      status: false,
+      isBlocked: false,
+      courseIds: [],
+      categories: [],
+      savedCourses: [],
+      lastActive: DateTime.now(),
+      lastLogin: DateTime.now(),
+      createdDate: DateTime.now(),
+      updatedDate: DateTime.now(),
+      infoSubmitted: false,
+    );
+
+    await _firestore.collection('mentors').doc(params.userId).set(
+      placeholderUser.toJson(),
+      SetOptions(merge: true),
+    );
+
+    // Step 3: Delete user
+    await user.delete();
+
+    return Right(true);
+  } catch (e) {
+    return Left("Error deleting user: ${e.toString()}");
+  }
 }
 
 
