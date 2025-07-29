@@ -50,7 +50,7 @@ class Skilnk extends StatelessWidget {
         BlocProvider(create: (_) => CoursesBloc())
       ],
       child: MaterialApp.router(
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
         theme: MyThemes.lightTheme,
         darkTheme: MyThemes.darkTheme,
         debugShowCheckedModeBanner: false,

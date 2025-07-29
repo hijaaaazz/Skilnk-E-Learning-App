@@ -2,9 +2,10 @@ import 'dart:developer';
 import 'dart:io' show File;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tutor_app/core/utils/get_video_duration.dart';
 import 'package:tutor_app/features/courses/data/models/lecture_creation_req.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_state.dart';
+
+import '../../../../../../core/utils/get_video_duration.dart';
 
 mixin LectureManagementHandlers on Cubit<AddCourseState> {
   void updateCurrentLessonTitle(String title) {
@@ -52,7 +53,7 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
         }
       }
 
-      final duration = await getVideoDuration(videoPath, bytes: videoBytes);
+      final duration = await getVideoDuration(videoPath,);
       final newLecture = LectureCreationReq(
         title: title,
         description: description ?? '',
@@ -169,7 +170,7 @@ mixin LectureManagementHandlers on Cubit<AddCourseState> {
       Duration? duration = existingLecture.duration;
       if (videoPath != existingLecture.videoUrl) {
         log('[updateLecture] Fetching video duration for new video...');
-        duration = await getVideoDuration(videoPath, bytes: videoBytes);
+        duration = await getVideoDuration(videoPath);
         log('[updateLecture] ✅ Video duration fetched: $duration');
       } else {
         log('[updateLecture] Using existing video duration: $duration');

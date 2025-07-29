@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "skilnk"
+  },
+  "targets": {
+    "skilnk": {
+      "hosting": {
+        "skilnk-tutor": [
+          "skilnk-tutor"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

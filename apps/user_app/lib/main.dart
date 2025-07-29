@@ -56,10 +56,9 @@ class Skilnk extends StatelessWidget {
       ],
       child: MaterialApp.router(
         title: "Skilnk",
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
 
         theme: MyThemes.lightTheme,
-        darkTheme: MyThemes.darkTheme,
         debugShowCheckedModeBanner: false,
         routerConfig: AppRoutes().router,
       

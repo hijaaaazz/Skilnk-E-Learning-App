@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 // Model for document items
 class DocumentItem {
@@ -385,74 +386,48 @@ class _MarkdownViewerPageState extends State<MarkdownViewerPage> {
           ),
         ],
       ),
-      // child: Markdown(
-      //   data: markdownContent,
-      //   styleSheet: MarkdownStyleSheet(
-      //     h1: TextStyle(
-      //       fontSize: 24,
-      //       fontWeight: FontWeight.bold,
-      //       color: widget.document.color,
-      //       height: 1.5,
-      //     ),
-      //     h2: TextStyle(
-      //       fontSize: 20,
-      //       fontWeight: FontWeight.bold,
-      //       color: widget.document.color,
-      //       height: 1.4,
-      //     ),
-      //     h3: TextStyle(
-      //       fontSize: 18,
-      //       fontWeight: FontWeight.w600,
-      //       color: Colors.grey[800],
-      //       height: 1.3,
-      //     ),
-      //     p: TextStyle(
-      //       fontSize: 16,
-      //       color: Colors.grey[700],
-      //       height: 1.6,
-      //     ),
-      //     listBullet: TextStyle(
-      //       color: widget.document.color,
-      //       fontSize: 16,
-      //     ),
-      //     blockquote: TextStyle(
-      //       color: Colors.grey[600],
-      //       fontStyle: FontStyle.italic,
-      //       fontSize: 15,
-      //     ),
-      //     code: TextStyle(
-      //       backgroundColor: Colors.grey[100],
-      //       color: widget.document.color,
-      //       fontFamily: 'monospace',
-      //     ),
-      //   ),
-      // ),
+      child: Markdown(
+        data: markdownContent,
+        styleSheet: MarkdownStyleSheet(
+          h1: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: widget.document.color,
+            height: 1.5,
+          ),
+          h2: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: widget.document.color,
+            height: 1.4,
+          ),
+          h3: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+            height: 1.3,
+          ),
+          p: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[700],
+            height: 1.6,
+          ),
+          listBullet: TextStyle(
+            color: widget.document.color,
+            fontSize: 16,
+          ),
+          blockquote: TextStyle(
+            color: Colors.grey[600],
+            fontStyle: FontStyle.italic,
+            fontSize: 15,
+          ),
+          code: TextStyle(
+            backgroundColor: Colors.grey[100],
+            color: widget.document.color,
+            fontFamily: 'monospace',
+          ),
+        ),
+      ),
     );
   }
 }
-
-/* 
-Add these dependencies to your pubspec.yaml:
-
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_markdown: ^0.6.18
-
-And add your markdown files to pubspec.yaml:
-
-flutter:
-  assets:
-    - assets/markdown/terms_conditions.md
-    - assets/markdown/privacy_policy.md
-    - assets/markdown/about_app.md
-    - assets/markdown/user_guidelines.md
-
-Create the folder structure:
-assets/
-  markdown/
-    terms_conditions.md
-    privacy_policy.md
-    about_app.md
-    user_guidelines.md
-*/

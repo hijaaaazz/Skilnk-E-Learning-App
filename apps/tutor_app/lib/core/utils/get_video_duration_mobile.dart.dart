@@ -1,15 +1,10 @@
 import 'dart:io';
 import 'dart:developer';
+import 'dart:typed_data';
 import 'package:video_player/video_player.dart';
 
-Future<Duration?> getVideoDuration(String videoPath) async {
+Future<Duration?> getVideoDuration(String videoPath, {Uint8List? bytes}) async {
   try {
-    // Ensure this code runs only on Android
-    if (!Platform.isAndroid) {
-      log("This function is intended only for Android.");
-      return null;
-    }
-
     final file = File(videoPath);
     if (!file.existsSync()) {
       log("Error: Video file does not exist: $videoPath");
@@ -21,10 +16,10 @@ Future<Duration?> getVideoDuration(String videoPath) async {
     final duration = controller.value.duration;
     await controller.dispose();
 
-    log("Android video duration: $duration");
+    log("Mobile video duration: $duration");
     return duration;
   } catch (e) {
-    log("Error getting video duration on Android: $e");
+    log("Error in mobile getVideoDuration: $e");
     return null;
   }
 }

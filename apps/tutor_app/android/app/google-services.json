@@ -32,10 +32,10 @@
               "client_type": 3
             },
             {
-              "client_id": "288935584617-gen9qmd3sau7g1slfrgaoljsdneeclrj.apps.googleusercontent.com",
+              "client_id": "288935584617-46pduq8oo1b3vqc9j22ivb0kgtgam832.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.adminApp"
+                "bundle_id": "com.example.tutorApp"
               }
             }
           ]
@@ -44,9 +44,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:288935584617:android:a11caf74c4dfacd05993f8",
+        "mobilesdk_app_id": "1:288935584617:android:4e5295f593cb96ed5993f8",
         "android_client_info": {
-          "package_name": "com.example.tutor_app"
+          "package_name": "in.skilnk.tutor_app"
         }
       },
       "oauth_client": [
@@ -68,10 +68,54 @@
               "client_type": 3
             },
             {
-              "client_id": "288935584617-gen9qmd3sau7g1slfrgaoljsdneeclrj.apps.googleusercontent.com",
+              "client_id": "288935584617-46pduq8oo1b3vqc9j22ivb0kgtgam832.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.adminApp"
+                "bundle_id": "com.example.tutorApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288935584617:android:7696f1f481d4891e5993f8",
+        "android_client_info": {
+          "package_name": "in.skilnk.user_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288935584617-a7g7c32r5umppth8f1nm4103guof4ts9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.skilnk.user_app",
+            "certificate_hash": "ce538ef302affce4f30d91df0689b240bacf64ce"
+          }
+        },
+        {
+          "client_id": "288935584617-bkfggihvm40s430cvm49qp4qhrb93270.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5o0MGxqNMGBksqZKgNxzg5CxuZ0aGc4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "288935584617-bkfggihvm40s430cvm49qp4qhrb93270.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "288935584617-46pduq8oo1b3vqc9j22ivb0kgtgam832.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.tutorApp"
               }
             }
           ]

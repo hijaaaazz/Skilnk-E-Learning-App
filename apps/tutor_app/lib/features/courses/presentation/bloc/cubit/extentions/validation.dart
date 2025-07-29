@@ -204,18 +204,23 @@ mixin ValidationHandlers on Cubit<AddCourseState> {
           }
         }
       } else {
-        // Non-web: Ensure videoUrl is a valid file path
-        if (!_isFilePath(lecture.videoUrl)) {
-          log("Invalid video file path for lecture '${lecture.title}': ${lecture.videoUrl}");
-          showAppSnackbar(context, "Lecture '${lecture.title}' has invalid video file path");
-          return false;
-        }
-        if (lecture.notesUrl != null && lecture.notesUrl!.isNotEmpty && !_isFilePath(lecture.notesUrl)) {
-          log("Invalid notes file path for lecture '${lecture.title}': ${lecture.notesUrl}");
-          showAppSnackbar(context, "PDF notes for '${lecture.title}' have invalid file path");
-          // Warn but don't fail
-        }
-      }
+  // Check if it's a valid file path OR a valid network URL
+  if (!_isFilePath(lecture.videoUrl) && !_isNetworkUrl(lecture.videoUrl)) {
+    log("Invalid video source for lecture '${lecture.title}': ${lecture.videoUrl}");
+    showAppSnackbar(context, "Lecture '${lecture.title}' has invalid video source");
+    return false;
+  }
+
+  if (lecture.notesUrl != null &&
+      lecture.notesUrl!.isNotEmpty &&
+      !_isFilePath(lecture.notesUrl!) &&
+      !_isNetworkUrl(lecture.notesUrl!)) {
+    log("Invalid notes source for lecture '${lecture.title}': ${lecture.notesUrl}");
+    showAppSnackbar(context, "PDF notes for '${lecture.title}' have invalid source");
+    // Warn but don't fail
+  }
+}
+
     }
     log("Curriculum validation passed");
     return true;
