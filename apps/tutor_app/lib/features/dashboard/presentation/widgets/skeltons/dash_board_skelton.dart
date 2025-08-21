@@ -4,7 +4,7 @@ import 'package:tutor_app/features/dashboard/presentation/widgets/skeltons/skelt
 class StatCardSkeleton extends StatelessWidget {
   final bool isFullWidth;
 
-  const StatCardSkeleton({Key? key, this.isFullWidth = false}) : super(key: key);
+  const StatCardSkeleton({super.key, this.isFullWidth = false});
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +46,8 @@ class StatCardSkeleton extends StatelessWidget {
 }
 
 class EarningsCardSkeleton extends StatelessWidget {
+  const EarningsCardSkeleton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -90,6 +92,8 @@ class EarningsCardSkeleton extends StatelessWidget {
 }
 
 class RecentActivitySkeleton extends StatelessWidget {
+  const RecentActivitySkeleton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -150,6 +154,8 @@ class RecentActivitySkeleton extends StatelessWidget {
 }
 
 class DashboardSkeletonGrid extends StatelessWidget {
+  const DashboardSkeletonGrid({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(

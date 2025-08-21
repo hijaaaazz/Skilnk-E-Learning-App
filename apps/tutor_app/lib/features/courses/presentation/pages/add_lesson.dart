@@ -2,10 +2,10 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as path;
 import 'package:tutor_app/common/widgets/app_text.dart';
 import 'package:tutor_app/common/widgets/snack_bar.dart';
-import 'package:tutor_app/core/routes/app_route_constants.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_cubit.dart';
 import 'package:tutor_app/features/courses/presentation/bloc/cubit/add_new_couse_ui_state.dart';
 import 'package:go_router/go_router.dart';

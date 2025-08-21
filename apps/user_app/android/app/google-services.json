@@ -51,6 +51,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "288935584617-rctvdekiv9k29d5cm1337kbmd87hfatq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.skilnk.tutor_app",
+            "certificate_hash": "c57d81edd2bfbfd95309ec73a306b93a0ced772c"
+          }
+        },
+        {
           "client_id": "288935584617-bkfggihvm40s430cvm49qp4qhrb93270.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -92,6 +100,14 @@
           "android_info": {
             "package_name": "in.skilnk.user_app",
             "certificate_hash": "ce538ef302affce4f30d91df0689b240bacf64ce"
+          }
+        },
+        {
+          "client_id": "288935584617-g5ur5s1g0jkq6lo4uuh4hv79g8l0qds4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.skilnk.user_app",
+            "certificate_hash": "0ee6d0e553101806ea4c878ef3eaa7a4bc8f357d"
           }
         },
         {

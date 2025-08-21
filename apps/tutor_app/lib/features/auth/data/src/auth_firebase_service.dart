@@ -141,7 +141,8 @@ Future<UserModel?> getUserFromFirestore(String uid) async {
 Future<DocumentSnapshot<Map<String, dynamic>>> getUserDocById(String uid) async {
   return await FirebaseFirestore.instance.collection('mentors').doc(uid).get();
 }
-Future<Either<String, bool>> deleteUserData(DeleteUserParams params) async {
+@override
+  Future<Either<String, bool>> deleteUserData(DeleteUserParams params) async {
   try {
     final user = _auth.currentUser;
 

@@ -43,7 +43,8 @@ class CoursesRepoImplementation extends CoursesRepository {
   }
 
 
-Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(CourseCreationReq req) async* {
+@override
+  Stream<Either<String, Either<UploadProgress, CourseEntity>>> addNewCourse(CourseCreationReq req) async* {
   try {
     final cloudinaryService = serviceLocator<CourseCloudinaryServices>();
     final firebaseService = serviceLocator<CourseFirebaseService>();

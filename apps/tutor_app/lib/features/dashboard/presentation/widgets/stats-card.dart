@@ -1,3 +1,6 @@
+// ignore: file_names
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class ModernStatCard extends StatelessWidget {
@@ -9,14 +12,14 @@ class ModernStatCard extends StatelessWidget {
   final bool isFullWidth;
 
   const ModernStatCard({
-    Key? key,
+    super.key,
     required this.value,
     required this.label,
     required this.icon,
     required this.color,
     this.growth,
     this.isFullWidth = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

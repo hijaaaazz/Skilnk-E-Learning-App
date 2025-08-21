@@ -18,7 +18,6 @@ class CoursePriceForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isWide = screenWidth > 600;
 
     return BlocBuilder<AddCourseCubit, AddCourseState>(
       builder: (context, state) {

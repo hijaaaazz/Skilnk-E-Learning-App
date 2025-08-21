@@ -35,8 +35,8 @@ android {
         applicationId = "in.skilnk.user_app"
         minSdkVersion 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = 4
-        versionName = "1.1.2"
+        versionCode = 6
+        versionName = "1.1.3"
     }
 
     // ✅ move signingConfigs here before buildTypes

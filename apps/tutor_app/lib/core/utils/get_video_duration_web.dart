@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:developer';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
 Future<Duration?> getVideoDuration(String videoPath, {Uint8List? bytes}) async {

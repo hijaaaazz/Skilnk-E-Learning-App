@@ -10,10 +10,10 @@ class ModernStatsGrid extends StatelessWidget {
   final Function(TimePeriod)? onPeriodChanged;
 
   const ModernStatsGrid({
-    Key? key,
+    super.key,
     required this.data,
     this.onPeriodChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -107,6 +107,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
             return base64Video;
           } else {
             log("No bytes found for web video");
+            // ignore: use_build_context_synchronously
             showAppSnackbar(context, "Failed to read video file");
             return null;
           }
@@ -120,6 +121,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
               return filePath;
             } else {
               log("Selected video file not found: $filePath");
+              // ignore: use_build_context_synchronously
               showAppSnackbar(context, "Selected video file not found");
               return null;
             }
@@ -130,6 +132,7 @@ mixin FileSelectionHandlers on Cubit<AddCourseState> {
       return null;
     } catch (e) {
       log("Error picking video file: $e");
+      // ignore: use_build_context_synchronously
       showAppSnackbar(context, "Could not select video file");
       return null;
     }

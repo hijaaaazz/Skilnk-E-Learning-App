@@ -4,7 +4,7 @@ import 'package:tutor_app/features/dashboard/data/models/activity_item.dart';
 class ActivityItemWidget extends StatelessWidget {
   final ActivityItem activity;
 
-  const ActivityItemWidget({Key? key, required this.activity}) : super(key: key);
+  const ActivityItemWidget({super.key, required this.activity});
 
   @override
   Widget build(BuildContext context) {

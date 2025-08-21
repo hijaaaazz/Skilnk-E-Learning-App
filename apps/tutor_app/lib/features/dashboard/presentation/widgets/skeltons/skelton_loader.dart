@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 
 class SkeletonLoader extends StatefulWidget {
@@ -6,11 +8,11 @@ class SkeletonLoader extends StatefulWidget {
   final BorderRadius? borderRadius;
 
   const SkeletonLoader({
-    Key? key,
+    super.key,
     required this.width,
     required this.height,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   _SkeletonLoaderState createState() => _SkeletonLoaderState();
@@ -75,7 +77,7 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
 class SkeletonContainer extends StatelessWidget {
   final Widget child;
 
-  const SkeletonContainer({Key? key, required this.child}) : super(key: key);
+  const SkeletonContainer({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

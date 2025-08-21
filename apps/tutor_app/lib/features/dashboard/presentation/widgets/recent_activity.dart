@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_to_list_in_spreads
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../data/models/activity_item.dart';
@@ -5,7 +7,7 @@ import '../../data/models/activity_item.dart';
 class ModernRecentActivity extends StatelessWidget {
   final List<ActivityItem> activities;
 
-  const ModernRecentActivity({Key? key, required this.activities}) : super(key: key);
+  const ModernRecentActivity({super.key, required this.activities});
 
   @override
   Widget build(BuildContext context) {

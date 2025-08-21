@@ -94,6 +94,7 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
       return Left("Failed to fetch categories: ${e.toString()}");
     }
   }
+  @override
   Future<Either<String, CourseModel>> createCourse(CourseCreationReq req) async {
   try {
     // Validate input
@@ -134,7 +135,7 @@ class CoursesFirebaseServiceImpl extends CourseFirebaseService {
       offerPercentage: req.offerPercentage ?? 0,
       tutorId: req.tutorId ?? '',
       duration: req.duration!.inSeconds,
-      categoryName: req.categoryName ?? '',
+      categoryName: req.categoryName,
       enrolledCount: 0,
       averageRating: 0.0,
       ratingBreakdown: {

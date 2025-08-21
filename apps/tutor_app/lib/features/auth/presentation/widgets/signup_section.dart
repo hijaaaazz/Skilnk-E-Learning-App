@@ -12,7 +12,7 @@ import 'package:tutor_app/features/auth/presentation/widgets/auth_input_fieds.da
 import 'package:tutor_app/features/auth/presentation/widgets/authentication_form.dart';
 import 'package:tutor_app/features/auth/presentation/widgets/buttons.dart';
 class SignUpForm extends StatefulWidget {
-  SignUpForm({super.key});
+  const SignUpForm({super.key});
 
   @override
   State<SignUpForm> createState() => _SignUpFormState();

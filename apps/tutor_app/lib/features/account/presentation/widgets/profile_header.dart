@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -341,7 +340,7 @@ Widget _buildProfileImage(ProfileState profileState) {
     imageUrl = profileState.optimisticImageUrl;
   } else if (profileState is ProfileImageUpdated) {
     imageUrl = profileState.imageUrl;
-    if (kIsWeb && profileState is ProfileImageUpdated) {
+    if (kIsWeb) {
       webImageBytes = profileState.imageBytes;
     }
   } else if (profileState is ProfileImageShowMode) {
